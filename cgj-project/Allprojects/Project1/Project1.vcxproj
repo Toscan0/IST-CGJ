@@ -94,7 +94,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\..\dependencies\glew\include;$(SolutionDir)\..\dependencies\freeglut\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\dependecies\freeglut\lib\x64;$(SolutionDir)\..\dependecies\glew\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\dependencies\freeglut\lib\x64;$(SolutionDir)\..\dependencies\glew\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
