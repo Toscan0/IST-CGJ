@@ -25,6 +25,9 @@
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
+
+#include "vectorTest.h"
+
 #define CAPTION "Hello Blank World"
 
 int WinX = 640, WinY = 480;
@@ -236,9 +239,14 @@ void init(int argc, char* argv[])
 }
 
 int main(int argc, char* argv[])
-{
+{	
 	init(argc, argv);
+	
+	//run tests
+	callTests();
+
 	glutMainLoop();	
+
 	exit(EXIT_SUCCESS);
 }
 

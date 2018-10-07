@@ -1,2 +1,7 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
-  Project1.vcxproj -> Z:\Desktop\CGJ\cgj-project\Allprojects\\..\bin\x64\Project1.exe
+  1-StartingOpenGL.cpp
+  vector.cpp
+  vectorTest.cpp
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project1\vectortest.cpp(39): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  Generating Code...
+  Project1.vcxproj -> C:\Users\Toscan0\Desktop\IST-CGJ\cgj-project\Allprojects\\..\bin\x64\Project1.exe
