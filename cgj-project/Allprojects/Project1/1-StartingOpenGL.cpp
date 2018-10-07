@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
 	
 	//run tests
 	callTests();
-
+	
 	glutMainLoop();	
 
 	exit(EXIT_SUCCESS);
