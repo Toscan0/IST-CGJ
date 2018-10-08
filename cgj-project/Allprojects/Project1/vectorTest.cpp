@@ -67,7 +67,9 @@ int vector4Test(vector4 v1, vector4 v2) {
 	return 0;
 }
 
-void callTests() {
+void callVectorTests() {
+	std::cout << "\n";
+	std::cout << "Starting test vector.cpp\n";
 	vector2 v1 (5, 4);
 	std::tuple<float, float> t1 = std::make_tuple(5, 3);
 	vector2 v2 (t1);
@@ -85,4 +87,5 @@ void callTests() {
 	vector4 v6(t3);
 
 	vector4Test(v5, v6);
+	std::cout << "End vector.cpp test\n";
 }

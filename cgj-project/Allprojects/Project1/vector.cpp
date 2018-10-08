@@ -3,18 +3,17 @@
 #include <string>
 #include <tuple>
 
+#include <algorithm>
+
 #include "vector.h"
-/*
-std::string i;
-	std::cout << "write something\n";
-	getline(std::cin, i);
-	std::cout << "sss" << i;
-	*/
+
 // -- Constructor --
 // Vector2
 vector2::vector2(float a, float b) {
 	_a = a;
 	_b = b;
+
+	//_vc = std::make_tuple(a, b);
 }
 
 vector2::vector2(std::tuple<float, float> vc2) {
@@ -49,6 +48,17 @@ vector4::vector4(std::tuple<float, float, float, float> vc4) {
 	_c = std::get<2>(vc4);
 	_d = std::get<3>(vc4);
 }
+
+// -- Read --
+/*
+std::string i;
+	std::cout << "write something\n";
+	getline(std::cin, i);
+	std::cout << "sss" << i;
+	*/
+// Vector 2
+
+
 
 // -- Print --
 void vector2::printVc2() {
@@ -190,3 +200,8 @@ vector3  vector3::crossProductVc3(const vector3& vc3) {
 	vector3 auxVc(a, b, c);
 	return auxVc;
 }
+
+
+
+
+

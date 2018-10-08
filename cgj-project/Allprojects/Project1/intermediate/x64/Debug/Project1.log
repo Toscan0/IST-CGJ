@@ -1,5 +1,72 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
   1-StartingOpenGL.cpp
+<<<<<<< HEAD
   vector.cpp
+=======
+  matrixTest.cpp
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.15.26726\include\tuple(236): warning C4244: 'initializing': conversion from '_Ty' to '_Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+          and
+          [
+              _Ty=float
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.15.26726\include\tuple(357): note: see reference to function template instantiation 'std::_Tuple_val<_This>::_Tuple_val<_Ty>(_Other &&)' being compiled
+          with
+          [
+              _This=float,
+              _Ty=int,
+              _Other=int
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.15.26726\include\tuple(358): note: see reference to function template instantiation 'std::_Tuple_val<_This>::_Tuple_val<_Ty>(_Other &&)' being compiled
+          with
+          [
+              _This=float,
+              _Ty=int,
+              _Other=int
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.15.26726\include\tuple(1035): note: see reference to function template instantiation 'std::tuple<float,float>::tuple<std::_Exact_args_t,int,int,0>(_Tag,_This2 &&,int &&)' being compiled
+          with
+          [
+              _Tag=std::_Exact_args_t,
+              _This2=int
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.15.26726\include\tuple(1035): note: see reference to function template instantiation 'std::tuple<float,float>::tuple<std::_Exact_args_t,int,int,0>(_Tag,_This2 &&,int &&)' being compiled
+          with
+          [
+              _Tag=std::_Exact_args_t,
+              _This2=int
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.15.26726\include\tuple(372): note: see reference to function template instantiation 'std::tuple<float,float>::tuple<std::_Unpack_tuple_t,_Ty,0,1,0>(_Tag,_Tpl &&,std::integer_sequence<unsigned __int64,0,1>)' being compiled
+          with
+          [
+              _Ty=std::tuple<int,int>,
+              _Tag=std::_Unpack_tuple_t,
+              _Tpl=std::tuple<int,int>
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.15.26726\include\tuple(372): note: see reference to function template instantiation 'std::tuple<float,float>::tuple<std::_Unpack_tuple_t,_Ty,0,1,0>(_Tag,_Tpl &&,std::integer_sequence<unsigned __int64,0,1>)' being compiled
+          with
+          [
+              _Ty=std::tuple<int,int>,
+              _Tag=std::_Unpack_tuple_t,
+              _Tpl=std::tuple<int,int>
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.15.26726\include\tuple(516): note: see reference to function template instantiation 'std::tuple<float,float>::tuple<std::_Unpack_tuple_t,std::tuple<int,int>,0>(_Tag,_Tpl &&)' being compiled
+          with
+          [
+              _Tag=std::_Unpack_tuple_t,
+              _Tpl=std::tuple<int,int>
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.15.26726\include\tuple(516): note: see reference to function template instantiation 'std::tuple<float,float>::tuple<std::_Unpack_tuple_t,std::tuple<int,int>,0>(_Tag,_Tpl &&)' being compiled
+          with
+          [
+              _Tag=std::_Unpack_tuple_t,
+              _Tpl=std::tuple<int,int>
+          ]
+  c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project1\matrixtest.cpp(13): note: see reference to function template instantiation 'std::tuple<float,float>::tuple<int,int,0>(std::tuple<int,int> &&) noexcept' being compiled
+  c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project1\matrixtest.cpp(13): note: see reference to function template instantiation 'std::tuple<float,float>::tuple<int,int,0>(std::tuple<int,int> &&) noexcept' being compiled
+>>>>>>> 3ff3aa603e3628ce543f496d16b93b5a49dfafc0
   Generating Code...
   Project1.vcxproj -> C:\Users\Toscan0\Desktop\IST-CGJ\cgj-project\Allprojects\\..\bin\x64\Project1.exe

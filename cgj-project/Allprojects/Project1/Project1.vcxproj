@@ -131,10 +131,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="1-StartingOpenGL.cpp" />
+    <ClCompile Include="matrix.cpp" />
+    <ClCompile Include="matrixTest.cpp" />
     <ClCompile Include="vector.cpp" />
     <ClCompile Include="vectorTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="matrix.h" />
+    <ClInclude Include="matrixTest.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="vectorTest.h" />
   </ItemGroup>
