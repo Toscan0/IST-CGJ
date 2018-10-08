@@ -1,3 +1,5 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
-  1-StartingOpenGL.cpp
+  matrix.cpp
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project1\matrix.cpp(242): warning C4715: 'matrix2x2::inverseM2x2': not all control paths return a value
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project1\matrix.cpp(281): warning C4715: 'matrix3x3::inverseM3x3': not all control paths return a value
   Project1.vcxproj -> C:\Users\Toscan0\Desktop\IST-CGJ\cgj-project\Allprojects\\..\bin\x64\Project1.exe

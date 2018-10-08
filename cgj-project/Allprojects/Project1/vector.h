@@ -3,11 +3,12 @@
 
 struct vector2 {
 	float _a, _b;
+	//std::tuple<float, float> _vc;
 
 	vector2(float, float);
 	vector2(std::tuple<float, float>);
 	
-	void readVc2 ();
+	vector2 readVc2 ();
 	void printVc2 ();
 	
 	vector2 operator= (const vector2&);
