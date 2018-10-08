@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string>
 #include <tuple>
+#include <assert.h>     /* assert */
 
 #include "matrix.h"
 #include "vector.h"
@@ -52,6 +53,35 @@ void matrix3x3Test(matrix3x3 m1, matrix3x3 m2) {
 	std::cout << "End tests of matrix 3x3\n";
 }
 
+
+void matrix4x4Test(matrix4x4 m1, matrix4x4 m2) {
+	std::cout << "Starting teste matrix 4x4\n";
+
+	m1.matrixPrint();
+
+	bool b = m1 == m1;
+	std::cout << b << "\n"; //1
+
+	matrix4x4 aux1 = m1 + m1;
+	aux1.matrixPrint();
+
+	matrix4x4 aux2 = m1 - m1;
+	aux2.matrixPrint();
+
+	matrix4x4 aux3 = m1 * m1;
+	aux3.matrixPrint();
+
+	matrix4x4 aux4 = m1 * 2;
+	aux4.matrixPrint();
+	
+	float det = m1.detM4x4();
+	std::cout << det << "\n";
+	
+	matrix4x4 aux6 = m1.transposeM4x4();
+	aux6.matrixPrint();
+
+	std::cout << "End tests of matrix 4x4\n";
+}
 void callMatrixTests() {
 	std::cout << "\n";
 	std::cout << "Starting test matrix.cpp\n";
@@ -71,6 +101,11 @@ void callMatrixTests() {
 	matrix3x3 m4 (v3, v4, v5);
 
 	matrix3x3Test(m3, m4);
+
+	matrix4x4 m5 (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+	matrix4x4 m6 (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+
+	matrix4x4Test(m5, m6);
 
 	std::cout << "End test matrix.cpp\n";
 }
