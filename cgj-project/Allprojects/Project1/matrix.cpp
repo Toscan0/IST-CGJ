@@ -338,17 +338,17 @@ matrix4x4 matrix4x4::operator*(const matrix4x4& m1) {
 	float a = (_a * m1._a) + (_b * m1._e) + (_c * m1._i) + (_d * m1._m);
 	float b = (_a * m1._b) + (_b * m1._f) + (_c * m1._j) + (_d * m1._n);
 	float c = (_a * m1._c) + (_b * m1._g) + (_c * m1._k) + (_d * m1._o);
-	float d = (_a * m1._d) + (_b * m1._h) + (_c * m1._e) + (_d * m1._p);
+	float d = (_a * m1._d) + (_b * m1._h) + (_c * m1._l) + (_d * m1._p);
 
 	float e = (_e * m1._a) + (_f * m1._e) + (_g * m1._i) + (_h * m1._m);
 	float f = (_e * m1._b) + (_f * m1._f) + (_g * m1._j) + (_h * m1._n);
 	float g = (_e * m1._c) + (_f * m1._g) + (_g * m1._k) + (_h * m1._o);
-	float h = (_e * m1._d) + (_f * m1._h) + (_g * m1._e) + (_h * m1._p);
+	float h = (_e * m1._d) + (_f * m1._h) + (_g * m1._l) + (_h * m1._p);
 
 	float i = (_i * m1._a) + (_j * m1._e) + (_k * m1._i) + (_l * m1._m);
 	float j = (_i * m1._b) + (_j * m1._f) + (_k * m1._j) + (_l * m1._n);
 	float k = (_i * m1._c) + (_j * m1._g) + (_k * m1._k) + (_l * m1._o);
-	float l = (_i * m1._d) + (_j * m1._h) + (_k * m1._e) + (_l * m1._p);
+	float l = (_i * m1._d) + (_j * m1._h) + (_k * m1._l) + (_l * m1._p);
 
 	float m = (_m * m1._a) + (_n * m1._e) + (_o * m1._i) + (_p * m1._m);
 	float n = (_m * m1._b) + (_n * m1._f) + (_o * m1._j) + (_p * m1._n);
@@ -383,14 +383,11 @@ float matrix3x3::detM3x3() {
 
 // Matrix 4x4
 float matrix4x4::detM4x4() {
-	float x, y, z, w;
-
-	x = _a * ((_f * _k * _p) - (_f * _l * _o) - (_g * _i * _p) + (_g * _l * _n) + (_h * _j * _o) - (_h * _k * _n));
-	y = _b * ((_e * _k * _p) - (_e * _l * _o) - (_g * _i * _p) + (_g * _l * _m) + (_h * _j * _o) - (_h * _k * _m));
-	z = _c * ((_e * _j * _p) - (_e * _l * _n) - (_f * _i * _p) + (_f * _k * _m) + (_h * _i * _n) - (_h * _i * _m));
-	w = _d * ((_e * _j * _o) - (_e * _k * _n) - (_f * _i * _o) + (_f * _k * _m) + (_g * _i * _n) - (_g * _j * _m));
-
-	return x + y + z + w;
+	
+	return ((_a * _f * _k * _p) - (_a * _f * _l * _o) - (_a * _g * _j * _p) + (_a * _g * _l * _n) + (_a * _h * _j * _o) - (_a * _h * _k * _n)
+			- (_b * _e * _k * _p) + (_b * _e * _l * _o) + (_b * _g * _i * _p) - (_b * _g * _l * _m) - (_b * _h * _i * _o) + (_b * _h * _k * _m)
+			+ (_c * _e * _j * _p) - (_c * _e * _l * _n) - (_c * _f * _i * _p) + (_c * _f * _l * _m) + (_c * _h * _i * _n) - (_c * _h * _j * _m)
+			- (_d * _e * _j * _o) + (_d * _e * _k * _n) + (_d * _f * _i * _o) - (_d * _f * _k * _m) - (_d * _g * _i * _n) + (_d * _g * _j * _m));
 }
 
 // -- Transpose --
@@ -413,7 +410,7 @@ matrix3x3 matrix3x3::transposeM3x3() {
 // Matrix 4x4
 matrix4x4 matrix4x4::transposeM4x4() {
 
-	matrix4x4 mAux(_a, _e, _i, _m, _b, _f, _j, _n, _c, _g, _k, _o, _d, _h, _e, _p);
+	matrix4x4 mAux(_a, _e, _i, _m, _b, _f, _j, _n, _c, _g, _k, _o, _d, _h, _l, _p);
 
 	return mAux;
 }

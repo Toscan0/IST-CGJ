@@ -68,14 +68,15 @@ void matrix4x4Test(matrix4x4 m1, matrix4x4 m2) {
 	matrix4x4 aux2 = m1 - m1;
 	aux2.matrixPrint();
 
+	std::cout << "--\n";
 	matrix4x4 aux3 = m1 * m1;
 	aux3.matrixPrint();
 
 	matrix4x4 aux4 = m1 * 2;
 	aux4.matrixPrint();
 	
-	float det = m1.detM4x4();
-	std::cout << det << "\n";
+	float l = m1.detM4x4();
+	std::cout << "det" << l << "\n";
 	
 	matrix4x4 aux6 = m1.transposeM4x4();
 	aux6.matrixPrint();
@@ -103,7 +104,7 @@ void callMatrixTests() {
 	matrix3x3Test(m3, m4);
 
 	matrix4x4 m5 (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-	matrix4x4 m6 (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+	matrix4x4 m6 (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
 	matrix4x4Test(m5, m6);
 
