@@ -25,7 +25,6 @@
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
-
 #include "vectorTest.h"
 #include "matrixTest.h"
 
@@ -249,7 +248,7 @@ int main(int argc, char* argv[])
 
 	glutMainLoop();	
 
-	exit(EXIT_SUCCESS);
+	exit(EXIT_SUCCESS);	
 }
 
 ///////////////////////////////////////////////////////////////////////
