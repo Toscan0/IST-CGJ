@@ -14,8 +14,8 @@ struct matrix2x2{
 	float _a, _b, _c, _d;
 
 	matrix2x2 (float, float, float, float);
-	matrix2x2 (std::tuple<float, float>, std::tuple<float, float>);
 	matrix2x2 (vector2& vc1, vector2& vc2);
+	matrix2x2(float lst[4]);
 
 	matrix2x2 matrixRead();
 	void matrixPrint();
@@ -26,7 +26,7 @@ struct matrix2x2{
 	matrix2x2 operator- (const matrix2x2&);
 	matrix2x2 operator* (const matrix2x2&);
 	matrix2x2 operator* (const float);
-	matrix2x2 operator* (const vector2& vc);
+	vector2 operator* (const vector2& vc);
 
 	float detM2x2();
 	matrix2x2 inverseM2x2();
@@ -50,6 +50,7 @@ struct matrix3x3 {
 
 	matrix3x3 (float, float, float, float, float, float, float, float, float);
 	matrix3x3 (vector3& vc1, vector3& vc2, vector3& vc3);
+	matrix3x3 (float lst [9]);
 
 	matrix3x3 matrixRead();
 	void matrixPrint();
@@ -60,7 +61,7 @@ struct matrix3x3 {
 	matrix3x3 operator- (const matrix3x3&);
 	matrix3x3 operator* (const matrix3x3&);
 	matrix3x3 operator* (const float);
-	matrix2x2 operator* (const vector3& vc);
+	vector3 operator* (const vector3& vc);
 
 	float detM3x3();
 	matrix3x3 transposeM3x3();
@@ -85,6 +86,7 @@ struct matrix4x4 {
 
 	matrix4x4 (float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float);
 	matrix4x4 (vector4& vc1, vector4& vc2, vector4& vc3, vector4& vc4);
+	matrix4x4 (float lst[16]);
 
 	matrix4x4 matrixRead();
 	void matrixPrint();
@@ -95,7 +97,7 @@ struct matrix4x4 {
 	matrix4x4 operator- (const matrix4x4&);
 	matrix4x4 operator* (const matrix4x4&);
 	matrix4x4 operator* (const float);
-	matrix4x4 operator* (const vector4& vc);
+	vector4 operator* (const vector4& vc);
 
 	float detM4x4();
 	matrix4x4 transposeM4x4();

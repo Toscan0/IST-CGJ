@@ -50,14 +50,74 @@ vector4::vector4(std::tuple<float, float, float, float> vc4) {
 }
 
 // -- Read --
-/*
-std::string i;
-	std::cout << "write something\n";
-	getline(std::cin, i);
-	std::cout << "sss" << i;
-	*/
 // Vector 2
+vector2 vector2::readVc2() {
+	std::string aAux, bAux;
+	float a, b;
 
+	std::cout << "A vector 2D have the structure v = (a, b)\n";
+	std::cout << "Please introduce your a:\n";
+	getline(std::cin, aAux);
+	std::cout << "Please introduce your b:\n";
+	getline(std::cin, bAux);
+	
+	a = std::stof(aAux);
+	b = std::stof(bAux);
+
+	vector2 v(a, b);
+	std::cout << "The vector " << "(" << a << ", " << b << ") " << "was created\n";
+
+	return v;
+}
+
+// Vector 3
+vector3 vector3::readVc3() {
+	std::string aAux, bAux, cAux;
+	float a, b, c;
+
+	std::cout << "A vector 3D have the structure v = (a, b, c)\n";
+	std::cout << "Please introduce your a:\n";
+	getline(std::cin, aAux);
+	std::cout << "Please introduce your b:\n";
+	getline(std::cin, bAux);
+	std::cout << "Please introduce your c:\n";
+	getline(std::cin, cAux);
+
+	a = std::stof(aAux);
+	b = std::stof(bAux);
+	c = std::stof(cAux);
+
+	vector3 v (a, b, c);
+	std::cout << "The vector " << "(" << a << ", " << b << ", " << c << ") " << "was created\n";
+
+	return v;
+}
+
+// Vector 4
+vector4 vector4::readVc4() {
+	std::string aAux, bAux, cAux, dAux;
+	float a, b, c, d;
+
+	std::cout << "A vector 4D have the structure v = (a, b, c, d)\n";
+	std::cout << "Please introduce your a:\n";
+	getline(std::cin, aAux);
+	std::cout << "Please introduce your b:\n";
+	getline(std::cin, bAux);
+	std::cout << "Please introduce your c:\n";
+	getline(std::cin, cAux);
+	std::cout << "Please introduce your d:\n";
+	getline(std::cin, dAux);
+
+	a = std::stof(aAux);
+	b = std::stof(bAux);
+	c = std::stof(cAux);
+	d = std::stof(dAux);
+
+	vector4 v(a, b, c, d);
+	std::cout << "The vector " << "(" << a << ", " << b << ", " << c << ", " << d << ") " << "was created\n";
+
+	return v;
+}
 
 
 // -- Print --

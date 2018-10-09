@@ -30,6 +30,9 @@
     <ClCompile Include="matrixTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="matrixFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.h">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="matrixTest.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="matrixFactory.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

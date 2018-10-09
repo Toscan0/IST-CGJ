@@ -10,13 +10,8 @@
 void matrix2x2Test(matrix2x2 m1, matrix2x2 m2) {
 	std::cout << "Starting teste matrix 2x2\n";
 
-	std::tuple<float, float> t1 = std::make_tuple(1, 3);
-	std::tuple<float, float> t2 = std::make_tuple(2, 4);
-	matrix2x2 m3(t1, t2);
-
 	m1.matrixPrint();
 	m2.matrixPrint();
-	m3.matrixPrint();
 
 	matrix2x2 aux1 = m1 + m2;
 	aux1.matrixPrint(); 

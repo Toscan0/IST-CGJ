@@ -17,18 +17,18 @@ matrix2x2::matrix2x2(float a, float b, float c, float d) {
 	_d = d;
 }
 
-matrix2x2::matrix2x2(std::tuple<float, float> vc1, std::tuple<float, float> vc2) {
-	_a = std::get<0>(vc1);
-	_b = std::get<0>(vc2);
-	_c = std::get<1>(vc1);
-	_d = std::get<1>(vc2);
-}
-
 matrix2x2::matrix2x2(vector2& vc1, vector2& vc2) {
 	_a = vc1._a;
 	_b = vc2._a;
 	_c = vc1._b;
 	_d = vc2._b;
+}
+
+matrix2x2::matrix2x2(float lst[4]) {
+	_a = lst[0];
+	_b = lst[1];
+	_c = lst[2];
+	_d = lst[3];
 }
 
 // Matrix 3x3
@@ -54,6 +54,18 @@ matrix3x3::matrix3x3(vector3& vc1, vector3& vc2, vector3& vc3) {
 	_g = vc1._c;
 	_h = vc2._c;
 	_i = vc3._c;
+}
+
+matrix3x3::matrix3x3(float lst[9] ) {
+	_a = lst[0];
+	_b = lst[1];
+	_c = lst[2];
+	_d = lst[3];
+	_e = lst[4];
+	_f = lst[5];
+	_g = lst[6];
+	_h = lst[7];
+	_i = lst[8];
 }
 
 //Matrix 4x4
@@ -96,9 +108,164 @@ matrix4x4::matrix4x4(vector4& vc1, vector4& vc2, vector4& vc3, vector4& vc4) {
 	_p = vc4._d;
 }
 
-
+matrix4x4::matrix4x4(float lst[16]) {
+	_a = lst[0];
+	_b = lst[1];
+	_c = lst[2];
+	_d = lst[3];
+	_e = lst[4];
+	_f = lst[5];
+	_g = lst[6];
+	_h = lst[7];
+	_i = lst[8];
+	_j = lst[9];
+	_k = lst[10];
+	_l = lst[11];
+	_m = lst[12];
+	_n = lst[13];
+	_o = lst[14];
+	_p = lst[15];
+}
 
 // -- Read --
+// Matrix 2x2
+matrix2x2 matrix2x2::matrixRead() {
+	std::string aAux, bAux, cAux, dAux;
+	float a, b, c, d;
+
+	std::cout << "A matrix 4x4 have the structure:\n";
+	std::cout << "a b\n";
+	std::cout << "c d\n";
+	std::cout << "Please introduce your a:\n";
+	getline(std::cin, aAux);
+	std::cout << "Please introduce your b:\n";
+	getline(std::cin, bAux);
+	std::cout << "Please introduce your c:\n";
+	getline(std::cin, cAux);
+	std::cout << "Please introduce your d:\n";
+	getline(std::cin, dAux);
+
+	a = std::stof(aAux);
+	b = std::stof(bAux);
+	c = std::stof(cAux);
+	d = std::stof(dAux);
+
+	matrix2x2 m (a, b, c, d);
+	std::cout << "A matrix 2x2 created:\n";
+	m.matrixPrint();
+
+	return m;
+}
+
+// Matrix 3x3
+matrix3x3 matrix3x3::matrixRead() {
+	std::string aAux, bAux, cAux, dAux, eAux, fAux, gAux, hAux, iAux;
+	float a, b, c, d, e, f, g, h, i;
+
+	std::cout << "A matrix 4x4 have the structure:\n";
+	std::cout << "a b c\n";
+	std::cout << "d e f\n";
+	std::cout << "g h i\n";
+	std::cout << "Please introduce your a:\n";
+	getline(std::cin, aAux);
+	std::cout << "Please introduce your b:\n";
+	getline(std::cin, bAux);
+	std::cout << "Please introduce your c:\n";
+	getline(std::cin, cAux);
+	std::cout << "Please introduce your d:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your e:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your f:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your g:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your h:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your i:\n";
+	getline(std::cin, dAux);
+
+	a = std::stof(aAux);
+	b = std::stof(bAux);
+	c = std::stof(cAux);
+	d = std::stof(dAux);
+	e = std::stof(eAux);
+	f = std::stof(fAux);
+	g = std::stof(gAux);
+	h = std::stof(hAux);
+	i = std::stof(iAux);
+
+	matrix3x3 m (a, b, c, d, e, f, g, h, i);
+	std::cout << "A matrix 3x3 created:\n";
+	m.matrixPrint();
+
+	return m;
+}
+
+// Matrix 4x4
+matrix4x4 matrix4x4::matrixRead() {
+	std::string aAux, bAux, cAux, dAux, eAux, fAux, gAux, hAux, iAux, jAux, kAux, lAux, mAux, nAux, oAux, pAux;
+	float a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p;
+
+	std::cout << "A matrix 4x4 have the structure:\n";
+	std::cout << "a b c d\n";
+	std::cout << "e f g h\n";
+	std::cout << "i j k l\n";
+	std::cout << "m n o p\n";
+	std::cout << "Please introduce your a:\n";
+	getline(std::cin, aAux);
+	std::cout << "Please introduce your b:\n";
+	getline(std::cin, bAux);
+	std::cout << "Please introduce your c:\n";
+	getline(std::cin, cAux);
+	std::cout << "Please introduce your d:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your e:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your f:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your g:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your h:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your i:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your j:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your k:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your l:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your m:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your n:\n";
+	getline(std::cin, dAux);
+	std::cout << "Please introduce your o:\n";
+	getline(std::cin, dAux);
+
+	a = std::stof(aAux);
+	b = std::stof(bAux);
+	c = std::stof(cAux);
+	d = std::stof(dAux);
+	e = std::stof(eAux);
+	f = std::stof(fAux);
+	g = std::stof(gAux);
+	h = std::stof(hAux);
+	i = std::stof(iAux);
+	j = std::stof(jAux);
+	k = std::stof(kAux);
+	l = std::stof(lAux);
+	m = std::stof(mAux);
+	n = std::stof(nAux);
+	o = std::stof(oAux);
+	p = std::stof(pAux);
+
+	matrix4x4 mR (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
+	std::cout << "A matrix 4x4 created:\n";
+	mR.matrixPrint();
+
+	return mR;
+}
 
 // -- Print --
 // Matrix 2x2
@@ -360,6 +527,36 @@ matrix4x4 matrix4x4::operator*(const matrix4x4& m1) {
 	return mMut;
 }
 
+
+// Matrix 2x2 by a vector 
+vector2 matrix2x2::operator* (const vector2& vc) {
+	float a = (_a * vc._a) + (_b * vc._b);
+	float b = (_c * vc._a) + (_d * vc._b);
+
+	vector2 res (a, b);
+	return res;
+}
+
+// Matrix 3x3 by a vector 
+vector3 matrix3x3::operator* (const vector3& vc) {
+	float a = (_a * vc._a) + (_b * vc._b) + (_c * vc._c);
+	float b = (_d * vc._a) + (_e * vc._b) + (_f * vc._c);
+	float c = (_g * vc._a) + (_h * vc._b) + (_i * vc._c);
+
+	vector3 res (a, b, c);
+	return res;
+}
+// Matrix 4x4 by a vector
+vector4 matrix4x4::operator* (const vector4& vc) {
+	float a = (_a * vc._a) + (_b * vc._b) + (_c * vc._c) + (_d * vc._d);
+	float b = (_e * vc._a) + (_f * vc._b) + (_g * vc._c) + (_h * vc._d);
+	float c = (_i * vc._a) + (_j * vc._b) + (_k * vc._c) + (_l * vc._d);
+	float d = (_m * vc._a) + (_n * vc._b) + (_o * vc._c) + (_p * vc._d);
+
+	vector4 res(a, b, c, d);
+	return res;
+}
+
 // -- Determinant --
 // Matrix 2x2
 float matrix2x2::detM2x2() {
@@ -467,4 +664,3 @@ matrix3x3 matrix3x3::inverseM3x3() {
 		return inv;
 	}
 }
-

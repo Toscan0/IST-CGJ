@@ -24,7 +24,7 @@ struct vector3 {
 	vector3(float, float, float);
 	vector3(std::tuple<float, float, float>);
 
-	void readVc3();
+	vector3 readVc3();
 	void printVc3();
 
 	float dotProductVc3 (const vector3&);
@@ -40,10 +40,10 @@ struct vector3 {
 struct vector4 {
 	float _a, _b, _c, _d;
 
-	vector4(float, float, float, float);
-	vector4(std::tuple<float, float, float, float>);
+	vector4 (float, float, float, float);
+	vector4 (std::tuple<float, float, float, float>);
 
-	void readVc4();
+	vector4 readVc4();
 	void printVc4();
 
 	vector4 operator= (const vector4&);
