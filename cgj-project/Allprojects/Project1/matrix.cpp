@@ -26,8 +26,8 @@ matrix2x2::matrix2x2(vector2& vc1, vector2& vc2) {
 
 matrix2x2::matrix2x2(float lst[4]) {
 	_a = lst[0];
-	_b = lst[1];
-	_c = lst[2];
+	_b = lst[2];
+	_c = lst[1];
 	_d = lst[3];
 }
 
@@ -58,13 +58,13 @@ matrix3x3::matrix3x3(vector3& vc1, vector3& vc2, vector3& vc3) {
 
 matrix3x3::matrix3x3(float lst[9] ) {
 	_a = lst[0];
-	_b = lst[1];
-	_c = lst[2];
-	_d = lst[3];
+	_b = lst[3];
+	_c = lst[6];
+	_d = lst[1];
 	_e = lst[4];
-	_f = lst[5];
-	_g = lst[6];
-	_h = lst[7];
+	_f = lst[7];
+	_g = lst[2];
+	_h = lst[5];
 	_i = lst[8];
 }
 
@@ -111,20 +111,73 @@ matrix4x4::matrix4x4(vector4& vc1, vector4& vc2, vector4& vc3, vector4& vc4) {
 matrix4x4::matrix4x4(float lst[16]) {
 	_a = lst[0];
 	_b = lst[1];
-	_c = lst[2];
-	_d = lst[3];
-	_e = lst[4];
+	_c = lst[8];
+	_d = lst[12];
+	_e = lst[1];
 	_f = lst[5];
-	_g = lst[6];
-	_h = lst[7];
-	_i = lst[8];
-	_j = lst[9];
+	_g = lst[9];
+	_h = lst[13];
+	_i = lst[2];
+	_j = lst[6];
 	_k = lst[10];
-	_l = lst[11];
-	_m = lst[12];
-	_n = lst[13];
-	_o = lst[14];
+	_l = lst[14];
+	_m = lst[3];
+	_n = lst[7];
+	_o = lst[11];
 	_p = lst[15];
+}
+
+// -- Data --
+// Matrix 2x2
+float* matrix2x2::data() {
+	float* m = new float[4];
+
+	m[0] = _a;
+	m[1] = _b;
+	m[2] = _c;
+	m[3] = _d;
+
+	return m;
+}
+
+// Matrix 3x3
+float* matrix3x3::data() {
+	float* m = new float[9];
+
+	m[0] = _a;
+	m[1] = _b;
+	m[2] = _c;
+	m[3] = _d;
+	m[4] = _e;
+	m[5] = _f;
+	m[6] = _g;
+	m[7] = _h;
+	m[8] = _i;
+
+	return m;
+}
+// Matrix 4x4
+float* matrix4x4::data() {
+	float* m = new float[16];
+
+	m[0] = _a;
+	m[1] = _b;
+	m[2] = _c;
+	m[3] = _d;
+	m[4] = _e;
+	m[5] = _f;
+	m[6] = _g;
+	m[7] = _h;
+	m[8] = _i;
+	m[9] = _j;
+	m[10] = _k;
+	m[11] = _l;
+	m[12] = _m;
+	m[13] = _n;
+	m[14] = _o;
+	m[15] = _p;
+
+	return m;
 }
 
 // -- Read --
@@ -292,6 +345,32 @@ void matrix4x4::matrixPrint() {
 	std::cout << "[ " << _m << " " << _n << " " << _o << " " << _p << " ]" << "\n";
 	std::cout << "\n";
 }
+
+
+
+// -- Overloading = -
+// Matrix 2x2
+matrix2x2 matrix2x2::operator= (const matrix2x2& m) {
+	matrix2x2 mCopy(m._a, m._b, m._c, m._d);
+
+	return m;
+}
+
+// Matrix 3x3
+matrix3x3 matrix3x3::operator= (const matrix3x3& m) {
+	matrix3x3 mCopy(m._a, m._b, m._c, m._d, m._e, m._f, m._g, m._h, m._i);
+
+	return m;
+}
+
+// Matrix 4x4
+matrix4x4 matrix4x4::operator= (const matrix4x4& m) {
+	matrix4x4 mCopy(m._a, m._b, m._c, m._d, m._e, m._f, m._g, m._h, m._i, m._j, m._k, m._l, m._m, m._n, m._o, m._p);
+
+	return m;
+}
+
+
 
 // -- Overloading == --
 // Matrix 2x2
@@ -634,17 +713,18 @@ matrix3x3 matrix3x3::inverseM3x3() {
 		std::cout << "Matrix dosen't have inverse\n";
 	}
 	else {
+		matrix3x3 mT = transposeM3x3();
 		float a, b, c, d, e, f, g, h, i; //det of minor matrices
 		//minor matrices
-		matrix2x2 m1 (_e, _f, _h, _i); 
-		matrix2x2 m2 (_d, _f, _g, _i);
-		matrix2x2 m3 (_d, _e, _g, _h);
-		matrix2x2 m4 (_b, _c, _h, _i);
-		matrix2x2 m5 (_a, _c, _g, _i);
-		matrix2x2 m6 (_a, _b, _g, _h);
-		matrix2x2 m7 (_b, _c, _e, _f);
-		matrix2x2 m8 (_a, _c, _d, _f);
-		matrix2x2 m9 (_a, _b, _d, _e);
+		matrix2x2 m1 (mT._e, mT._f, mT._h, mT._i);
+		matrix2x2 m2 (mT._d, mT._f, mT._g, mT._i);
+		matrix2x2 m3 (mT._d, mT._e, mT._g, mT._h);
+		matrix2x2 m4 (mT._b, mT._c, mT._h, mT._i);
+		matrix2x2 m5 (mT._a, mT._c, mT._g, mT._i);
+		matrix2x2 m6 (mT._a, mT._b, mT._g, mT._h);
+		matrix2x2 m7 (mT._b, mT._c, mT._e, mT._f);
+		matrix2x2 m8 (mT._a, mT._c, mT._d, mT._f);
+		matrix2x2 m9 (mT._a, mT._b, mT._d, mT._e);
 
 		a = m1.detM2x2();
 		b = m2.detM2x2();

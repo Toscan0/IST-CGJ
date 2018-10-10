@@ -49,6 +49,39 @@ vector4::vector4(std::tuple<float, float, float, float> vc4) {
 	_d = std::get<3>(vc4);
 }
 
+// Data
+// Vector 2
+float* vector2::data() {
+	float* v = new float[2];
+
+	v[0] = _a;
+	v[1] = _b;
+
+	return v;
+}
+
+// Vector 3
+float* vector3::data() {
+	float* v = new float[3];
+
+	v[0] = _a;
+	v[1] = _b;
+	v[2] = _c;
+
+	return v;
+}
+
+// Vector 4
+float* vector4::data() {
+	float* v = new float[4];
+
+	v[0] = _a;
+	v[1] = _b;
+	v[2] = _c;
+	v[3] = _d;
+	
+	return v;
+}
 // -- Read --
 // Vector 2
 vector2 vector2::readVc2() {
@@ -133,12 +166,27 @@ void vector4::printVc4() {
 	std::cout << "(" << _a << "," << _b << "," << _c << "," << _d  << ")" << "\n";
 }
 
-
-/*
+// Overloading operator =
+// Matrix 2x2
 vector2 vector2::operator=(const vector2& v2) {
-	return v2;
-}*/
+	vector2 vCopy (v2._a, v2._b);
 
+	return vCopy;
+}
+
+// Matrix 3x3
+vector3 vector3::operator=(const vector3& v) {
+	vector3 vCopy (v._a, v._b, v._c);
+
+	return vCopy;
+}
+
+// Matrix 4x4
+vector4 vector4::operator=(const vector4& v) {
+	vector4 vCopy (v._a, v._b, v._c, v._d);
+
+	return vCopy;
+}
 
 // Overloading operator ==
 //don't forget --> in c++ true is 1 and false is 0

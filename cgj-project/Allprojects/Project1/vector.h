@@ -3,11 +3,12 @@
 
 struct vector2 {
 	float _a, _b;
-	//std::tuple<float, float> _vc;
 
 	vector2(float, float);
 	vector2(std::tuple<float, float>);
 	
+	float* data();
+
 	vector2 readVc2 ();
 	void printVc2 ();
 	
@@ -23,6 +24,8 @@ struct vector3 {
 
 	vector3(float, float, float);
 	vector3(std::tuple<float, float, float>);
+
+	float* data();
 
 	vector3 readVc3();
 	void printVc3();
@@ -42,6 +45,8 @@ struct vector4 {
 
 	vector4 (float, float, float, float);
 	vector4 (std::tuple<float, float, float, float>);
+
+	float* data();
 
 	vector4 readVc4();
 	void printVc4();

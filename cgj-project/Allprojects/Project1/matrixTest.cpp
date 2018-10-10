@@ -40,8 +40,8 @@ void matrix3x3Test(matrix3x3 m1, matrix3x3 m2) {
 	matrix3x3 v = m1.transposeM3x3();
 	v.matrixPrint();
 	
-	matrix3x3 m3(1, 0, 5, 2, 1, 6, 3, 4, 0);
-	std::cout << m3.detM3x3() << "\n";
+	matrix3x3 m3(1, 2, 3, 0, 1, 4, 5, 6, 0);
+	std::cout << m3.detM3x3() << "çççç\n";
 	matrix3x3 v2 = m3.inverseM3x3();
 	v2.matrixPrint();
 

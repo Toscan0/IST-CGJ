@@ -28,6 +28,8 @@
 #include "vectorTest.h"
 #include "matrixTest.h"
 
+#include "matrixFactory.h"
+
 #define CAPTION "Hello Blank World"
 
 int WinX = 640, WinY = 480;
@@ -245,6 +247,10 @@ int main(int argc, char* argv[])
 	//run tests
 	callVectorTests();
 	callMatrixTests();
+
+	std::cout << "Factory--\n";
+	
+	
 
 	glutMainLoop();	
 
