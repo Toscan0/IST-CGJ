@@ -134,6 +134,7 @@
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="matrixFactory.cpp" />
     <ClCompile Include="matrixTest.cpp" />
+    <ClCompile Include="random.cpp" />
     <ClCompile Include="vector.cpp" />
     <ClCompile Include="vectorTest.cpp" />
   </ItemGroup>
@@ -141,6 +142,7 @@
     <ClInclude Include="matrix.h" />
     <ClInclude Include="matrixFactory.h" />
     <ClInclude Include="matrixTest.h" />
+    <ClInclude Include="random.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="vectorTest.h" />
   </ItemGroup>
