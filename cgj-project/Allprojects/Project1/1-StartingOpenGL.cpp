@@ -27,8 +27,7 @@
 
 #include "vectorTest.h"
 #include "matrixTest.h"
-
-#include "matrixFactory.h"
+//#include "matrixFactoryTest.h"
 
 #define CAPTION "Hello Blank World"
 
@@ -247,10 +246,7 @@ int main(int argc, char* argv[])
 	//run tests
 	callVectorTests();
 	callMatrixTests();
-
-	std::cout << "Factory--\n";
-	
-	
+	//callMatrixFactoryTests();
 
 	glutMainLoop();	
 
