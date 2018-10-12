@@ -7,6 +7,24 @@
 
 #include "vector.h"
 
+// -- Norma --
+// Vector3
+float vector3::norma() {
+	float s = pow(_a,2) + pow(_b, 2) + pow(_c, 2);
+	float n = sqrt(s);
+	return n;
+}
+
+vector3 vector3::normalizado() {
+	float n = norma();
+	float a = _a / n;
+	float b = _b / n;
+	float c = _c / n;
+	
+	vector3 v(a, b, c);
+	return v;
+}
+
 // -- Constructor --
 // Vector2
 vector2::vector2(float a, float b) {
@@ -195,7 +213,15 @@ bool vector2::operator==(const vector2& v2) {
 }
 
 bool vector3::operator==(const vector3& vc3) {
-	return _a == vc3._a && _b == vc3._b && _c == vc3._c;
+	float a = abs(_a - vc3._a);
+	float b = abs(_b - vc3._b);
+	float c = abs(_c - vc3._c);
+	float e = (1e-5);
+	if ( (a < e) && (b < e) && (c < e)) {
+		return true;
+	}
+	return false;
+	//return _a == vc3._a && _b == vc3._b && _c == vc3._c;
 }
 
 bool vector4::operator==(const vector4& vc4) {
@@ -270,7 +296,7 @@ vector2 vector2::operator*(const int x) {
 	return auxVc;
 }
 
-vector3 vector3::operator*(const int x) {
+vector3 vector3::operator*(const float x) {
 	float a = _a * x;
 	float b = _b * x;
 	float c = _c * x;
@@ -289,6 +315,13 @@ vector4 vector4::operator*(const int x) {
 	return auxVc;
 }
 
+ float dot(const vector3& v1, const vector3& v2) {
+	 float a = v1._a * v2._a;
+	 float b = v1._b * v2._b;
+	 float c = v1._c * v2._c;
+
+	 return a + b + c;
+}
 
 // Dot product (intern product)
 float  vector3::dotProductVc3 (const vector3& vc3) {

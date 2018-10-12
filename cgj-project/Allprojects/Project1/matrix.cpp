@@ -509,8 +509,28 @@ matrix2x2 matrix2x2::operator*(const float x) {
 	return m;
 }
 
+matrix3x3 operator*(const matrix3x3 m, const float x) {
+	float a = m._a * x;
+	float b = m._b * x;
+	float c = m._c * x;
+	float d = m._d * x;
+	float e = m._e * x;
+	float f = m._f * x;
+	float g = m._g * x;
+	float h = m._h * x;
+	float i = m._i * x;
+
+	matrix3x3 m1(a, b, c, d, e, f, g, h, i);
+
+	return m1;
+}
+
+matrix3x3 operator* (const float x, const matrix3x3 m) {
+	return m * x;
+}
+
 // Matrix 3x3 by a scalar
-matrix3x3 matrix3x3::operator*(const float x) {
+/*matrix3x3 matrix3x3::operator*(const float x) {
 	float a = _a * x;
 	float b = _b * x;
 	float c = _c * x;
@@ -524,7 +544,7 @@ matrix3x3 matrix3x3::operator*(const float x) {
 	matrix3x3 m(a, b, c, d, e, f, g, h, i);
 
 	return m;
-}
+}*/
 
 // Matrix 4x4 by a scalar
 matrix4x4 matrix4x4::operator*(const float x) {

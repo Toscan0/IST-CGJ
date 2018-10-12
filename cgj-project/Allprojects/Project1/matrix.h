@@ -59,12 +59,15 @@ struct matrix3x3 {
 	matrix3x3 matrixRead();
 	void matrixPrint();
 
+
 	matrix3x3 operator= (const matrix3x3&);
 	bool operator== (const matrix3x3&);
 	matrix3x3 operator+ (const matrix3x3&);
 	matrix3x3 operator- (const matrix3x3&);
 	matrix3x3 operator* (const matrix3x3&);
-	matrix3x3 operator* (const float);
+	friend matrix3x3 operator*(const matrix3x3, const float);
+	friend matrix3x3 operator* (const float, const matrix3x3);
+	//matrix3x3 operator* (const float);
 	vector3 operator* (const vector3& vc);
 
 	float detM3x3();

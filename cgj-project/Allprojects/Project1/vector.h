@@ -33,11 +33,16 @@ struct vector3 {
 	float dotProductVc3 (const vector3&);
 	vector3 crossProductVc3(const vector3&);
 
+	float norma();
+	vector3 normalizado();
+
 	vector3 operator= (const vector3&);
 	bool operator== (const vector3&);
 	vector3 operator+ (const vector3&);
 	vector3 operator- (const vector3&);
-	vector3 operator* (const int);
+	vector3 operator* (const float);
+
+	friend float dot(const vector3&, const vector3&);
 };
 
 struct vector4 {

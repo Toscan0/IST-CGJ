@@ -2,5 +2,6 @@
 
 #include <time.h>       /* time */
 #include <stdlib.h>     /* srand, rand */
+#include <ctime>
 
-int makeRandom(); // betewen 0-9
+float makeRandom(); // betewen 0-9
