@@ -18,6 +18,33 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="1-StartingOpenGL.cpp" />
+    <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp" />
+    <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp" />
+    <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp" />
+    <ClCompile Include="src\matrix\matrixFactory\matrixFactory.cpp" />
+    <ClCompile Include="src\random.cpp" />
+    <ClCompile Include="src\vector\vector2\vector2.cpp" />
+    <ClCompile Include="src\vector\vector3\vector3.cpp" />
+    <ClCompile Include="src\vector\vector4\vector4.cpp" />
+    <ClCompile Include="test\av1\av1.cpp" />
+    <ClCompile Include="test\matrix\matrixTest.cpp" />
+    <ClCompile Include="test\vector\vectorTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h" />
+    <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h" />
+    <ClInclude Include="src\matrix\matrix4x4\matrix4x4.h" />
+    <ClInclude Include="src\matrix\matrixFactory\matrixFactory.h" />
+    <ClInclude Include="src\random.h" />
+    <ClInclude Include="src\vector\vector2\vector2.h" />
+    <ClInclude Include="src\vector\vector3\vector3.h" />
+    <ClInclude Include="src\vector\vector4\vector4.h" />
+    <ClInclude Include="test\av1\av1.h" />
+    <ClInclude Include="test\matrix\matrixTest.h" />
+    <ClInclude Include="test\vector\vectorTest.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B15EC95F-440F-49E4-A051-E8E4940D01AE}</ProjectGuid>
@@ -129,23 +156,6 @@
       <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="1-StartingOpenGL.cpp" />
-    <ClCompile Include="matrix.cpp" />
-    <ClCompile Include="matrixFactory.cpp" />
-    <ClCompile Include="matrixTest.cpp" />
-    <ClCompile Include="random.cpp" />
-    <ClCompile Include="vector.cpp" />
-    <ClCompile Include="vectorTest.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="matrixFactory.h" />
-    <ClInclude Include="matrixTest.h" />
-    <ClInclude Include="random.h" />
-    <ClInclude Include="vector.h" />
-    <ClInclude Include="vectorTest.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

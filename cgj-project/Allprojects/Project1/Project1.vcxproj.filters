@@ -15,45 +15,75 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="test\av1\av1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test\matrix\matrixTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test\vector\vectorTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="1-StartingOpenGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vector.cpp">
+    <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vectorTest.cpp">
+    <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="matrix.cpp">
+    <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="matrixTest.cpp">
+    <ClCompile Include="src\matrix\matrixFactory\matrixFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="matrixFactory.cpp">
+    <ClCompile Include="src\random.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="random.cpp">
+    <ClCompile Include="src\vector\vector2\vector2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vector\vector3\vector3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vector\vector4\vector4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="vector.h">
+    <ClInclude Include="test\av1\av1.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="vectorTest.h">
+    <ClInclude Include="test\matrix\matrixTest.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="matrix.h">
+    <ClInclude Include="test\vector\vectorTest.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="matrixTest.h">
+    <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="matrixFactory.h">
+    <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="random.h">
+    <ClInclude Include="src\matrix\matrix4x4\matrix4x4.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\matrix\matrixFactory\matrixFactory.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\random.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vector\vector2\vector2.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vector\vector3\vector3.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vector\vector4\vector4.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
