@@ -241,7 +241,7 @@ matrix3x3 matrix3x3::transposeM3x3() {
 matrix3x3 matrix3x3::inverseM3x3() {
 	float det = detM3x3();
 	if (det == 0) {
-		std::cout << "Matrix dosen't have inverse\n";
+		throw "Matrix dosen't have inverse\n";
 	}
 	else {
 		matrix3x3 mT = transposeM3x3();

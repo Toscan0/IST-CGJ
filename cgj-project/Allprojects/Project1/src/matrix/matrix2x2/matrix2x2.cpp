@@ -168,7 +168,7 @@ matrix2x2 matrix2x2::transposeM2x2() {
 matrix2x2 matrix2x2::inverseM2x2() {
 	float det = detM2x2();
 	if (det == 0) {
-		std::cout << "Matrix dosen't have inverse\n";
+		throw "Matrix dosen't have inverse\n";
 	}
 	else {
 		float k = 1 / det;
