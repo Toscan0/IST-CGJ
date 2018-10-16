@@ -29,6 +29,8 @@
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
+#include "shapes.h"
+
 #define CAPTION "Hello Modern 2D World"
 
 int WinX = 640, WinY = 480;
@@ -38,7 +40,7 @@ unsigned int FrameCount = 0;
 #define VERTICES 0
 #define COLORS 1
 
-GLuint VaoId, VboId[2];
+GLuint VaoIdSTri, VboIdSTri[2], VaoIdSquare, VboIdSquare[2], VaoIdParall, VboIdParall[2];
 GLuint VertexShaderId, FragmentShaderId, ProgramId;
 GLint UniformId;
 
@@ -188,78 +190,67 @@ void destroyShaderProgram()
 	checkOpenGLError("ERROR: Could not destroy shaders.");
 }
 
-/////////////////////////////////////////////////////////////////////// VAOs & VBOs
-
-typedef struct 
-{
-	GLfloat XYZW[4];
-	GLfloat RGBA[4];
-} Vertex;
-
-// Right triangle
-const Vertex Vertices[] = 
-{
-	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 0.5f, 0.2f, 0.0f, 1.0f }},
-	{{ 0.50f, 0.0f, 0.0f, 1.0f }, { 0.5f, 0.2f, 0.0f, 1.0f }},
-	{{ 0.0f, 0.50f, 0.0f, 1.0f }, { 0.5f, 0.2f, 0.0f, 1.0f }}
-};
-
-const GLubyte Indices[] =
-{
-	0,1,2
-};
-
-// Squad
-/*
-const Vertex Vertices[] =
-{
-	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }},
-	{{ 0.50f, 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }},
-	{{ 0.0f, 0.50f, 0.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }},
-	{{ 0.50f, 0.50f, 0.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }},
-};
-
-const GLubyte Indices[] =
-{
-	0,1,2,2,1,3
-};
-*/
-
-// Parallelogram
-/*
-const Vertex Vertices[] =
-{
-	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }},
-	{{ 0.50f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }},
-	{{ 0.25f, 0.50f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }},
-	{{ 0.75f, 0.50f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }},
-};
-
-const GLubyte Indices[] =
-{
-	0,1,2,2,1,3
-};
-*/
 void createBufferObjects()
 {
-	glGenVertexArrays(1, &VaoId);
-	glBindVertexArray(VaoId);
+	glGenVertexArrays(1, &VaoIdSTri);
+	glBindVertexArray(VaoIdSTri);
 	{
-		glGenBuffers(2, VboId);
+		glGenBuffers(2, VboIdSTri);
 
-		glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, VboIdSTri[0]);
 		{
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(VerticesSTri), VerticesSTri, GL_STATIC_DRAW);
 			glEnableVertexAttribArray(VERTICES);
 			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 			glEnableVertexAttribArray(COLORS);
-			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(Vertices[0].XYZW));
+			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(VerticesSTri[0].XYZW));
 		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboIdSTri[1]);
 		{
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(IndicesSTri), IndicesSTri, GL_STATIC_DRAW);
 		}
 	}
+
+	// Square
+	glGenVertexArrays(1, &VaoIdSquare);
+	glBindVertexArray(VaoIdSquare);
+	{
+		glGenBuffers(2, VboIdSquare);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VboIdSquare[0]);
+		{
+			glBufferData(GL_ARRAY_BUFFER, sizeof(VerticesSquare), VerticesSquare, GL_STATIC_DRAW);
+			glEnableVertexAttribArray(VERTICES);
+			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+			glEnableVertexAttribArray(COLORS);
+			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(VerticesSquare[0].XYZW));
+		}
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboIdSquare[1]);
+		{
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(IndicesSquare), IndicesSquare, GL_STATIC_DRAW);
+		}
+	}
+
+	// Square
+	glGenVertexArrays(1, &VaoIdParall);
+	glBindVertexArray(VaoIdParall);
+	{
+		glGenBuffers(2, VboIdParall);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VboIdParall[0]);
+		{
+			glBufferData(GL_ARRAY_BUFFER, sizeof(VerticesParall), VerticesParall, GL_STATIC_DRAW);
+			glEnableVertexAttribArray(VERTICES);
+			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+			glEnableVertexAttribArray(COLORS);
+			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(VerticesParall[0].XYZW));
+		}
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboIdParall[1]);
+		{
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(IndicesParall), IndicesParall, GL_STATIC_DRAW);
+		}
+	}
+
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -269,13 +260,30 @@ void createBufferObjects()
 
 void destroyBufferObjects()
 {
-	glBindVertexArray(VaoId);
+	glBindVertexArray(VaoIdSTri);
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, VboId);
-	glDeleteVertexArrays(1, &VaoId);
+	glDeleteBuffers(2, VboIdSTri);
+	glDeleteVertexArrays(1, &VaoIdSTri);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(VaoIdSquare);
+	glDisableVertexAttribArray(VERTICES);
+	glDisableVertexAttribArray(COLORS);
+	glDeleteBuffers(2, VboIdSquare);
+	glDeleteVertexArrays(1, &VaoIdSquare);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(VaoIdParall);
+	glDisableVertexAttribArray(VERTICES);
+	glDisableVertexAttribArray(COLORS);
+	glDeleteBuffers(2, VboIdParall);
+	glDeleteVertexArrays(1, &VaoIdParall);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 	glBindVertexArray(0);
 
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
@@ -299,26 +307,30 @@ const Matrix M = {
 	0.0f,  0.0f,  0.0f,  1.0f
 }; // Row Major (GLSL is Column Major)
 
-const Matrix e = {
-	1.0f,  0.0f,  0.0f,  0.5f,
-	0.0f,  1.0f,  0.0f,  0.5f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-}; // Row Major (GLSL is Column Major)
-
 void drawScene()
 {
-	glBindVertexArray(VaoId);
+	glBindVertexArray(VaoIdSTri);
+	glUseProgram(ProgramId);
+
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	glUseProgram(0);
+	glBindVertexArray(0);
+
+	// Draw square
+	glBindVertexArray(VaoIdSquare);
 	glUseProgram(ProgramId);
 
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	// Draw Parall
+	glBindVertexArray(VaoIdParall);
+	glUseProgram(ProgramId);
 
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, e);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUseProgram(0);
 	glBindVertexArray(0);
