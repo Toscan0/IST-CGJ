@@ -196,11 +196,12 @@ typedef struct
 	GLfloat RGBA[4];
 } Vertex;
 
+// Right triangle
 const Vertex Vertices[] = 
 {
-	{{ 0.25f, 0.25f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }},
-	{{ 0.75f, 0.25f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }},
-	{{ 0.50f, 0.75f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}
+	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 0.5f, 0.2f, 0.0f, 1.0f }},
+	{{ 0.50f, 0.0f, 0.0f, 1.0f }, { 0.5f, 0.2f, 0.0f, 1.0f }},
+	{{ 0.0f, 0.50f, 0.0f, 1.0f }, { 0.5f, 0.2f, 0.0f, 1.0f }}
 };
 
 const GLubyte Indices[] =
@@ -208,6 +209,37 @@ const GLubyte Indices[] =
 	0,1,2
 };
 
+// Squad
+/*
+const Vertex Vertices[] =
+{
+	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }},
+	{{ 0.50f, 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }},
+	{{ 0.0f, 0.50f, 0.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }},
+	{{ 0.50f, 0.50f, 0.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }},
+};
+
+const GLubyte Indices[] =
+{
+	0,1,2,2,1,3
+};
+*/
+
+// Parallelogram
+/*
+const Vertex Vertices[] =
+{
+	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }},
+	{{ 0.50f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }},
+	{{ 0.25f, 0.50f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }},
+	{{ 0.75f, 0.50f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }},
+};
+
+const GLubyte Indices[] =
+{
+	0,1,2,2,1,3
+};
+*/
 void createBufferObjects()
 {
 	glGenVertexArrays(1, &VaoId);
@@ -261,8 +293,15 @@ const Matrix I = {
 }; // Row Major (GLSL is Column Major)
 
 const Matrix M = {
-	1.0f,  0.0f,  0.0f, -1.0f,
-	0.0f,  1.0f,  0.0f, -1.0f,
+	1.0f,  0.0f,  0.0f, -0.5f,
+	0.0f,  1.0f,  0.0f, -0.5f,
+	0.0f,  0.0f,  1.0f,  0.0f,
+	0.0f,  0.0f,  0.0f,  1.0f
+}; // Row Major (GLSL is Column Major)
+
+const Matrix e = {
+	1.0f,  0.0f,  0.0f,  0.5f,
+	0.0f,  1.0f,  0.0f,  0.5f,
 	0.0f,  0.0f,  1.0f,  0.0f,
 	0.0f,  0.0f,  0.0f,  1.0f
 }; // Row Major (GLSL is Column Major)
@@ -273,9 +312,12 @@ void drawScene()
 	glUseProgram(ProgramId);
 
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, e);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUseProgram(0);
