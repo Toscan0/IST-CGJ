@@ -25,6 +25,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <math.h>
+
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
@@ -293,68 +295,47 @@ void destroyBufferObjects()
 }
 
 /////////////////////////////////////////////////////////////////////// SCENE
-
-typedef GLfloat Matrix[16];
-
-const Matrix I = {
-	1.0f,  0.0f,  0.0f,  0.0f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-}; // Row Major (GLSL is Column Major)
-
-const Matrix M = {
-	1.0f,  0.0f,  0.0f, -0.5f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-}; // Row Major (GLSL is Column Major)
-
-const Matrix MSM = {
-	1.5f,  0.0f,  0.0f, 0.0f,
-	0.0f,  1.5f,  0.0f, 0.0f,
-	0.0f,  0.0f,  1.5f, 0.0f,
-	0.0f,  0.0f,  0.0f, 1.0f
-}; // Row Major (GLSL is Column Major)
-
-const Matrix MSL = {
-	2.0f,  0.0f,  0.0f, 0.0f,
-	0.0f,  2.0f,  0.0f, 0.0f,
-	0.0f,  0.0f,  2.0f, 0.0f,
-	0.0f,  0.0f,  0.0f, 1.0f
-}; // Row Major (GLSL is Column Major)
-
 void drawScene()
 {	
-	// Draw triangle
-	glBindVertexArray(VaoIdSTri);
-	glUseProgram(ProgramId);
-
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, MSM);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUseProgram(0);
-	glBindVertexArray(0);
-
 	// Draw square
 	glBindVertexArray(VaoIdSquare);
 	glUseProgram(ProgramId);
 
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M1);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
+	
 	// Draw Parall
 	glBindVertexArray(VaoIdParall);
 	glUseProgram(ProgramId);
 
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M2);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
+		
+	// Draw triangle
+	glBindVertexArray(VaoIdSTri);
+	glUseProgram(ProgramId);
+
+	// Small triangle
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M3);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	
+
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M4);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	
+	// Medium Triangle
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M5);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	// Big triangle
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M6);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M7);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+
 
 	glUseProgram(0);
 	glBindVertexArray(0);
@@ -474,6 +455,87 @@ void init(int argc, char* argv[])
 	setupGLUT(argc, argv);
 	setupGLEW();
 	setupOpenGL();
+
+	matrixFactory mf;
+	matrix4x4 mi = mf.identityMatrix4x4();
+	for (int i = 0; i < 16; ++i) {
+		I[i] = mi.data()[i];
+	}
+
+	//Squad (foot)
+	vector3 v1(0, 0, 1);
+	vector3 vT1(0.32, -0.02, 0);
+	matrix4x4 mR1 = mf.rotationMatrix4x4(v1, (3.14159265358979323846 / 4));
+	matrix4x4 mT1 = mf.translationMatrix4x4(vT1);
+	//matrix4x4 m1 = mi * mR1 * mT1;
+	matrix4x4 m1 = mT1 * mR1 * mi;
+	for (int i = 0; i < 16; ++i) {
+		M1[i] = m1.data()[i];
+	}
+
+	// Parallelogram (Legs)
+	vector3 v2(0, 0, 1);
+	vector3 vT2(-0.23, -0.54, 0);
+	matrix4x4 mR2 = mf.rotationMatrix4x4(v2, (3.14159265358979323846 / 8));
+	matrix4x4 mT2 = mf.translationMatrix4x4(vT2);
+	matrix4x4 m2 = mT2 * mR2 * mi;
+	for (int i = 0; i < 16; ++i) {
+		M2[i] = m2.data()[i];
+	}
+
+	// Small triangle (foot)
+	vector3 v3(0, 0, 1);
+	vector3 vT3(-0.23, -0.28, 0);
+	matrix4x4 mR3 = mf.rotationMatrix4x4(v3, (3.14));
+	matrix4x4 mT3 = mf.translationMatrix4x4(vT3);
+	matrix4x4 m3 = mT3 * mR3 * mi;
+	for (int i = 0; i < 16; ++i) {
+		M3[i] = m3.data()[i];
+	}
+
+	// Small triangle (hand)
+	vector3 v4(0, 0, 1);
+	vector3 vT4(-0.03, -0.04, 0);
+	matrix4x4 mR4 = mf.rotationMatrix4x4(v4, (3.14/2));
+	matrix4x4 mT4 = mf.translationMatrix4x4(vT4);
+	matrix4x4 m4 = mT4 * mR4 * mi;
+	for (int i = 0; i < 16; ++i) {
+		M4[i] = m4.data()[i];
+	}
+
+	// Medium triangle (Arm)
+	vector3 v5(0, 0, 1);
+	vector3 vT5(0.15, -0.22, 0);
+	matrix4x4 mR5 = mf.rotationMatrix4x4(v5, (3.14/4));
+	matrix4x4 mT5 = mf.translationMatrix4x4(vT5);
+	matrix4x4 m5 = mT5 * mR5 * mM;
+	for (int i = 0; i < 16; ++i) {
+		M5[i] = m5.data()[i];
+	}
+
+	// Big triangle (ass)
+	vector3 vT (0, -0.5, 0);
+	matrix4x4 mT = mf.translationMatrix4x4(vT);
+	matrix4x4 m6 = mT * mL;
+	for (int i = 0; i < 16; ++i) {
+		M6[i] = m6.data()[i];
+	}
+
+	// Big triangle (body)
+	vector3 v7(0, 0, -1);
+	vector3 vT7(0.1, -0.27, 0);
+	matrix4x4 mT7 = mf.translationMatrix4x4(vT7);
+	matrix4x4 mR7 = mf.rotationMatrix4x4(v7, (3.14159265358979323846 / (4)));
+	matrix4x4 m7 = mT7 * mR7 * mL;
+	for (int i = 0; i < 16; ++i) {
+		M7[i] = m7.data()[i];
+	}
+	/*
+	std::cout << M5[0] << M5[1] << M5[2] << M5[3] << "\n";
+	std::cout << M5[4] << M5[5] << M5[6] << M5[7] << "\n";
+	std::cout << M5[8] << M5[9] << M5[10] << M5[11] << "\n";
+	std::cout << M5[12] << M5[13] << M5[14] << M5[15] << "\n";*/
+
 	setupCallbacks();
 	createShaderProgram();
 	createBufferObjects();

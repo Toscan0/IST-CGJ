@@ -53,7 +53,10 @@ matrix4x4 matrixFactory::scalingMatrix4x4(vector3& vc) {
 // Translação matrix
 matrix4x4 matrixFactory::translationMatrix3x3(vector3& vc) {
 
-	matrix4x4 mTr (1, 0, 0, vc._a, 0, 1, 0, vc._b, 0, 0, 1, vc._c, 0, 0, 0, 1);
+	matrix4x4 mTr (1, 0, 0, vc._a, 
+				   0, 1, 0, vc._b, 
+				   0, 0, 1, vc._c, 
+				   0, 0, 0, 1);
 
 	return mTr;
 }
