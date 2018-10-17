@@ -25,6 +25,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstring>
 #include <math.h>
 #include <fstream>
 
@@ -36,6 +37,7 @@
 #include "src/matrix/matrixFactory/matrixFactory.h"
 
 #include "shapes.h"
+#include "readShaders.h"
 
 #define CAPTION "Hello Modern 2D World"
 
@@ -129,60 +131,20 @@ static void checkOpenGLError(std::string error)
 }
 
 /////////////////////////////////////////////////////////////////////// SHADERs
-//GLchar* VertexShader;
-const GLchar* VertexShader =
-{
-	"#version 330 core\n"
-
-	"in vec4 in_Position;\n"
-	"in vec4 in_Color;\n"
-	"out vec4 ex_Color;\n"
-
-	"uniform mat4 Matrix;\n"
-
-	"void main(void)\n"
-	"{\n"
-	"	gl_Position = Matrix * in_Position;\n"
-	"	ex_Color = in_Color;\n"
-	"}\n"
-};
-
-const GLchar* FragmentShader =
-{
-	"#version 330 core\n"
-
-	"in vec4 ex_Color;\n"
-	"out vec4 out_Color;\n"
-
-	"void main(void)\n"
-	"{\n"
-	"	out_Color = ex_Color;\n"
-	"}\n"
-};
-
-char* readFile() {
-	std::ifstream myReadFile;
-	myReadFile.open("vertexSh.glsl");
-	char output[500];
-	if (myReadFile.is_open()) {
-		while (!myReadFile.eof()) {
-			myReadFile >> output;
-			std::cout << output;
-		}
-	}
-	myReadFile.close();
-	
-	return output;
-}
-
 void createShaderProgram()
 {	
+	std::string vertex_source = read_shader_file("vertexSh.glsl");
+	const char *vertexShader = vertex_source.c_str();
+
 	VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(VertexShaderId, 1, &VertexShader, 0);
+	glShaderSource(VertexShaderId, 1, &vertexShader, 0);
 	glCompileShader(VertexShaderId);
 
+	std::string fragment_source = read_shader_file("fragmentSh.glsl");
+	const char *fragmentShader = fragment_source.c_str();
+
 	FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(FragmentShaderId, 1, &FragmentShader, 0);
+	glShaderSource(FragmentShaderId, 1, &fragmentShader, 0);
 	glCompileShader(FragmentShaderId);
 
 	ProgramId = glCreateProgram();
@@ -548,6 +510,16 @@ void myInit() {
 	std::cout << M5[12] << M5[13] << M5[14] << M5[15] << "\n";*/
 }
 
+
+std::vector<std::string> read_pass(std::istream &is) {
+	std::string line;
+	std::vector<std::string> lines;
+	while (getline(is, line)) {
+		lines.push_back(line);
+	}
+	return lines;
+}
+
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
@@ -555,8 +527,8 @@ void init(int argc, char* argv[])
 	setupOpenGL();
 	
 	myInit();
-	//VertexShader = readFile();
-	
+
+		
 	setupCallbacks();
 	createShaderProgram();
 	createBufferObjects();

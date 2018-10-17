@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="2-Hello2dWorld.cpp" />
+    <ClCompile Include="readShaders.cpp" />
     <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp" />
     <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp" />
     <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp" />
@@ -134,6 +135,7 @@
     <ClCompile Include="src\vector\vector4\vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="readShaders.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="shapes.h" />
     <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h" />
@@ -150,6 +152,7 @@
     <ResourceCompile Include="Project2.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="fragmentSh.glsl" />
     <None Include="vertexSh.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

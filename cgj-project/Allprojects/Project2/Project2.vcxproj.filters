@@ -45,6 +45,9 @@
     <ClCompile Include="src\vector\vector4\vector4.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
+    <ClCompile Include="readShaders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shapes.h">
@@ -80,6 +83,9 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="readShaders.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project2.rc">
@@ -88,6 +94,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="vertexSh.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fragmentSh.glsl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
