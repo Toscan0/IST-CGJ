@@ -134,6 +134,7 @@
     <ClCompile Include="src\vector\vector4\vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="shapes.h" />
     <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h" />
     <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h" />
@@ -144,6 +145,12 @@
     <ClInclude Include="src\vector\vector3\vector3.h" />
     <ClInclude Include="src\vector\vector4\vector4.h" />
     <ClInclude Include="Vertex.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Project2.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vertexSh.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

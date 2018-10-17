@@ -26,6 +26,7 @@
 #include <sstream>
 #include <string>
 #include <math.h>
+#include <fstream>
 
 
 #include "GL/glew.h"
@@ -128,7 +129,7 @@ static void checkOpenGLError(std::string error)
 }
 
 /////////////////////////////////////////////////////////////////////// SHADERs
-
+//GLchar* VertexShader;
 const GLchar* VertexShader =
 {
 	"#version 330 core\n"
@@ -159,8 +160,23 @@ const GLchar* FragmentShader =
 	"}\n"
 };
 
+char* readFile() {
+	std::ifstream myReadFile;
+	myReadFile.open("vertexSh.glsl");
+	char output[500];
+	if (myReadFile.is_open()) {
+		while (!myReadFile.eof()) {
+			myReadFile >> output;
+			std::cout << output;
+		}
+	}
+	myReadFile.close();
+	
+	return output;
+}
+
 void createShaderProgram()
-{
+{	
 	VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(VertexShaderId, 1, &VertexShader, 0);
 	glCompileShader(VertexShaderId);
@@ -197,6 +213,7 @@ void destroyShaderProgram()
 
 void createBufferObjects()
 {
+	// Triangle
 	glGenVertexArrays(1, &VaoIdSTri);
 	glBindVertexArray(VaoIdSTri);
 	{
@@ -303,7 +320,6 @@ void drawScene()
 
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M1);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
 	
 	// Draw Parall
 	glBindVertexArray(VaoIdParall);
@@ -311,7 +327,7 @@ void drawScene()
 
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M2);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
-		
+
 	// Draw triangle
 	glBindVertexArray(VaoIdSTri);
 	glUseProgram(ProgramId);
@@ -334,8 +350,6 @@ void drawScene()
 
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M7);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-
 
 	glUseProgram(0);
 	glBindVertexArray(0);
@@ -450,12 +464,7 @@ void setupGLUT(int argc, char* argv[])
 	}
 }
 
-void init(int argc, char* argv[])
-{
-	setupGLUT(argc, argv);
-	setupGLEW();
-	setupOpenGL();
-
+void myInit() {
 	matrixFactory mf;
 	matrix4x4 mi = mf.identityMatrix4x4();
 	for (int i = 0; i < 16; ++i) {
@@ -496,7 +505,7 @@ void init(int argc, char* argv[])
 	// Small triangle (hand)
 	vector3 v4(0, 0, 1);
 	vector3 vT4(-0.03, -0.04, 0);
-	matrix4x4 mR4 = mf.rotationMatrix4x4(v4, (3.14/2));
+	matrix4x4 mR4 = mf.rotationMatrix4x4(v4, (3.14 / 2));
 	matrix4x4 mT4 = mf.translationMatrix4x4(vT4);
 	matrix4x4 m4 = mT4 * mR4 * mi;
 	for (int i = 0; i < 16; ++i) {
@@ -506,7 +515,7 @@ void init(int argc, char* argv[])
 	// Medium triangle (Arm)
 	vector3 v5(0, 0, 1);
 	vector3 vT5(0.15, -0.22, 0);
-	matrix4x4 mR5 = mf.rotationMatrix4x4(v5, (3.14/4));
+	matrix4x4 mR5 = mf.rotationMatrix4x4(v5, (3.14 / 4));
 	matrix4x4 mT5 = mf.translationMatrix4x4(vT5);
 	matrix4x4 m5 = mT5 * mR5 * mM;
 	for (int i = 0; i < 16; ++i) {
@@ -514,7 +523,7 @@ void init(int argc, char* argv[])
 	}
 
 	// Big triangle (ass)
-	vector3 vT (0, -0.5, 0);
+	vector3 vT(0, -0.5, 0);
 	matrix4x4 mT = mf.translationMatrix4x4(vT);
 	matrix4x4 m6 = mT * mL;
 	for (int i = 0; i < 16; ++i) {
@@ -530,19 +539,31 @@ void init(int argc, char* argv[])
 	for (int i = 0; i < 16; ++i) {
 		M7[i] = m7.data()[i];
 	}
+
+
 	/*
 	std::cout << M5[0] << M5[1] << M5[2] << M5[3] << "\n";
 	std::cout << M5[4] << M5[5] << M5[6] << M5[7] << "\n";
 	std::cout << M5[8] << M5[9] << M5[10] << M5[11] << "\n";
 	std::cout << M5[12] << M5[13] << M5[14] << M5[15] << "\n";*/
+}
 
+void init(int argc, char* argv[])
+{
+	setupGLUT(argc, argv);
+	setupGLEW();
+	setupOpenGL();
+	
+	myInit();
+	//VertexShader = readFile();
+	
 	setupCallbacks();
 	createShaderProgram();
 	createBufferObjects();
 }
 
 int main(int argc, char* argv[])
-{
+{	
 	init(argc, argv);
 	glutMainLoop();
 	exit(EXIT_SUCCESS);
