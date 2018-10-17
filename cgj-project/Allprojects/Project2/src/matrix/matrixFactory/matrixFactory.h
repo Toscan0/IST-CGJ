@@ -14,9 +14,9 @@ struct matrixFactory {
 	static matrix4x4 translationMatrix3x3(vector3& vc);
 	static matrix3x3 rodriguez(vector3&, double);
 
+	static matrix4x4 identityMatrix4x4();
+
 	static matrix4x4 translationMatrix4x4(vector3& vc);
 	static matrix4x4 scalingMatrix4x4(vector3& vc);
 	static matrix4x4 rotationMatrix4x4(vector3&, double);
-
-	static matrix4x4 identityMatrix4x4();
 };

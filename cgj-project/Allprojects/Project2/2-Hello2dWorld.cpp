@@ -29,6 +29,9 @@
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
+#include "src/matrix/matrix4x4/matrix4x4.h"
+#include "src/matrix/matrixFactory/matrixFactory.h"
+
 #include "shapes.h"
 
 #define CAPTION "Hello Modern 2D World"
@@ -231,7 +234,7 @@ void createBufferObjects()
 		}
 	}
 
-	// Square
+	// Parall
 	glGenVertexArrays(1, &VaoIdParall);
 	glBindVertexArray(VaoIdParall);
 	{
@@ -302,17 +305,38 @@ const Matrix I = {
 
 const Matrix M = {
 	1.0f,  0.0f,  0.0f, -0.5f,
-	0.0f,  1.0f,  0.0f, -0.5f,
+	0.0f,  1.0f,  0.0f,  0.0f,
 	0.0f,  0.0f,  1.0f,  0.0f,
 	0.0f,  0.0f,  0.0f,  1.0f
 }; // Row Major (GLSL is Column Major)
 
+const Matrix MSM = {
+	1.5f,  0.0f,  0.0f, 0.0f,
+	0.0f,  1.5f,  0.0f, 0.0f,
+	0.0f,  0.0f,  1.5f, 0.0f,
+	0.0f,  0.0f,  0.0f, 1.0f
+}; // Row Major (GLSL is Column Major)
+
+const Matrix MSL = {
+	2.0f,  0.0f,  0.0f, 0.0f,
+	0.0f,  2.0f,  0.0f, 0.0f,
+	0.0f,  0.0f,  2.0f, 0.0f,
+	0.0f,  0.0f,  0.0f, 1.0f
+}; // Row Major (GLSL is Column Major)
+
 void drawScene()
-{
+{	
+	// Draw triangle
 	glBindVertexArray(VaoIdSTri);
 	glUseProgram(ProgramId);
 
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, I);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, MSM);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUseProgram(0);
@@ -334,7 +358,7 @@ void drawScene()
 
 	glUseProgram(0);
 	glBindVertexArray(0);
-
+	
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
 
