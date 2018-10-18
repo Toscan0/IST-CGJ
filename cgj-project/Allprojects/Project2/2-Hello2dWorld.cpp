@@ -47,6 +47,7 @@ unsigned int FrameCount = 0;
 
 #define VERTICES 0
 #define COLORS 1
+#define M_PI 3.14159265358979323846  /* pi */
 
 GLuint VaoIdSTri, VboIdSTri[2], VaoIdSquare, VboIdSquare[2], VaoIdParall, VboIdParall[2];
 GLuint VertexShaderId, FragmentShaderId, ProgramId;
@@ -427,37 +428,37 @@ void setupGLUT(int argc, char* argv[])
 }
 
 void myInit() {
+	// T * R * S
 	matrixFactory mf;
 	matrix4x4 mi = mf.identityMatrix4x4();
 	for (int i = 0; i < 16; ++i) {
 		I[i] = mi.data()[i];
 	}
 
-	//Squad (foot)
+	//Squad (head)
 	vector3 v1(0, 0, 1);
-	vector3 vT1(0.32, -0.02, 0);
-	matrix4x4 mR1 = mf.rotationMatrix4x4(v1, (3.14159265358979323846 / 4));
+	vector3 vT1(0.17, 0.08, 0);
+	matrix4x4 mR1 = mf.rotationMatrix4x4(v1, (M_PI / 4));
 	matrix4x4 mT1 = mf.translationMatrix4x4(vT1);
-	//matrix4x4 m1 = mi * mR1 * mT1;
 	matrix4x4 m1 = mT1 * mR1 * mi;
 	for (int i = 0; i < 16; ++i) {
 		M1[i] = m1.data()[i];
 	}
 
 	// Parallelogram (Legs)
-	vector3 v2(0, 0, 1);
-	vector3 vT2(-0.23, -0.54, 0);
-	matrix4x4 mR2 = mf.rotationMatrix4x4(v2, (3.14159265358979323846 / 8));
+	vector3 v2(1, 0, 1);
+	vector3 vT2(-0.29, -0.49, 0);
+	matrix4x4 mR2 = mf.rotationMatrix4x4(v2, ( (M_PI) / 2));
 	matrix4x4 mT2 = mf.translationMatrix4x4(vT2);
-	matrix4x4 m2 = mT2 * mR2 * mi;
+	matrix4x4 m2 = mT2 * mR2* mi;
 	for (int i = 0; i < 16; ++i) {
 		M2[i] = m2.data()[i];
 	}
 
 	// Small triangle (foot)
 	vector3 v3(0, 0, 1);
-	vector3 vT3(-0.23, -0.28, 0);
-	matrix4x4 mR3 = mf.rotationMatrix4x4(v3, (3.14));
+	vector3 vT3(-0.54, -0.49, 0);
+	matrix4x4 mR3 = mf.rotationMatrix4x4(v3, M_PI);
 	matrix4x4 mT3 = mf.translationMatrix4x4(vT3);
 	matrix4x4 m3 = mT3 * mR3 * mi;
 	for (int i = 0; i < 16; ++i) {
@@ -466,8 +467,8 @@ void myInit() {
 
 	// Small triangle (hand)
 	vector3 v4(0, 0, 1);
-	vector3 vT4(-0.03, -0.04, 0);
-	matrix4x4 mR4 = mf.rotationMatrix4x4(v4, (3.14 / 2));
+	vector3 vT4(-0.20, 0.075, 0);
+	matrix4x4 mR4 = mf.rotationMatrix4x4(v4, (M_PI / 4));
 	matrix4x4 mT4 = mf.translationMatrix4x4(vT4);
 	matrix4x4 m4 = mT4 * mR4 * mi;
 	for (int i = 0; i < 16; ++i) {
@@ -476,8 +477,8 @@ void myInit() {
 
 	// Medium triangle (Arm)
 	vector3 v5(0, 0, 1);
-	vector3 vT5(0.15, -0.22, 0);
-	matrix4x4 mR5 = mf.rotationMatrix4x4(v5, (3.14 / 4));
+	vector3 vT5(-0.015, -0.1, 0);
+	matrix4x4 mR5 = mf.rotationMatrix4x4(v5, (M_PI / 4));
 	matrix4x4 mT5 = mf.translationMatrix4x4(vT5);
 	matrix4x4 m5 = mT5 * mR5 * mM;
 	for (int i = 0; i < 16; ++i) {
@@ -485,7 +486,7 @@ void myInit() {
 	}
 
 	// Big triangle (ass)
-	vector3 vT(0, -0.5, 0);
+	vector3 vT(0, -0.4, 0);
 	matrix4x4 mT = mf.translationMatrix4x4(vT);
 	matrix4x4 m6 = mT * mL;
 	for (int i = 0; i < 16; ++i) {
@@ -494,9 +495,9 @@ void myInit() {
 
 	// Big triangle (body)
 	vector3 v7(0, 0, -1);
-	vector3 vT7(0.1, -0.27, 0);
+	vector3 vT7(0.17, -0.335, 0);
 	matrix4x4 mT7 = mf.translationMatrix4x4(vT7);
-	matrix4x4 mR7 = mf.rotationMatrix4x4(v7, (3.14159265358979323846 / (4)));
+	matrix4x4 mR7 = mf.rotationMatrix4x4(v7, (M_PI / (4)));
 	matrix4x4 m7 = mT7 * mR7 * mL;
 	for (int i = 0; i < 16; ++i) {
 		M7[i] = m7.data()[i];
