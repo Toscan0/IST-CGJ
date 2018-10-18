@@ -36,8 +36,9 @@
 #include "src/matrix/matrix4x4/matrix4x4.h"
 #include "src/matrix/matrixFactory/matrixFactory.h"
 
-#include "shapes.h"
-#include "src/read/readShaders.h"
+#include "src/shapes.h"
+#include "src/shaders/shaders.h"
+//#include "src/read/readShaders.h"
 
 #define CAPTION "Hello Modern 2D World"
 
@@ -51,8 +52,7 @@ unsigned int FrameCount = 0;
 
 GLuint VaoIdSTri, VboIdSTri[2], VaoIdSquare, VboIdSquare[2], VaoIdParall, VboIdParall[2];
 GLuint VertexShaderId, FragmentShaderId, ProgramId;
-GLint UniformId;
-GLint myLoc;
+GLint UniformId, colorShader;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -135,14 +135,17 @@ static void checkOpenGLError(std::string error)
 /////////////////////////////////////////////////////////////////////// SHADERs
 void createShaderProgram()
 {	
-	std::string vertex_source = read_shader_file("shaders/vertexSh.glsl");
+	shaders s;
+	std::string vertex_source = s.readShaderFile("shaders_files/vertexSh.glsl");
+	//std::string vertex_source = read_shader_file("shaders/vertexSh.glsl");
 	const char *vertexShader = vertex_source.c_str();
 
 	VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(VertexShaderId, 1, &vertexShader, 0);
 	glCompileShader(VertexShaderId);
 
-	std::string fragment_source = read_shader_file("shaders/fragmentSh.glsl");
+	//std::string fragment_source = read_shader_file("shaders/fragmentSh.glsl");
+	std::string fragment_source = s.readShaderFile("shaders_files/fragmentSh.glsl");
 	const char *fragmentShader = fragment_source.c_str();
 
 	FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
@@ -159,7 +162,7 @@ void createShaderProgram()
 	glLinkProgram(ProgramId);
 	UniformId = glGetUniformLocation(ProgramId, "Matrix");
 	
-	myLoc = glGetUniformLocation(ProgramId, "color");
+	colorShader = glGetUniformLocation(ProgramId, "color");
 	
 	glDetachShader(ProgramId, VertexShaderId);
 	glDeleteShader(VertexShaderId);
@@ -285,7 +288,7 @@ void drawScene()
 	glBindVertexArray(VaoIdSquare);
 	glUseProgram(ProgramId);
 
-	glProgramUniform4fv(ProgramId, myLoc, 1, pink);
+	glProgramUniform4fv(ProgramId, colorShader, 1, pink);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M1);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	
@@ -293,7 +296,7 @@ void drawScene()
 	glBindVertexArray(VaoIdParall);
 	glUseProgram(ProgramId);
 
-	glProgramUniform4fv(ProgramId, myLoc, 1, green);
+	glProgramUniform4fv(ProgramId, colorShader, 1, green);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M2);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
@@ -303,29 +306,29 @@ void drawScene()
 
 	// Small triangle
 	// foot
-	glProgramUniform4fv(ProgramId, myLoc, 1, yellow);
+	glProgramUniform4fv(ProgramId, colorShader, 1, yellow);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M3);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	
 	// hand
-	glProgramUniform4fv(ProgramId, myLoc, 1, black);
+	glProgramUniform4fv(ProgramId, colorShader, 1, black);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M4);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	
 	// Medium Triangle
 	// arm
-	glProgramUniform4fv(ProgramId, myLoc, 1, red);
+	glProgramUniform4fv(ProgramId, colorShader, 1, red);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M5);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// Big triangle
 	// ass
-	glProgramUniform4fv(ProgramId, myLoc, 1, purple);
+	glProgramUniform4fv(ProgramId, colorShader, 1, purple);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M6);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// body
-	glProgramUniform4fv(ProgramId, myLoc, 1, blue);
+	glProgramUniform4fv(ProgramId, colorShader, 1, blue);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M7);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 

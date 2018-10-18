@@ -49,8 +49,11 @@
     <Filter Include="Source Files\src\vector\vector2">
       <UniqueIdentifier>{f4f243be-488f-4a1f-b9c6-30b91afd01f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\shaders">
-      <UniqueIdentifier>{0e31294a-3c46-42a6-9fdb-bdb8d56142c2}</UniqueIdentifier>
+    <Filter Include="Source Files\src\shaders">
+      <UniqueIdentifier>{6233c42d-fe3a-411e-841b-35f1aaa5f679}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders_files">
+      <UniqueIdentifier>{0d330dcb-73cc-447c-a28c-dafc187ec39e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -84,16 +87,13 @@
     <ClCompile Include="src\vector\vector4\vector4.cpp">
       <Filter>Source Files\src\vector\vector4</Filter>
     </ClCompile>
+    <ClCompile Include="src\shaders\shaders.cpp">
+      <Filter>Source Files\src\shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Vertex.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shapes.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\random\random.h">
       <Filter>Source Files\src\random</Filter>
@@ -122,6 +122,15 @@
     <ClInclude Include="src\vector\vector4\vector4.h">
       <Filter>Source Files\src\vector\vector4</Filter>
     </ClInclude>
+    <ClInclude Include="src\shapes.h">
+      <Filter>Source Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Vertex.h">
+      <Filter>Source Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shaders\shaders.h">
+      <Filter>Source Files\src\shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project2.rc">
@@ -129,11 +138,11 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragmentSh.glsl">
-      <Filter>Source Files\shaders</Filter>
+    <None Include="shaders_files\fragmentSh.glsl">
+      <Filter>Source Files\shaders_files</Filter>
     </None>
-    <None Include="shaders\vertexSh.glsl">
-      <Filter>Source Files\shaders</Filter>
+    <None Include="shaders_files\vertexSh.glsl">
+      <Filter>Source Files\shaders_files</Filter>
     </None>
   </ItemGroup>
 </Project>
