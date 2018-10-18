@@ -37,7 +37,7 @@
 #include "src/matrix/matrixFactory/matrixFactory.h"
 
 #include "shapes.h"
-#include "readShaders.h"
+#include "src/read/readShaders.h"
 
 #define CAPTION "Hello Modern 2D World"
 
@@ -134,14 +134,14 @@ static void checkOpenGLError(std::string error)
 /////////////////////////////////////////////////////////////////////// SHADERs
 void createShaderProgram()
 {	
-	std::string vertex_source = read_shader_file("vertexSh.glsl");
+	std::string vertex_source = read_shader_file("shaders/vertexSh.glsl");
 	const char *vertexShader = vertex_source.c_str();
 
 	VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(VertexShaderId, 1, &vertexShader, 0);
 	glCompileShader(VertexShaderId);
 
-	std::string fragment_source = read_shader_file("fragmentSh.glsl");
+	std::string fragment_source = read_shader_file("shaders/fragmentSh.glsl");
 	const char *fragmentShader = fragment_source.c_str();
 
 	FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
