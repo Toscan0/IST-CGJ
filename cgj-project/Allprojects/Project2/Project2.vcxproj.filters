@@ -49,6 +49,9 @@
     <Filter Include="Source Files\src\vector\vector2">
       <UniqueIdentifier>{f4f243be-488f-4a1f-b9c6-30b91afd01f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\shaders">
+      <UniqueIdentifier>{0e31294a-3c46-42a6-9fdb-bdb8d56142c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2-Hello2dWorld.cpp">
@@ -124,5 +127,13 @@
     <ResourceCompile Include="Project2.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\fragmentSh.glsl">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="shaders\vertexSh.glsl">
+      <Filter>Source Files\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -151,6 +151,10 @@
   <ItemGroup>
     <ResourceCompile Include="Project2.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\fragmentSh.glsl" />
+    <None Include="shaders\vertexSh.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

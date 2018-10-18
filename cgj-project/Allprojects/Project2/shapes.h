@@ -48,10 +48,6 @@ const GLubyte IndicesParall[] =
 	0,1,2,2,1,3
 };
 
-
-
-
-
 // --------------------- Matrix -------------------------------
 typedef GLfloat Matrix[16];
 Matrix I, M1, M2, M3, M4, M5, M6, M7;
@@ -75,43 +71,13 @@ matrix4x4 mL(2.0f, 0.0f, 0.0f, 0.0f,
 			 0.0f, 0.0f, 2.0f, 0.0f,
 		 	 0.0f, 0.0f, 0.0f, 1.5f);
 
-/*
-const Matrix I = {
-	1.0f,  0.0f,  0.0f,  0.0f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-}; // Row Major (GLSL is Column Major)
 
-
-const Matrix M = {
-	1.0f,  0.0f,  0.0f, -0.5f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-}; // Row Major (GLSL is Column Major)
-
-const Matrix MSM = {
-	1.5f,  0.0f,  0.0f, 0.0f,
-	0.0f,  1.5f,  0.0f, 0.0f,
-	0.0f,  0.0f,  1.5f, 0.0f,
-	0.0f,  0.0f,  0.0f, 1.0f
-}; // Row Major (GLSL is Column Major)
-
-const Matrix MSL = {
-	2.0f,  0.0f,  0.0f, 0.0f,
-	0.0f,  2.0f,  0.0f, 0.0f,
-	0.0f,  0.0f,  2.0f, 0.0f,
-	0.0f,  0.0f,  0.0f, 1.0f
-}; // Row Major (GLSL is Column Major)
-
-const Matrix x = {
-	1.5f,  0.0f,  0.0f, -0.5f,
-	0.0f,  1.5f,  0.0f, 0.0f,
-	0.0f,  0.0f,  1.5f, 0.0f,
-	0.0f,  0.0f,  0.0f, 1.0f
-}; // Row Major (GLSL is Column Major)
-*/
-
-
-//Usually it is scale, then rotation and lastly translation
+// --------------------- Colors -------------------------------
+float red[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+float green[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
+float blue[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+float black[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float yellow[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
+float purple[4] = { 0.8f, 0.0f, 0.2f, 1.0f };
+float pink[4] = { 1.0f, 0.5f, 0.5f, 1.0f };
