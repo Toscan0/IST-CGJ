@@ -2,9 +2,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <vector>
 #include "Vertex.h"
-
+#include  "matrix/matrix4x4/matrix4x4.h"
 
 // --------------------- Vertices -------------------------------
 // Small right triangle
@@ -60,16 +59,16 @@ void convertMatrixToGLfloat(const matrix4x4& m) {
 }
 
 // pass the small triangle to a medium triangle
-matrix4x4 mM (1.05f, 0.0f, 0.0f, 0.0f,
+matrix4x4 mM(1.05f, 0.0f, 0.0f, 0.0f,
 	0.0f, 1.05f, 0.0f, 0.0f,
 	0.0f, 0.0f, 1.05f, 0.0f,
 	0.0f, 0.0f, 0.0f, 1.0f);
 
 // pass the small triangle to a Large triangle
 matrix4x4 mL(2.0f, 0.0f, 0.0f, 0.0f,
-			 0.0f, 2.0f, 0.0f, 0.0f,
-			 0.0f, 0.0f, 2.0f, 0.0f,
-		 	 0.0f, 0.0f, 0.0f, 1.5f);
+	0.0f, 2.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 2.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.5f);
 
 
 // --------------------- Colors -------------------------------

@@ -38,7 +38,6 @@
 
 #include "src/shapes.h"
 #include "src/shaders/shaders.h"
-//#include "src/read/readShaders.h"
 
 #define CAPTION "Hello Modern 2D World"
 
@@ -51,8 +50,7 @@ unsigned int FrameCount = 0;
 #define M_PI 3.14159265358979323846  /* pi */
 
 GLuint VaoIdSTri, VboIdSTri[2], VaoIdSquare, VboIdSquare[2], VaoIdParall, VboIdParall[2];
-GLuint VertexShaderId, FragmentShaderId, ProgramId;
-GLint UniformId, colorShader;
+shaders s;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -135,49 +133,13 @@ static void checkOpenGLError(std::string error)
 /////////////////////////////////////////////////////////////////////// SHADERs
 void createShaderProgram()
 {	
-	shaders s;
-	std::string vertex_source = s.readShaderFile("shaders_files/vertexSh.glsl");
-	//std::string vertex_source = read_shader_file("shaders/vertexSh.glsl");
-	const char *vertexShader = vertex_source.c_str();
-
-	VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(VertexShaderId, 1, &vertexShader, 0);
-	glCompileShader(VertexShaderId);
-
-	//std::string fragment_source = read_shader_file("shaders/fragmentSh.glsl");
-	std::string fragment_source = s.readShaderFile("shaders_files/fragmentSh.glsl");
-	const char *fragmentShader = fragment_source.c_str();
-
-	FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(FragmentShaderId, 1, &fragmentShader, 0);
-	glCompileShader(FragmentShaderId);
-
-	ProgramId = glCreateProgram();
-	glAttachShader(ProgramId, VertexShaderId);
-	glAttachShader(ProgramId, FragmentShaderId);
-
-	glBindAttribLocation(ProgramId, VERTICES, "in_Position");
-	glBindAttribLocation(ProgramId, COLORS, "in_Color");
-
-	glLinkProgram(ProgramId);
-	UniformId = glGetUniformLocation(ProgramId, "Matrix");
 	
-	colorShader = glGetUniformLocation(ProgramId, "color");
-	
-	glDetachShader(ProgramId, VertexShaderId);
-	glDeleteShader(VertexShaderId);
-	glDetachShader(ProgramId, FragmentShaderId);
-	glDeleteShader(FragmentShaderId);
-
-	checkOpenGLError("ERROR: Could not create shaders.");
+	s.createShader();
 }
 
 void destroyShaderProgram()
 {
-	glUseProgram(0);
-	glDeleteProgram(ProgramId);
-
-	checkOpenGLError("ERROR: Could not destroy shaders.");
+	s.destroyShader();
 }
 
 void createBufferObjects()
@@ -286,50 +248,50 @@ void drawScene()
 {	
 	// Draw square (head)
 	glBindVertexArray(VaoIdSquare);
-	glUseProgram(ProgramId);
+	glUseProgram(s.getProgramId() );
 
-	glProgramUniform4fv(ProgramId, colorShader, 1, pink);
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M1);
+	glProgramUniform4fv( s.getProgramId() , s.getcolorShader(), 1, pink);
+	glUniformMatrix4fv( s.getUniformId() , 1, GL_TRUE, M1);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	
 	// Draw Parall (legs)
 	glBindVertexArray(VaoIdParall);
-	glUseProgram(ProgramId);
+	glUseProgram(s.getProgramId());
 
-	glProgramUniform4fv(ProgramId, colorShader, 1, green);
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M2);
+	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, green);
+	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M2);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// Draw triangle 
 	glBindVertexArray(VaoIdSTri);
-	glUseProgram(ProgramId);
+	glUseProgram(s.getProgramId());
 
 	// Small triangle
 	// foot
-	glProgramUniform4fv(ProgramId, colorShader, 1, yellow);
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M3);
+	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, yellow);
+	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M3);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	
 	// hand
-	glProgramUniform4fv(ProgramId, colorShader, 1, black);
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M4);
+	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, black);
+	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M4);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	
 	// Medium Triangle
 	// arm
-	glProgramUniform4fv(ProgramId, colorShader, 1, red);
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M5);
+	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, red);
+	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M5);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// Big triangle
 	// ass
-	glProgramUniform4fv(ProgramId, colorShader, 1, purple);
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M6);
+	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, purple);
+	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M6);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// body
-	glProgramUniform4fv(ProgramId, colorShader, 1, blue);
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M7);
+	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, blue);
+	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M7);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUseProgram(0);
@@ -527,16 +489,6 @@ void myInit() {
 	std::cout << M5[4] << M5[5] << M5[6] << M5[7] << "\n";
 	std::cout << M5[8] << M5[9] << M5[10] << M5[11] << "\n";
 	std::cout << M5[12] << M5[13] << M5[14] << M5[15] << "\n";*/
-}
-
-
-std::vector<std::string> read_pass(std::istream &is) {
-	std::string line;
-	std::vector<std::string> lines;
-	while (getline(is, line)) {
-		lines.push_back(line);
-	}
-	return lines;
 }
 
 void init(int argc, char* argv[])
