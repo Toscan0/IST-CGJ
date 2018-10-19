@@ -9,9 +9,9 @@
 // Small right triangle
 const Vertex VerticesSTri[] =
 {
-	{{-0.125f, -0.125f, 0.0f, 1.0f },  { 1.0f, 0.0f, 0.0f, 1.0f }},
-	{{ 0.125f, -0.125f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }},
-	{{-0.125f,  0.125f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }},
+	{{-0.125f, -0.125f, 0.0f, 1.0f }},
+	{{ 0.125f, -0.125f, 0.0f, 1.0f }},
+	{{-0.125f,  0.125f, 0.0f, 1.0f }},
 };
 
 const GLubyte IndicesSTri[] =
@@ -22,10 +22,10 @@ const GLubyte IndicesSTri[] =
 // Squad 
 const Vertex VerticesSquare[] =
 {
-	{{-0.125f, -0.125f, 0.0f, 1.0f},   { 1.0f, 0.0f, 0.0f, 1.0f }},
-	{{ 0.125f, -0.125f, 0.0f, 1.0f},  { 0.0f, 1.0f, 0.0f, 1.0f }},
-	{{-0.125f,  0.125f, 0.0f, 1.0f},  { 0.0f, 0.0f, 1.0f, 1.0f }},
-	{{ 0.125f,  0.125f, 0.0f, 1.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }},
+	{{-0.125f, -0.125f, 0.0f, 1.0f}},
+	{{ 0.125f, -0.125f, 0.0f, 1.0f}},
+	{{-0.125f,  0.125f, 0.0f, 1.0f}},
+	{{ 0.125f,  0.125f, 0.0f, 1.0f}},
 };
 
 const GLubyte IndicesSquare[] =
@@ -36,10 +36,10 @@ const GLubyte IndicesSquare[] =
 // Parallelogram 
 const Vertex VerticesParall[] =
 {
-	{{-0.125f, -0.125f, 0.0f, 1.0f},   { 1.0f, 0.0f, 0.0f, 1.0f }},
-	{{ 0.125f, -0.125f, 0.0f, 1.0f},  { 0.0f, 1.0f, 0.0f, 1.0f }},
-	{{-0.0f,  0.125f, 0.0f, 1.0f},  { 0.0f, 0.0f, 1.0f, 1.0f }},
-	{{ 0.25f,  0.125f, 0.0f, 1.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }},
+	{{-0.125f, -0.125f, 0.0f, 1.0f}},
+	{{ 0.125f, -0.125f, 0.0f, 1.0f}},
+	{{-0.0f,  0.125f, 0.0f, 1.0f}},
+	{{ 0.25f,  0.125f, 0.0f, 1.0f}},
 };
 
 const GLubyte IndicesParall[] =
@@ -58,18 +58,11 @@ void convertMatrixToGLfloat(const matrix4x4& m) {
 	}
 }
 
-// pass the small triangle to a medium triangle
-matrix4x4 mM(1.05f, 0.0f, 0.0f, 0.0f,
-	0.0f, 1.05f, 0.0f, 0.0f,
-	0.0f, 0.0f, 1.05f, 0.0f,
-	0.0f, 0.0f, 0.0f, 1.0f);
-
 // pass the small triangle to a Large triangle
 matrix4x4 mL(2.0f, 0.0f, 0.0f, 0.0f,
 	0.0f, 2.0f, 0.0f, 0.0f,
 	0.0f, 0.0f, 2.0f, 0.0f,
 	0.0f, 0.0f, 0.0f, 1.5f);
-
 
 // --------------------- Colors -------------------------------
 float red[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -80,3 +73,4 @@ float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 float yellow[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
 float purple[4] = { 0.8f, 0.0f, 0.2f, 1.0f };
 float pink[4] = { 1.0f, 0.5f, 0.5f, 1.0f };
+

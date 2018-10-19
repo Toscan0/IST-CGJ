@@ -12,12 +12,11 @@
 
 class shaders {
 	GLuint _VertexShaderId, _FragmentShaderId, _ProgramId;
-	GLint _UniformId, _colorShader;
 	
 	public:	
 		std::string readShaderFile(const char *shader_file);
 		
-		void createShader();
+		void createShader(const char* vertexPath, const char* fragPath);
 		void destroyShader();
 		void createBuffer();
 		void destroyBuffer();
@@ -33,6 +32,4 @@ class shaders {
 		GLuint getVertexShaderId();
 		GLuint getFragmentShaderId();
 		GLuint getProgramId();
-		GLint  getUniformId();
-		GLint  getcolorShader();
 };

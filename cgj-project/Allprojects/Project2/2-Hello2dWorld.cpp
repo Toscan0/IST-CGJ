@@ -50,6 +50,7 @@ unsigned int FrameCount = 0;
 #define M_PI 3.14159265358979323846  /* pi */
 
 GLuint VaoIdSTri, VboIdSTri[2], VaoIdSquare, VboIdSquare[2], VaoIdParall, VboIdParall[2];
+GLint UniformId, colorId;
 shaders s;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
@@ -131,10 +132,17 @@ static void checkOpenGLError(std::string error)
 }
 
 /////////////////////////////////////////////////////////////////////// SHADERs
+GLuint getId(GLuint programId, const char* name) {
+	GLuint id = glGetUniformLocation(programId, name);
+	return id;
+}
+
 void createShaderProgram()
 {	
-	
-	s.createShader();
+	s.createShader("shaders_files/vertexSh.glsl", "shaders_files/fragmentSh.glsl");
+
+	UniformId = getId(s.getProgramId(), "Matrix");
+	colorId = getId(s.getProgramId(), "color");
 }
 
 void destroyShaderProgram()
@@ -142,9 +150,30 @@ void destroyShaderProgram()
 	s.destroyShader();
 }
 
+void createAux(GLuint VaoId, GLuint VboId, Vertex vert) {
+	/*glGenVertexArrays(1, &VaoId);
+	glBindVertexArray(VaoId);
+	{
+		glGenBuffers(2, VboId);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
+		{
+			glBufferData(GL_ARRAY_BUFFER, sizeof(VerticesSTri), VerticesSTri, GL_STATIC_DRAW);
+			glEnableVertexAttribArray(VERTICES);
+			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+			glEnableVertexAttribArray(COLORS);
+			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(VerticesSTri[0].XYZW));
+		}
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
+		{
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(IndicesSTri), IndicesSTri, GL_STATIC_DRAW);
+		}
+	}*/
+}
+
 void createBufferObjects()
 {
-	// Triangle
+	/// Triangle
 	glGenVertexArrays(1, &VaoIdSTri);
 	glBindVertexArray(VaoIdSTri);
 	{
@@ -211,55 +240,58 @@ void createBufferObjects()
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
 
+void destroyAux(GLuint VaoId, GLuint VboId) {
+	glBindVertexArray(VaoId);
+	glDisableVertexAttribArray(VERTICES);
+	glDisableVertexAttribArray(COLORS);
+	glDeleteBuffers(2, &VboId);
+	glDeleteVertexArrays(1, &VaoId);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
 void destroyBufferObjects()
 {
-	glBindVertexArray(VaoIdSTri);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, VboIdSTri);
-	glDeleteVertexArrays(1, &VaoIdSTri);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(VaoIdSquare);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, VboIdSquare);
-	glDeleteVertexArrays(1, &VaoIdSquare);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(VaoIdParall);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, VboIdParall);
-	glDeleteVertexArrays(1, &VaoIdParall);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
+	
+	destroyAux(VaoIdSTri, *VboIdSTri);
+	destroyAux(VaoIdSquare, *VboIdSquare);
+	destroyAux(VaoIdParall, *VboIdParall);
 
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
 }
 
-
 /////////////////////////////////////////////////////////////////////// SCENE
+void drawAux(GLuint VaoId, GLuint ProgramId, GLint UniformId, GLint colorShader, float* color) {
+	float x[4];
+	for (int i = 0; i < 4; ++i) {
+		x[i] = color[i];
+	}
+	// Draw square (head)
+	glBindVertexArray(VaoId);
+	glUseProgram(ProgramId);
+
+	glProgramUniform4fv(ProgramId, colorShader, 1, x);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M1);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
+}
+
 void drawScene()
 {	
 	// Draw square (head)
-	glBindVertexArray(VaoIdSquare);
-	glUseProgram(s.getProgramId() );
+	glBindVertexArray(VaoIdParall);
+	glUseProgram(s.getProgramId());
 
-	glProgramUniform4fv( s.getProgramId() , s.getcolorShader(), 1, pink);
-	glUniformMatrix4fv( s.getUniformId() , 1, GL_TRUE, M1);
+	glProgramUniform4fv(s.getProgramId(), colorId, 1, pink);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M1);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
-	
+
 	// Draw Parall (legs)
 	glBindVertexArray(VaoIdParall);
 	glUseProgram(s.getProgramId());
 
-	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, green);
-	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M2);
+	glProgramUniform4fv(s.getProgramId(), colorId, 1, green);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M2);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// Draw triangle 
@@ -268,30 +300,30 @@ void drawScene()
 
 	// Small triangle
 	// foot
-	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, yellow);
-	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M3);
+	glProgramUniform4fv(s.getProgramId(), colorId, 1, yellow);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M3);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	
 	// hand
-	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, black);
-	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M4);
+	glProgramUniform4fv(s.getProgramId(), colorId, 1, black);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M4);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 	
 	// Medium Triangle
 	// arm
-	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, red);
-	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M5);
+	glProgramUniform4fv(s.getProgramId(), colorId, 1, red);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M5);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// Big triangle
 	// ass
-	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, purple);
-	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M6);
+	glProgramUniform4fv(s.getProgramId(), colorId, 1, purple);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M6);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// body
-	glProgramUniform4fv(s.getProgramId(), s.getcolorShader(), 1, blue);
-	glUniformMatrix4fv(s.getUniformId(), 1, GL_TRUE, M7);
+	glProgramUniform4fv(s.getProgramId(), colorId, 1, blue);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M7);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUseProgram(0);
@@ -394,7 +426,7 @@ void setupGLUT(int argc, char* argv[])
 	glutInitContextVersion(3, 3);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
-	//glutInitContextFlags(GLUT_DEBUG);
+	glutInitContextFlags(GLUT_DEBUG);
 
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE,GLUT_ACTION_GLUTMAINLOOP_RETURNS);
 	
@@ -408,8 +440,14 @@ void setupGLUT(int argc, char* argv[])
 }
 
 void myInit() {
-	// T * R * S
 	matrixFactory mf;
+
+	vector3 vM(1.05, 1.05, 1.05);
+	matrix4x4 mM = mf.scalingMatrix4x4(vM);
+	/*vector3 vL(2, 2, 2);
+	matrix4x4 mL = mf.scalingMatrix4x4(vL);
+	mL.matrixPrint();*/
+	// T * R * S
 	matrix4x4 mi = mf.identityMatrix4x4();
 	for (int i = 0; i < 16; ++i) {
 		I[i] = mi.data()[i];

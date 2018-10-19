@@ -25,17 +25,15 @@ std::string shaders::readShaderFile(const char *shader_file)
 	return sstr.str();
 }
 
-void shaders::createShader() {
-	std::string vertex_source = readShaderFile("shaders_files/vertexSh.glsl");
-	//std::string vertex_source = read_shader_file("shaders/vertexSh.glsl");
+void shaders::createShader(const char* vertexPath, const char* fragPath) {
+	std::string vertex_source = readShaderFile(vertexPath);
 	const char *vertexShader = vertex_source.c_str();
 
 	_VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(_VertexShaderId, 1, &vertexShader, 0);
 	glCompileShader(_VertexShaderId);
 
-	//std::string fragment_source = read_shader_file("shaders/fragmentSh.glsl");
-	std::string fragment_source = readShaderFile("shaders_files/fragmentSh.glsl");
+	std::string fragment_source = readShaderFile(fragPath);
 	const char *fragmentShader = fragment_source.c_str();
 
 	_FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
@@ -50,9 +48,7 @@ void shaders::createShader() {
 	glBindAttribLocation(_ProgramId, COLORS, "in_Color");
 
 	glLinkProgram(_ProgramId);
-	_UniformId = glGetUniformLocation(_ProgramId, "Matrix");
-
-	_colorShader = glGetUniformLocation(_ProgramId, "color");
+	
 
 	glDetachShader(_ProgramId, _VertexShaderId);
 	glDeleteShader(_VertexShaderId);
@@ -209,12 +205,4 @@ GLuint shaders::getFragmentShaderId() {
 }
 GLuint shaders::getProgramId() {
 	return _ProgramId;
-}
-
-GLint  shaders::getUniformId() {
-	return _UniformId;
-}
-
-GLint  shaders::getcolorShader() {
-	return _colorShader;
 }
