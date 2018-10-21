@@ -131,6 +131,28 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="3-Hello3dWorld.cpp" />
+    <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp" />
+    <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp" />
+    <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp" />
+    <ClCompile Include="src\matrix\matrixFactory\matrixFactory.cpp" />
+    <ClCompile Include="src\random\random.cpp" />
+    <ClCompile Include="src\shaders\shaders.cpp" />
+    <ClCompile Include="src\vector\vector2\vector2.cpp" />
+    <ClCompile Include="src\vector\vector3\vector3.cpp" />
+    <ClCompile Include="src\vector\vector4\vector4.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h" />
+    <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h" />
+    <ClInclude Include="src\matrix\matrix4x4\matrix4x4.h" />
+    <ClInclude Include="src\matrix\matrixFactory\matrixFactory.h" />
+    <ClInclude Include="src\random\random.h" />
+    <ClInclude Include="src\shaders\shaders.h" />
+    <ClInclude Include="src\shapes.h" />
+    <ClInclude Include="src\vector\vector2\vector2.h" />
+    <ClInclude Include="src\vector\vector3\vector3.h" />
+    <ClInclude Include="src\vector\vector4\vector4.h" />
+    <ClInclude Include="src\Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

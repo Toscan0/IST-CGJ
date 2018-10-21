@@ -32,6 +32,10 @@
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
+#include "src/matrix/matrix3x3/matrix3x3.h"
+#include "src/matrix/matrixFactory/matrixFactory.h"
+#include "src/vector/vector3/vector3.h"
+
 #define CAPTION "Hello Modern 3D World"
 
 int WinX = 640, WinY = 480;
@@ -480,6 +484,18 @@ void init(int argc, char* argv[])
 	createShaderProgram();
 	createBufferObjects();
 }
+
+bool testViewMatrix() {
+	matrixFactory mf;
+	vector3 eye(5, 5, 5);
+	vector3 center(0, 0, 0);
+	vector3 up(0, 1, 0);
+	matrix4x4 vM = mf.viewMatrix(eye, center, up);
+	matrix4x4 vMtest(0.7, 0, -0.7, 0, -0.41, 0.82, -0.41, 0, 0.58, 0.58, 0.58, -8.7, 0, 0, 0, 1);
+	bool x = vM == vMtest;
+	return x;
+}//	std::cout << testViewMatrix() << std::endl;
+
 
 int main(int argc, char* argv[])
 {
