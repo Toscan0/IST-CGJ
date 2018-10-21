@@ -1,6 +1,12 @@
 .vs/
 .git/
+
 cgj-project/Allprojects/.vs/
 cgj-project/Allprojects/Project1/.vs/
+cgj-project/Allprojects/Project1/intermediate/
+
 cgj-project/Allprojects/Project2/.vs/
 cgj-project/Allprojects/Project2/intermediate/
+
+cgj-project/Allprojects/Project3/.vs/
+cgj-project/Allprojects/Project3/intermediate/
