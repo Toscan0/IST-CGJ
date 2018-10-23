@@ -1,6 +1,12 @@
 #include "camera.h"
 
+/*
+camera::camera() {}
 
+camera::camera(vector3& center, vector3& lookAt) {
+	_center = center;
+	_lookAt = lookAt;
+}*/
 
 matrix4x4 camera::makeViewMatrix(vector3& eye, vector3& center, vector3& up) {
 	typedef GLfloat Matrix[16];

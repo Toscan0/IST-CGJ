@@ -28,7 +28,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
+#include <chrono>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
@@ -36,6 +36,7 @@
 #include "src/matrix/matrixFactory/matrixFactory.h"
 #include "src/vector/vector3/vector3.h"
 #include "camera.h"
+#include "src/Vertex.h"
 
 #define CAPTION "Hello Modern 3D World"
 
@@ -53,10 +54,16 @@ GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
 
 typedef GLfloat Matrix[16];
-Matrix ViewMatrix1, g_orthMatrix, g_prespMatrix;
+Matrix g_viewMatrix, g_orthMatrix, g_prespMatrix;
 matrixFactory mf;
-bool orth = true; // 1
-
+bool g_orth = true; // 1
+const float g_a = 5.0f;
+vector3 g_eye(5, 5, 5);
+vector3 g_center(0, 0, 0);
+vector3 g_up(0, 1, 0);
+float g_x;
+float g_y;
+float g_z;
 /////////////////////////////////////////////////////////////////////// ERRORS
 
 static std::string errorType(GLenum type)
@@ -212,12 +219,6 @@ void destroyShaderProgram()
 }
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
-
-typedef struct {
-	GLfloat XYZW[4];
-	GLfloat RGBA[4];
-} Vertex;
-
 const Vertex Vertices[] = // no indices?
 {
 	{{ 0.0f, 0.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.0f, 1.0f }}, // 0 - FRONT
@@ -362,8 +363,8 @@ const Matrix ProjectionMatrix2 = {
 void drawScene()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), ViewMatrix1);
-	if (orth == 1) {
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), g_viewMatrix);
+	if (g_orth == 1) {
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), g_orthMatrix);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
@@ -424,12 +425,91 @@ void timer(int value)
 }
 
 void keyboard_up(unsigned char key, int x, int y) {
-	if (key == 'p') {
-		orth = !orth;
+	
+	switch(key){
+		case 'P':
+		case 'p':
+			g_orth = !g_orth;
+			break;
+	}
+
+	
+}
+
+void keyboard_down(unsigned char key, int x, int y) {
+	unsigned long delta;
+	float pos;
+	switch (key) {
+	case 'A':
+	case 'a':
+		delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		pos = 0 + (0 * delta) + ((g_a / 2) / pow(delta % 10, 2));
+		g_x -= 1.0f;
+			break;
+	
+		case 'W':
+		case 'w':
+			delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			pos = 0 + (0 * delta) + ((g_a / 2) / pow(delta % 10, 2));
+			g_z += 1;
+			break;
+	
+		case 'S':
+		case 's':
+			delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			pos = 0 + (0 * delta) + ((g_a / 2) / pow(delta % 10, 2));
+			g_z -= 1;
+			break;
+		
+		case 'D':
+		case 'd':
+			delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			pos = 0 + (0 * delta) + ((g_a / 2) / pow(delta % 10, 2));
+			g_x += 1;
+			break;
+	}
+
+	vector3 newCenter(g_x, g_y, g_z);
+	matrix4x4 vM = mf.viewMatrix(g_eye, newCenter, g_up);
+	matrix4x4 vMAux = vM.transposeM4x4();
+	for (int i = 0; i < 16; ++i) {
+		g_viewMatrix[i] = vMAux.data()[i];
 	}
 }
-/////////////////////////////////////////////////////////////////////// SETUP
 
+void mouseWheel(int wheel, int direction, int x, int y) {
+	/*if (direction == -1) {
+		g_y -= 0.2;
+	}
+	if (direction == 1) {
+		g_y += 0.2;
+	}
+	vector3 newCenter(g_x, g_y, g_z);
+	vector3 newEye(g_x, g_y, g_z);
+	matrix4x4 vM = mf.viewMatrix(g_eye, g_center, g_up);
+	matrix4x4 vMAux = vM.transposeM4x4();
+	for (int i = 0; i < 16; ++i) {
+		g_viewMatrix[i] = vMAux.data()[i];
+	}*/
+}
+
+void OnMouseDown(int button, int state, int x, int y) {
+	
+	/*if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		std::cout << button << state << x << y << "\n";
+	}
+	vector3 newEye(g_x, g_y, g_z);
+	matrix4x4 vM = mf.viewMatrix(g_eye, g_center, g_up);
+	matrix4x4 vMAux = vM.transposeM4x4();
+	for (int i = 0; i < 16; ++i) {
+		g_viewMatrix[i] = vMAux.data()[i];
+	}*/
+}
+
+void OnMouseMove(int x, int y) {
+	std::cout << x << "...." << y << "\n";
+}
+/////////////////////////////////////////////////////////////////////// SETUP
 void setupCallbacks() 
 {
 	glutCloseFunc(cleanup);
@@ -438,8 +518,12 @@ void setupCallbacks()
 	glutReshapeFunc(reshape);
 	glutTimerFunc(0,timer,0);
 
+	glutKeyboardFunc(keyboard_down);
 	glutKeyboardUpFunc(keyboard_up);
 
+	glutMouseFunc(OnMouseDown);
+	glutMotionFunc(OnMouseMove);
+	glutMouseWheelFunc(mouseWheel);
 
 	setupErrors();
 }
@@ -501,32 +585,36 @@ void setupGLUT(int argc, char* argv[])
 }
 
 void myInit() {
-	vector3 eye(5, 5, 5);
-	vector3 center(0, 0, 0);
-	//vector3 g_lookAt(0, 0, 1);
-	vector3 up(0, 1, 0);
-	//matrix4x4 i = mf.identityMatrix4x4;
-
-	matrix4x4 vM = mf.viewMatrix(eye, center, up);
-	matrix4x4 vMAux = vM.transposeM4x4();
-	for (int i = 0; i < 16; ++i) {
-		ViewMatrix1[i] = vMAux.data()[i];
-	}
-
 	float Fovy = M_PI / 6;
 	float aspect = 640.0f / 480.0f;
-	float n = 1;
-	float f = 10;
-	matrix4x4 prespM = mf.prespMatrix(Fovy, aspect, n, f);
+	float n = 50;
+	float f = -50;
+	float left = -2;
+	float right = 2;
+	float top = -2;
+	float bottom = 2;
+
+
+	/*float g_x = g_center._a;
+	float g_y = g_center._b;
+	float g_z = g_center._c;*/
+	float g_x = -2;
+	float g_y = 5;
+	float g_z = 5;
+	matrix4x4 vM = mf.viewMatrix(g_eye, g_center, g_up);
+	matrix4x4 vMAux = vM.transposeM4x4();
+	for (int i = 0; i < 16; ++i) {
+		g_viewMatrix[i] = vMAux.data()[i];
+	}
+
+	
+	matrix4x4 prespM = mf.prespMatrix(Fovy, aspect, 1, 10);
 	matrix4x4 prespMAux = prespM.transposeM4x4();
 	for (int i = 0; i < 16; ++i) {
 		g_prespMatrix[i] = prespMAux.data()[i];
 	}
 
-	float left = -2;
-	float right = 2;
-	float top = -2;
-	float bottom = 2;
+	
 	matrix4x4 orthM = mf.orthMatrix(left, right, top, bottom, n, f);
 	matrix4x4 orthMMAux = orthM.transposeM4x4();
 	for (int i = 0; i < 16; ++i) {
