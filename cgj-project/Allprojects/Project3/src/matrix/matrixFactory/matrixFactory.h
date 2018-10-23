@@ -3,7 +3,8 @@
 #include "../matrix3x3/matrix3x3.h"
 #include "../matrix4x4/matrix4x4.h"
 
-#include <math.h> //sin && cos
+#include <math.h>
+#define PI 3.14159265
 
 struct matrixFactory {
 
@@ -23,4 +24,6 @@ struct matrixFactory {
 	static matrix4x4 rotationMatrix4x4(vector3&, double);
 
 	static matrix4x4 viewMatrix(vector3&, vector3&, vector3&);
+	static matrix4x4 orthMatrix(float, float, float, float, float, float);
+	static matrix4x4 prespMatrix(float, float, float, float);
 };

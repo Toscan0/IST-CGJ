@@ -81,6 +81,9 @@
     <ClCompile Include="src\vector\vector3\vector3.cpp">
       <Filter>Source Files\src\vector\vector3</Filter>
     </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h">
@@ -115,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="src\vector\vector4\vector4.h">
       <Filter>Source Files\src\vector\vector4</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

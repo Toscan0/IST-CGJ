@@ -35,6 +35,7 @@
 #include "src/matrix/matrix3x3/matrix3x3.h"
 #include "src/matrix/matrixFactory/matrixFactory.h"
 #include "src/vector/vector3/vector3.h"
+#include "camera.h"
 
 #define CAPTION "Hello Modern 3D World"
 
@@ -44,11 +45,17 @@ unsigned int FrameCount = 0;
 
 #define VERTICES 0
 #define COLORS 1
+#define M_PI 3.14159265358979323846  /* pi */
 
 GLuint VaoId, VboId[2];
 GLuint VertexShaderId, FragmentShaderId, ProgramId;
 GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
+
+typedef GLfloat Matrix[16];
+Matrix ViewMatrix1, g_orthMatrix, g_prespMatrix;
+matrixFactory mf;
+bool orth = true; // 1
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -211,8 +218,6 @@ typedef struct {
 	GLfloat RGBA[4];
 } Vertex;
 
-typedef GLfloat Matrix[16];
-
 const Vertex Vertices[] = // no indices?
 {
 	{{ 0.0f, 0.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.0f, 1.0f }}, // 0 - FRONT
@@ -317,6 +322,7 @@ const Matrix ModelMatrix = {
    -0.5f, -0.5f, -0.5f,  1.0f
 }; // Column Major
 
+   /*
 // Eye(5,5,5) Center(0,0,0) Up(0,1,0)
 const Matrix ViewMatrix1 = {
     0.70f, -0.41f,  0.58f,  0.00f,
@@ -324,7 +330,8 @@ const Matrix ViewMatrix1 = {
    -0.70f, -0.41f,  0.58f,  0.00f,
 	0.00f,  0.00f, -8.70f,  1.00f
 }; // Column Major
-
+*/
+/*
 // Eye(-5,-5,-5) Center(0,0,0) Up(0,1,0)
 const Matrix ViewMatrix2 = {
    -0.70f, -0.41f, -0.58f,  0.00f,
@@ -332,7 +339,8 @@ const Matrix ViewMatrix2 = {
     0.70f, -0.41f, -0.58f,  0.00f,
 	0.00f,  0.00f, -8.70f,  1.00f
 }; // Column Major
-
+*/
+/*
 // Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
 const Matrix ProjectionMatrix1 = {
 	0.50f,  0.00f,  0.00f,  0.00f,
@@ -340,21 +348,29 @@ const Matrix ProjectionMatrix1 = {
 	0.00f,  0.00f, -0.22f,  0.00f,
 	0.00f,  0.00f, -1.22f,  1.00f
 }; // Column Major
-
+*/
+/*
 // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
 const Matrix ProjectionMatrix2 = {
 	2.79f,  0.00f,  0.00f,  0.00f,
 	0.00f,  3.73f,  0.00f,  0.00f,
 	0.00f,  0.00f, -1.22f, -1.00f,
 	0.00f,  0.00f, -2.22f,  0.00f
-}; // Column Major
+}; // Column Major*/
+
 
 void drawScene()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), ViewMatrix1);
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), ProjectionMatrix2);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	if (orth == 1) {
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), g_orthMatrix);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+	else {
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), g_prespMatrix);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
 
 	glBindVertexArray(VaoId);
 	glUseProgram(ProgramId);
@@ -407,6 +423,11 @@ void timer(int value)
     glutTimerFunc(1000, timer, 0);
 }
 
+void keyboard_up(unsigned char key, int x, int y) {
+	if (key == 'p') {
+		orth = !orth;
+	}
+}
 /////////////////////////////////////////////////////////////////////// SETUP
 
 void setupCallbacks() 
@@ -416,6 +437,10 @@ void setupCallbacks()
 	glutIdleFunc(idle);
 	glutReshapeFunc(reshape);
 	glutTimerFunc(0,timer,0);
+
+	glutKeyboardUpFunc(keyboard_up);
+
+
 	setupErrors();
 }
 
@@ -475,15 +500,69 @@ void setupGLUT(int argc, char* argv[])
 	}
 }
 
+void myInit() {
+	vector3 eye(5, 5, 5);
+	vector3 center(0, 0, 0);
+	//vector3 g_lookAt(0, 0, 1);
+	vector3 up(0, 1, 0);
+	//matrix4x4 i = mf.identityMatrix4x4;
+
+	matrix4x4 vM = mf.viewMatrix(eye, center, up);
+	matrix4x4 vMAux = vM.transposeM4x4();
+	for (int i = 0; i < 16; ++i) {
+		ViewMatrix1[i] = vMAux.data()[i];
+	}
+
+	float Fovy = M_PI / 6;
+	float aspect = 640.0f / 480.0f;
+	float n = 1;
+	float f = 10;
+	matrix4x4 prespM = mf.prespMatrix(Fovy, aspect, n, f);
+	matrix4x4 prespMAux = prespM.transposeM4x4();
+	for (int i = 0; i < 16; ++i) {
+		g_prespMatrix[i] = prespMAux.data()[i];
+	}
+
+	float left = -2;
+	float right = 2;
+	float top = -2;
+	float bottom = 2;
+	matrix4x4 orthM = mf.orthMatrix(left, right, top, bottom, n, f);
+	matrix4x4 orthMMAux = orthM.transposeM4x4();
+	for (int i = 0; i < 16; ++i) {
+		g_orthMatrix[i] = orthMMAux.data()[i];
+	}
+
+	/*std::cout << ViewMatrix1[0] << ViewMatrix1[1] << ViewMatrix1[2] << ViewMatrix1[3] << "\n";
+	std::cout << ViewMatrix1[4] << ViewMatrix1[5] << ViewMatrix1[6] << ViewMatrix1[7] << "\n";
+	std::cout << ViewMatrix1[8] << ViewMatrix1[9] << ViewMatrix1[10] << ViewMatrix1[11] << "\n";
+	std::cout << ViewMatrix1[12] << ViewMatrix1[13] << ViewMatrix1[14] << ViewMatrix1[15] << "\n";*/
+}
+
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
 	setupGLEW();
 	setupOpenGL();
+
+	myInit();
+
 	setupCallbacks();
 	createShaderProgram();
 	createBufferObjects();
 }
+
+
+
+int main(int argc, char* argv[])
+{
+	init(argc, argv);
+	glutMainLoop();	
+	exit(EXIT_SUCCESS);
+}
+
+///////////////////////////////////////////////////////////////////////
+/*
 
 bool testViewMatrix() {
 	matrixFactory mf;
@@ -496,12 +575,39 @@ bool testViewMatrix() {
 	return x;
 }//	std::cout << testViewMatrix() << std::endl;
 
+bool testPrespMatrix() {
+	matrixFactory mf;
+	float Fovy = M_PI / 6;
+	float aspect = 640.0f / 480.0f;
+	float n = 1;
+	float f = 10;
+	matrix4x4 prespM = mf.prespMatrix(Fovy, aspect, n, f);
+	matrix4x4 prespMtest(2.79f, 0.00f, 0.00f, 0.00f,
+		0.00f, 3.73f, 0.00f, 0.00f,
+		0.00f, 0.00f, -1.22f, -2.22f,
+		0.00f, 0.00f, -1.00f, 0.00f);
+	prespM.matrixPrint();
+	bool x = prespM == prespMtest;
 
-int main(int argc, char* argv[])
-{
-	init(argc, argv);
-	glutMainLoop();	
-	exit(EXIT_SUCCESS);
+	return x;
 }
 
-///////////////////////////////////////////////////////////////////////
+bool testOrthMatrix() {
+	matrixFactory mf;
+	float left = -2;
+	float right = 2;
+	float top = -2;
+	float bottom = 2;
+	float n = 1;
+	float f = 10;
+	matrix4x4 orthM = mf.orthMatrix(left, right, top, bottom, n, f);
+	matrix4x4 orthMtest(0.50, 0, 0, 0,
+						 0, 0.50, 0, 0,
+						 0, 0, -0.22, -1.22,
+						 0, 0, 0, 1);
+	bool x = orthM == orthMtest;
+	orthM.matrixPrint();
+	return x;
+}
+
+*/

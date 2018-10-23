@@ -127,3 +127,24 @@ matrix4x4 matrixFactory::viewMatrix(vector3& eye, vector3& center, vector3& up) 
 
 	return viewMatrix;
 }
+
+matrix4x4 matrixFactory::orthMatrix(float l, float r, float t, float b, float n, float f) {
+	matrix4x4 mOrth((2 / (r - l)), 0, 0, -((r + l) / (r - l)),
+					0, (2 / (t - b)), 0, -((t + b) / (t - b)),
+					0, 0, -(2 / (f - n)), -((f + n) / (f - n)),
+					0, 0, 0, 1);
+	
+	return mOrth;
+}
+
+matrix4x4 matrixFactory::prespMatrix(float fovy, float aspect, float n, float f) {
+	float teta = (fovy / 2.0f);
+	float d = (1.0f / (tan(teta)));
+
+	matrix4x4 mPresp( (d / aspect), 0, 0, 0,
+		0, d, 0, 0,
+		0, 0, -((f + n) / (f - n)), -((2 * f * n) / (f - n)),
+		0, 0, -1, 0);
+
+	return mPresp;
+}
