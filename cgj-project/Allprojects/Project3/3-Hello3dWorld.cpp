@@ -378,13 +378,13 @@ void drawScene()
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), g_viewMatrix);
 	if (g_orth == 1) {
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), g_orthMatrix);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		
 	}
 	else {
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), g_prespMatrix);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
-
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	
 	glBindVertexArray(VaoId);
 	glUseProgram(ProgramId);
 
