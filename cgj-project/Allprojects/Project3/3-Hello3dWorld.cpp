@@ -61,9 +61,20 @@ const float g_a = 5.0f;
 vector3 g_eye(5, 5, 5);
 vector3 g_center(0, 0, 0);
 vector3 g_up(0, 1, 0);
-float g_x;
-float g_y;
-float g_z;
+vector3 g_view = (g_center - g_eye).normalizado();
+
+float g_cx;
+float g_cy;
+float g_cz;
+
+float g_ex;
+float g_ey;
+float g_ez;
+
+float old_cx;
+float old_cy;
+
+float g_rot = false;
 /////////////////////////////////////////////////////////////////////// ERRORS
 
 static std::string errorType(GLenum type)
@@ -440,37 +451,43 @@ void keyboard_down(unsigned char key, int x, int y) {
 	unsigned long delta;
 	float pos;
 	switch (key) {
-	case 'A':
-	case 'a':
-		delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-		pos = 0 + (0 * delta) + ((g_a / 2) / pow(delta % 10, 2));
-		g_x -= 1.0f;
+		case 'A':
+		case 'a':
+			/*delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			pos = 0 + (0 * delta) + ((g_a / 2) / pow(delta % 10, 2));*/
+			g_ex -= 1.0f;
+			g_cx -= 1.0f;
 			break;
 	
 		case 'W':
 		case 'w':
-			delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			pos = 0 + (0 * delta) + ((g_a / 2) / pow(delta % 10, 2));
-			g_z += 1;
+
+			g_ey += 1.0f;
+			g_cy += 1.0f;
 			break;
 	
 		case 'S':
 		case 's':
-			delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			pos = 0 + (0 * delta) + ((g_a / 2) / pow(delta % 10, 2));
-			g_z -= 1;
+
+			g_ey -= 1.0f;
+			g_cy -= 1.0f;
 			break;
 		
 		case 'D':
 		case 'd':
-			delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			pos = 0 + (0 * delta) + ((g_a / 2) / pow(delta % 10, 2));
-			g_x += 1;
+
+			g_ex += 1.0f;
+			g_cx += 1.0f;
 			break;
 	}
 
-	vector3 newCenter(g_x, g_y, g_z);
-	matrix4x4 vM = mf.viewMatrix(g_eye, newCenter, g_up);
+	old_cx = g_cx;
+	old_cy = g_cy;
+	vector3 newEye(g_ex, g_ey, g_ez);
+	vector3 newCenter(g_cx, g_cy, g_cz);
+	g_eye = newEye;
+	g_center = newCenter;
+	matrix4x4 vM = mf.viewMatrix(newEye, newCenter, g_up);
 	matrix4x4 vMAux = vM.transposeM4x4();
 	for (int i = 0; i < 16; ++i) {
 		g_viewMatrix[i] = vMAux.data()[i];
@@ -478,36 +495,59 @@ void keyboard_down(unsigned char key, int x, int y) {
 }
 
 void mouseWheel(int wheel, int direction, int x, int y) {
-	/*if (direction == -1) {
-		g_y -= 0.2;
+	if (direction == -1) {
+		g_ez -= 1.0f;
+		g_cz -= 1.0f;
 	}
 	if (direction == 1) {
-		g_y += 0.2;
+		g_ez += 1.0f;
+		g_cz += 1.0f;
 	}
-	vector3 newCenter(g_x, g_y, g_z);
-	vector3 newEye(g_x, g_y, g_z);
-	matrix4x4 vM = mf.viewMatrix(g_eye, g_center, g_up);
+	vector3 newEye(g_ex, g_ey, g_ez);
+	vector3 newCenter(g_cx, g_cy, g_cz);
+	g_eye = newEye;
+	g_center = newCenter;
+	matrix4x4 vM = mf.viewMatrix(newEye, newCenter, g_up);
 	matrix4x4 vMAux = vM.transposeM4x4();
 	for (int i = 0; i < 16; ++i) {
 		g_viewMatrix[i] = vMAux.data()[i];
-	}*/
+	}
 }
 
 void OnMouseDown(int button, int state, int x, int y) {
-	
-	/*if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-		std::cout << button << state << x << y << "\n";
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		g_rot = true;
 	}
-	vector3 newEye(g_x, g_y, g_z);
-	matrix4x4 vM = mf.viewMatrix(g_eye, g_center, g_up);
-	matrix4x4 vMAux = vM.transposeM4x4();
-	for (int i = 0; i < 16; ++i) {
-		g_viewMatrix[i] = vMAux.data()[i];
-	}*/
 }
 
+
 void OnMouseMove(int x, int y) {
-	std::cout << x << "...." << y << "\n";
+	if (g_rot == true) {
+		float x_aux = (old_cx - x) * 0.01; // angle to rotate in x 
+		float y_aux = (old_cy - y) * 0.01; // angle to rotate in y
+		g_view = (g_center - g_eye);
+		vector3 vRot = cross(g_view, g_up); // side
+		old_cx = (float)x;
+		old_cy = (float)y;
+		matrix4x4 mRot = mf.rotationMatrix4x4(vRot, y_aux) * mf.rotationMatrix4x4(g_up, x_aux);
+		matrix3x3 mRot_3x3 (mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
+
+		g_view = (mRot_3x3 * g_view);
+		g_up = (mRot_3x3 * g_up);
+		
+		vector3 c = (g_eye + g_view).normalizado();
+		matrix4x4 vM = mf.viewMatrix(g_eye, c, g_up);
+		matrix4x4 vMAux = vM.transposeM4x4();
+		for (int i = 0; i < 16; ++i) {
+			g_viewMatrix[i] = vMAux.data()[i];
+		}
+
+		g_cx = x;
+		g_cy = y;
+		g_ex = g_eye._a;
+		g_ey = g_eye._b;
+		g_ez = g_eye._c;
+	}
 }
 /////////////////////////////////////////////////////////////////////// SETUP
 void setupCallbacks() 
@@ -591,16 +631,18 @@ void myInit() {
 	float f = -50;
 	float left = -2;
 	float right = 2;
-	float top = -2;
-	float bottom = 2;
+	float top = 2;
+	float bottom = -2;
 
 
-	/*float g_x = g_center._a;
-	float g_y = g_center._b;
-	float g_z = g_center._c;*/
-	float g_x = -2;
-	float g_y = 5;
-	float g_z = 5;
+	g_cx = 0;
+	g_cy = 0;
+	g_cz = 0;
+
+	g_ex = 5;
+	g_ey = 5;
+	g_ez = 5;
+
 	matrix4x4 vM = mf.viewMatrix(g_eye, g_center, g_up);
 	matrix4x4 vMAux = vM.transposeM4x4();
 	for (int i = 0; i < 16; ++i) {

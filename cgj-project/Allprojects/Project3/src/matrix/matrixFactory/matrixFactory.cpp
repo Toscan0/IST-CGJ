@@ -90,6 +90,7 @@ matrix4x4 matrixFactory::rotationMatrix4x4(vector3& v, double x) {
 
 // Rodriguez Formula ( R(x) = I + sen(x)A + (1 - cos(x))A^2 )
 matrix3x3 matrixFactory::rodriguez(vector3& v, double x) {
+	vector3 vNormalizado = v.normalizado();
 	matrix3x3 i = identityMatrix3x3();
 	matrix3x3 dual = dualMatrix(v);
 	matrix3x3 dualQ = dual * dual;

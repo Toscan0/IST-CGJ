@@ -165,9 +165,25 @@ void matrix4x4::matrixPrint() {
 
 // -- Overloading = -
 matrix4x4 matrix4x4::operator= (const matrix4x4& m) {
-	matrix4x4 mCopy(m._a, m._b, m._c, m._d, m._e, m._f, m._g, m._h, m._i, m._j, m._k, m._l, m._m, m._n, m._o, m._p);
+	//matrix4x4 mCopy(m._a, m._b, m._c, m._d, m._e, m._f, m._g, m._h, m._i, m._j, m._k, m._l, m._m, m._n, m._o, m._p);
+	_a = m._a;
+	_b = m._b;
+	_c = m._c;
+	_d = m._d;
+	_e = m._e;
+	_f = m._f;
+	_g = m._g;
+	_h = m._h;
+	_i = m._i;
+	_j = m._j;
+	_k = m._k;
+	_l = m._l;
+	_m = m._m;
+	_n = m._n;
+	_o = m._o;
+	_p = m._p;
 
-	return m;
+	return *this;
 }
 
 
