@@ -114,9 +114,17 @@ void matrix3x3::matrixPrint() {
 
 // -- Overloading = -
 matrix3x3 matrix3x3::operator= (const matrix3x3& m) {
-	matrix3x3 mCopy(m._a, m._b, m._c, m._d, m._e, m._f, m._g, m._h, m._i);
+	_a = m._a;
+	_b = m._b;
+	_c = m._c;
+	_d = m._d;
+	_e = m._e;
+	_f = m._f;
+	_g = m._g;
+	_h = m._h;
+	_i = m._i;
 
-	return m;
+	return *this;
 }
 
 

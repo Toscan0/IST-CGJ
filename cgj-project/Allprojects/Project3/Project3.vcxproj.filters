@@ -49,6 +49,9 @@
     <Filter Include="Source Files\src\vector\vector3">
       <UniqueIdentifier>{c180fc62-c4c8-40f1-b709-005deb5bcc36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\shaders_files">
+      <UniqueIdentifier>{ed91f216-58be-487f-a394-4f9b520d1e2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3-Hello3dWorld.cpp">
@@ -122,5 +125,13 @@
     <ClInclude Include="camera.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders_files\vertexSh.glsl">
+      <Filter>Source Files\shaders_files</Filter>
+    </None>
+    <None Include="shaders_files\fragmentSh.glsl">
+      <Filter>Source Files\shaders_files</Filter>
+    </None>
   </ItemGroup>
 </Project>

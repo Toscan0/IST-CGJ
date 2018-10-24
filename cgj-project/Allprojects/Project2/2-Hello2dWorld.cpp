@@ -147,7 +147,7 @@ void createShaderProgram()
 
 void destroyShaderProgram()
 {
-	s.destroyShader();
+	git
 }
 
 void createAux(GLuint VaoId, GLuint VboId, Vertex vert) {

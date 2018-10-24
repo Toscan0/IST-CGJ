@@ -156,6 +156,10 @@
     <ClInclude Include="src\vector\vector4\vector4.h" />
     <ClInclude Include="src\Vertex.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders_files\fragmentSh.glsl" />
+    <None Include="shaders_files\vertexSh.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

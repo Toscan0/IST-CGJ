@@ -61,6 +61,7 @@ const float g_a = 5.0f;
 vector3 g_eye(5, 5, 5);
 vector3 g_center(0, 0, 0);
 vector3 g_up(0, 1, 0);
+
 vector3 g_view = (g_center - g_eye).normalizado();
 
 float g_cx;
@@ -71,8 +72,8 @@ float g_ex;
 float g_ey;
 float g_ez;
 
-float old_cx;
-float old_cy;
+int old_x;
+int old_y;
 
 float g_rot = false;
 /////////////////////////////////////////////////////////////////////// ERRORS
@@ -481,8 +482,6 @@ void keyboard_down(unsigned char key, int x, int y) {
 			break;
 	}
 
-	old_cx = g_cx;
-	old_cy = g_cy;
 	vector3 newEye(g_ex, g_ey, g_ez);
 	vector3 newCenter(g_cx, g_cy, g_cz);
 	g_eye = newEye;
@@ -517,36 +516,38 @@ void mouseWheel(int wheel, int direction, int x, int y) {
 void OnMouseDown(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		g_rot = true;
+		old_x = x;
+		old_y = y;
 	}
 }
 
 
 void OnMouseMove(int x, int y) {
 	if (g_rot == true) {
-		float x_aux = (old_cx - x) * 0.01; // angle to rotate in x 
-		float y_aux = (old_cy - y) * 0.01; // angle to rotate in y
-		g_view = (g_center - g_eye);
-		vector3 vRot = cross(g_view, g_up); // side
-		old_cx = (float)x;
-		old_cy = (float)y;
-		matrix4x4 mRot = mf.rotationMatrix4x4(vRot, y_aux) * mf.rotationMatrix4x4(g_up, x_aux);
-		matrix3x3 mRot_3x3 (mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
+		float x_aux = (x - old_x) * 0.005; // angle to rotate in x 
+		float y_aux = (y - old_y) * 0.005; // angle to rotate in y
 
+		old_x = (float)x;
+		old_y = (float)y;
+		
+		g_view = (g_center - g_eye).normalizado();
+		g_up = g_up.normalizado();
+		//vector3 up_rodado (g_up._a, (g_up._b * cos(y_aux)) - ((g_up._c) * sin(y_aux)), (g_up._b * sin(y_aux) + ((g_up._c) * cos(y_aux))));
+		//vector3 view_rodado(g_view._a * cos(x_aux) + g_view._c * sin(x_aux), g_view._b, -g_view._a * sin(x_aux) + g_view._c * cos(x_aux));
+		
+		matrix4x4 mRot = mf.rotationMatrix4x4(g_view, y_aux) * mf.rotationMatrix4x4(g_up, x_aux);
+		matrix3x3 mRot_3x3(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
 		g_view = (mRot_3x3 * g_view);
 		g_up = (mRot_3x3 * g_up);
 		
-		vector3 c = (g_eye + g_view).normalizado();
+		
+		vector3 c = (g_eye + g_view);
+		g_center = c;
 		matrix4x4 vM = mf.viewMatrix(g_eye, c, g_up);
 		matrix4x4 vMAux = vM.transposeM4x4();
 		for (int i = 0; i < 16; ++i) {
 			g_viewMatrix[i] = vMAux.data()[i];
 		}
-
-		g_cx = x;
-		g_cy = y;
-		g_ex = g_eye._a;
-		g_ey = g_eye._b;
-		g_ez = g_eye._c;
 	}
 }
 /////////////////////////////////////////////////////////////////////// SETUP
