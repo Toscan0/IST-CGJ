@@ -37,7 +37,7 @@
 #include "src/vector/vector3/vector3.h"
 #include "camera.h"
 #include "src/Vertex.h"
-
+//#include "src/shapes.h"
 #define CAPTION "Hello Modern 3D World"
 
 int WinX = 640, WinY = 480;
@@ -530,7 +530,8 @@ void OnMouseMove(int x, int y) {
 		old_x = (float)x;
 		old_y = (float)y;
 		
-		g_view = (g_center - g_eye).normalizado();
+		g_view = (g_center - g_eye);
+		g_view = g_view.normalizado();
 		g_up = g_up.normalizado();
 		//vector3 up_rodado (g_up._a, (g_up._b * cos(y_aux)) - ((g_up._c) * sin(y_aux)), (g_up._b * sin(y_aux) + ((g_up._c) * cos(y_aux))));
 		//vector3 view_rodado(g_view._a * cos(x_aux) + g_view._c * sin(x_aux), g_view._b, -g_view._a * sin(x_aux) + g_view._c * cos(x_aux));
@@ -542,12 +543,17 @@ void OnMouseMove(int x, int y) {
 		
 		
 		vector3 c = (g_eye + g_view);
-		g_center = c;
+
 		matrix4x4 vM = mf.viewMatrix(g_eye, c, g_up);
 		matrix4x4 vMAux = vM.transposeM4x4();
 		for (int i = 0; i < 16; ++i) {
 			g_viewMatrix[i] = vMAux.data()[i];
 		}
+
+		g_center = c;
+		g_cx = g_center._a;
+		g_cy = g_center._b;
+		g_cz = g_center._c;
 	}
 }
 /////////////////////////////////////////////////////////////////////// SETUP
