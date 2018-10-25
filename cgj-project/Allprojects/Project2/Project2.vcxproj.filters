@@ -13,82 +13,43 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\src">
-      <UniqueIdentifier>{38586759-37bb-428d-a170-680e14326b3e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\shaders_files">
-      <UniqueIdentifier>{4e9192da-fef0-44c7-a00a-38796376ee7d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\random">
-      <UniqueIdentifier>{c2978d25-8d16-4ea0-99ef-718d6d418afd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\matrix">
-      <UniqueIdentifier>{a303521b-aa45-4307-9917-896b89b785b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\shaders">
-      <UniqueIdentifier>{41b6638b-7f01-466b-af60-cf358fc0a02b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\vector">
-      <UniqueIdentifier>{17c78fd1-809b-4daf-afba-c0fb44c83345}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\vector\vector2">
-      <UniqueIdentifier>{bf279b9c-4e34-4f16-8c0d-e0f034480bb0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\vector\vector4">
-      <UniqueIdentifier>{4309b5f9-148f-4e9c-950e-8a7804ba7e88}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\vector\vector3">
-      <UniqueIdentifier>{32f3d331-2daa-484a-a82a-97b517dc9460}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\matrix\matrixFactory">
-      <UniqueIdentifier>{e231ed73-54e3-4ee3-8c84-c6aee0962ac0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\matrix\matrix4x4">
-      <UniqueIdentifier>{a9e45c3a-b30f-4cb3-b1af-473a8bd245ac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\matrix\matrix3x3">
-      <UniqueIdentifier>{b944b017-9daa-4e97-b8cd-5c60fae5fa5d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\matrix\matrix2x2">
-      <UniqueIdentifier>{37507b07-14c9-49c6-9201-95bc0d31a2b9}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\random\random.h">
-      <Filter>Source Files\src\random</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vector\vector2\vector2.h">
-      <Filter>Source Files\src\vector\vector2</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vector\vector3\vector3.h">
-      <Filter>Source Files\src\vector\vector3</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vector\vector4\vector4.h">
-      <Filter>Source Files\src\vector\vector4</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Vertex.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\shapes.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\shaders\shaders.h">
-      <Filter>Source Files\src\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h">
-      <Filter>Source Files\src\matrix\matrix2x2</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h">
-      <Filter>Source Files\src\matrix\matrix3x3</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\matrix\matrix4x4\matrix4x4.h">
-      <Filter>Source Files\src\matrix\matrix4x4</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\matrix\matrixFactory\matrixFactory.h">
-      <Filter>Source Files\src\matrix\matrixFactory</Filter>
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\random\random.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shaders\shaders.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shapes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vector\vector2\vector2.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vector\vector3\vector3.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vector\vector4\vector4.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Vertex.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -97,43 +58,35 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="2-Hello2dWorld.cpp">
+    <ClCompile Include="3-Hello3dWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\matrix\matrixFactory\matrixFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\random\random.cpp">
-      <Filter>Source Files\src\random</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vector\vector2\vector2.cpp">
-      <Filter>Source Files\src\vector\vector2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vector\vector3\vector3.cpp">
-      <Filter>Source Files\src\vector\vector3</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\shaders\shaders.cpp">
-      <Filter>Source Files\src\shaders</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vector\vector2\vector2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vector\vector3\vector3.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vector\vector4\vector4.cpp">
-      <Filter>Source Files\src\vector\vector4</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp">
-      <Filter>Source Files\src\matrix\matrix2x2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp">
-      <Filter>Source Files\src\matrix\matrix4x4</Filter>
-    </ClCompile>
-    <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp">
-      <Filter>Source Files\src\matrix\matrix3x3</Filter>
-    </ClCompile>
-    <ClCompile Include="src\matrix\matrixFactory\matrixFactory.cpp">
-      <Filter>Source Files\src\matrix\matrixFactory</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders_files\fragmentSh.glsl">
-      <Filter>Source Files\shaders_files</Filter>
-    </None>
-    <None Include="shaders_files\vertexSh.glsl">
-      <Filter>Source Files\shaders_files</Filter>
-    </None>
   </ItemGroup>
 </Project>

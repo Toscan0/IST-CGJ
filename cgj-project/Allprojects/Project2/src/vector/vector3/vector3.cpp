@@ -77,9 +77,10 @@ vector3 vector3::normalizado() {
 
 // Overloading operator =
 vector3 vector3::operator=(const vector3& v) {
-	vector3 vCopy(v._a, v._b, v._c);
-
-	return vCopy;
+	_a = v._a;
+	_b = v._b;
+	_c = v._c;
+	return *this;
 }
 
 

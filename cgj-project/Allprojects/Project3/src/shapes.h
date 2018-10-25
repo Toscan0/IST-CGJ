@@ -6,7 +6,7 @@
 #include  "matrix/matrix4x4/matrix4x4.h"
 
 // --------------------- Vertices -------------------------------
-const Vertex Vertices[] = // no indices?
+/*const Vertex Vertices[] = // no indices?
 {
 	{{ 0.0f, 0.0f, 1.0f, 1.0f }}, // { 0.9f, 0.0f, 0.0f, 1.0f }}, // 0 - FRONT
 	{{ 1.0f, 0.0f, 1.0f, 1.0f }}, // { 0.9f, 0.0f, 0.0f, 1.0f }}, // 1
@@ -49,7 +49,7 @@ const Vertex Vertices[] = // no indices?
 	{{ 1.0f, 0.0f, 0.0f, 1.0f }}, // { 0.9f, 0.9f, 0.0f, 1.0f }}, // 5	
 	{{ 1.0f, 0.0f, 1.0f, 1.0f }}, // { 0.9f, 0.9f, 0.0f, 1.0f }}, // 1
 	{{ 0.0f, 0.0f, 1.0f, 1.0f }}, // { 0.9f, 0.9f, 0.0f, 1.0f }}  // 0
-};
+};*/
 
 // Small right triangle
 const Vertex VerticesSTri[] =
@@ -94,7 +94,7 @@ const GLubyte IndicesParall[] =
 
 // --------------------- Matrix -------------------------------
 typedef GLfloat Matrix[16];
-//Matrix I, M1, M2, M3, M4, M5, M6, M7;
+Matrix I, M1, M2, M3, M4, M5, M6, M7;
 /*
 void convertMatrixToGLfloat(const matrix4x4& m) {
 	matrix4x4 mi = m;

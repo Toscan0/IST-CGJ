@@ -16,7 +16,7 @@ const Vertex VerticesSTri[] =
 
 const GLubyte IndicesSTri[] =
 {
-	0,1,2
+	0,1,2, 2,1,0
 };
 
 // Squad 
@@ -30,7 +30,7 @@ const Vertex VerticesSquare[] =
 
 const GLubyte IndicesSquare[] =
 {
-	0,1,2,2,1,3
+	0,1,2,2,1,3, 3,1,2,2,1,0
 };
 
 // Parallelogram 
@@ -44,20 +44,12 @@ const Vertex VerticesParall[] =
 
 const GLubyte IndicesParall[] =
 {
-	0,1,2,2,1,3
+	0,1,2,2,1,3, 3,1,2,2,1,0
 };
 
 // --------------------- Matrix -------------------------------
 typedef GLfloat Matrix[16];
 Matrix I, M1, M2, M3, M4, M5, M6, M7;
-
-void convertMatrixToGLfloat(const matrix4x4& m) {
-	matrix4x4 mi = m;
-	for (int i = 0; i < 16; ++i) {
-		I[i] = mi.data()[i];
-	}
-}
-
 // pass the small triangle to a Large triangle
 matrix4x4 mL(2.0f, 0.0f, 0.0f, 0.0f,
 	0.0f, 2.0f, 0.0f, 0.0f,

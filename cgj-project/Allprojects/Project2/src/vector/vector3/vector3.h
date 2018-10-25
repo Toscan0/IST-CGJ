@@ -27,5 +27,5 @@ struct vector3 {
 	vector3 operator* (const float);
 
 	friend float dot(const vector3&, const vector3&);
-	friend vector3 cross(const vector3&, const vector3&);
+	friend  vector3 cross(const vector3&, const vector3&);
 };

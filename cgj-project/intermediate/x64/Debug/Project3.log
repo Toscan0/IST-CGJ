@@ -1,1 +1,11 @@
-﻿
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+  3-Hello3dWorld.cpp
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project3\3-hello3dworld.cpp(453): warning C4101: 'pos': unreferenced local variable
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project3\3-hello3dworld.cpp(452): warning C4101: 'delta': unreferenced local variable
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project3\3-hello3dworld.cpp(526): warning C4805: '==': unsafe mix of type 'float' and type 'bool' in operation
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project3\3-hello3dworld.cpp(527): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project3\3-hello3dworld.cpp(528): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project3\3-hello3dworld.cpp(530): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project3\3-hello3dworld.cpp(531): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\toscan0\desktop\ist-cgj\cgj-project\allprojects\project3\3-hello3dworld.cpp(635): warning C4305: 'initializing': truncation from 'double' to 'float'
+  Project3.vcxproj -> C:\Users\Toscan0\Desktop\IST-CGJ\cgj-project\Allprojects\\..\bin\x64\Project3.exe
