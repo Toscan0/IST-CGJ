@@ -1,12 +1,7 @@
 #include "camera.h"
 
-/*
-camera::camera() {}
 
-camera::camera(vector3& center, vector3& lookAt) {
-	_center = center;
-	_lookAt = lookAt;
-}*/
+camera::camera() {}
 
 matrix4x4 camera::makeViewMatrix(vector3& eye, vector3& center, vector3& up) {
 	typedef GLfloat Matrix[16];
@@ -44,4 +39,37 @@ void camera::setPrespMatrix(matrix4x4& m) {
 
 void camera::setOrthMatrix(matrix4x4& m) {
 	_orthMatrix = m;
+}
+
+
+void camera::setCenter(vector3& center) {
+	_center = center;
+}
+
+void camera::setView(vector3& view) {
+	_view = view;
+}
+
+void camera::setUp(vector3& up) {
+	_up = up;
+}
+
+vector3 camera::getCenter() {
+	return _center;
+}
+
+vector3 camera::getView() {
+	return _view;
+}
+
+vector3 camera::getUp() {
+	return _up;
+}
+
+vector3 camera::getEye() {
+	return _eye;
+}
+
+void camera::setEye(vector3& eye) {
+	_eye = eye;
 }

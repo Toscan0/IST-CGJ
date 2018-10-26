@@ -54,15 +54,13 @@ GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
 
 typedef GLfloat Matrix[16];
-Matrix g_viewMatrix, g_orthMatrix, g_prespMatrix;
+Matrix g_orthMatrix, g_prespMatrix;
 matrixFactory mf;
 bool g_orth = true; // 1
 const float g_a = 5.0f;
-vector3 g_eye(5, 5, 5);
-vector3 g_center(0, 0, 0);
-vector3 g_up(0, 1, 0);
 
-vector3 g_view = (g_center - g_eye).normalizado();
+camera c;
+
 
 float g_cx;
 float g_cy;
@@ -75,7 +73,8 @@ float g_ez;
 int old_x;
 int old_y;
 
-float g_rot = false;
+bool g_rot = false;
+bool g_first = true;
 /////////////////////////////////////////////////////////////////////// ERRORS
 
 static std::string errorType(GLenum type)
@@ -335,53 +334,22 @@ const Matrix ModelMatrix = {
    -0.5f, -0.5f, -0.5f,  1.0f
 }; // Column Major
 
-   /*
-// Eye(5,5,5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix1 = {
-    0.70f, -0.41f,  0.58f,  0.00f,
-	0.00f,  0.82f,  0.58f,  0.00f,
-   -0.70f, -0.41f,  0.58f,  0.00f,
-	0.00f,  0.00f, -8.70f,  1.00f
-}; // Column Major
-*/
-/*
-// Eye(-5,-5,-5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix2 = {
-   -0.70f, -0.41f, -0.58f,  0.00f,
-	0.00f,  0.82f, -0.58f,  0.00f,
-    0.70f, -0.41f, -0.58f,  0.00f,
-	0.00f,  0.00f, -8.70f,  1.00f
-}; // Column Major
-*/
-/*
-// Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
-const Matrix ProjectionMatrix1 = {
-	0.50f,  0.00f,  0.00f,  0.00f,
-	0.00f,  0.50f,  0.00f,  0.00f,
-	0.00f,  0.00f, -0.22f,  0.00f,
-	0.00f,  0.00f, -1.22f,  1.00f
-}; // Column Major
-*/
-/*
-// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-const Matrix ProjectionMatrix2 = {
-	2.79f,  0.00f,  0.00f,  0.00f,
-	0.00f,  3.73f,  0.00f,  0.00f,
-	0.00f,  0.00f, -1.22f, -1.00f,
-	0.00f,  0.00f, -2.22f,  0.00f
-}; // Column Major*/
-
-
 void drawScene()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), g_viewMatrix);
-	if (g_orth == 1) {
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), g_orthMatrix);
-		
+	matrix4x4 vM = c.getViewMatrix();
+	Matrix viewMatrix;
+	for (int i = 0; i < 16; ++i) {
+		viewMatrix[i] = vM.data()[i];
 	}
-	else {
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), viewMatrix);
+	if (g_orth == 1 && g_first == true) {
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), g_orthMatrix);
+		g_first = false;
+	}
+	if (g_orth == 0 && g_first == true) {
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), g_prespMatrix);
+		g_first = false;
 	}
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	
@@ -442,6 +410,7 @@ void keyboard_up(unsigned char key, int x, int y) {
 		case 'P':
 		case 'p':
 			g_orth = !g_orth;
+			g_first = true;
 			break;
 	}
 
@@ -484,13 +453,15 @@ void keyboard_down(unsigned char key, int x, int y) {
 
 	vector3 newEye(g_ex, g_ey, g_ez);
 	vector3 newCenter(g_cx, g_cy, g_cz);
-	g_eye = newEye;
-	g_center = newCenter;
-	matrix4x4 vM = mf.viewMatrix(newEye, newCenter, g_up);
+	c.setEye(newEye);
+	c.setCenter(newCenter);
+	/*matrix4x4 vM = mf.viewMatrix(newEye, newCenter, g_up);
 	matrix4x4 vMAux = vM.transposeM4x4();
 	for (int i = 0; i < 16; ++i) {
 		g_viewMatrix[i] = vMAux.data()[i];
-	}
+	}*/
+	vector3 aux = c.getUp();
+	c.makeViewMatrix(newEye, newCenter, aux);
 }
 
 void mouseWheel(int wheel, int direction, int x, int y) {
@@ -504,13 +475,16 @@ void mouseWheel(int wheel, int direction, int x, int y) {
 	}
 	vector3 newEye(g_ex, g_ey, g_ez);
 	vector3 newCenter(g_cx, g_cy, g_cz);
-	g_eye = newEye;
-	g_center = newCenter;
-	matrix4x4 vM = mf.viewMatrix(newEye, newCenter, g_up);
+	c.setEye(newEye);
+	c.setEye(newCenter);
+
+	/*matrix4x4 vM = mf.viewMatrix(newEye, newCenter, g_up);
 	matrix4x4 vMAux = vM.transposeM4x4();
 	for (int i = 0; i < 16; ++i) {
 		g_viewMatrix[i] = vMAux.data()[i];
-	}
+	}*/
+	vector3 aux = c.getUp();
+	c.makeViewMatrix(newEye, newCenter, aux);
 }
 
 void OnMouseDown(int button, int state, int x, int y) {
@@ -530,30 +504,33 @@ void OnMouseMove(int x, int y) {
 		old_x = (float)x;
 		old_y = (float)y;
 		
-		g_view = (g_center - g_eye);
-		g_view = g_view.normalizado();
-		g_up = g_up.normalizado();
-		//vector3 up_rodado (g_up._a, (g_up._b * cos(y_aux)) - ((g_up._c) * sin(y_aux)), (g_up._b * sin(y_aux) + ((g_up._c) * cos(y_aux))));
-		//vector3 view_rodado(g_view._a * cos(x_aux) + g_view._c * sin(x_aux), g_view._b, -g_view._a * sin(x_aux) + g_view._c * cos(x_aux));
-		
-		matrix4x4 mRot = mf.rotationMatrix4x4(g_view, y_aux) * mf.rotationMatrix4x4(g_up, x_aux);
+		vector3 view = (c.getCenter() - c.getEye());
+		view = view.normalizado();
+		vector3 up = up.normalizado();
+
+		matrix4x4 mRot = mf.rotationMatrix4x4(up, x_aux);
 		matrix3x3 mRot_3x3(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
-		g_view = (mRot_3x3 * g_view);
-		g_up = (mRot_3x3 * g_up);
+
+		view = (mRot_3x3 * view);
+		vector3 side = cross(view, up);
+		mRot = mf.rotationMatrix4x4(side, y_aux);
+		matrix3x3 mRot_3x31(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
+		view = (mRot_3x31 * view);
+
+		up = (mRot_3x31 * up);
+		
+
 		
 		
-		vector3 c = (g_eye + g_view);
+		vector3 newCenter = (c.getEye() + view);
 
-		matrix4x4 vM = mf.viewMatrix(g_eye, c, g_up);
-		matrix4x4 vMAux = vM.transposeM4x4();
-		for (int i = 0; i < 16; ++i) {
-			g_viewMatrix[i] = vMAux.data()[i];
-		}
+		vector3 aux = c.getEye();
+		c.makeViewMatrix( aux, newCenter, up);
 
-		g_center = c;
-		g_cx = g_center._a;
-		g_cy = g_center._b;
-		g_cz = g_center._c;
+		c.setCenter(newCenter);
+		g_cx = newCenter._a;
+		g_cy = newCenter._b;
+		g_cz = newCenter._c;
 	}
 }
 /////////////////////////////////////////////////////////////////////// SETUP
@@ -641,6 +618,15 @@ void myInit() {
 	float top = 2;
 	float bottom = -2;
 
+	vector3 eye(5, 5, 5);
+	vector3 center(0, 0, 0);
+	vector3 up(0, 1, 0);
+	vector3 view = (center - eye).normalizado();
+
+	c.setEye(eye);
+	c.setCenter(center);
+	c.setUp(up);
+	c.setView(view);
 
 	g_cx = 0;
 	g_cy = 0;
@@ -650,11 +636,15 @@ void myInit() {
 	g_ey = 5;
 	g_ez = 5;
 
-	matrix4x4 vM = mf.viewMatrix(g_eye, g_center, g_up);
-	matrix4x4 vMAux = vM.transposeM4x4();
+
+
+	// ----- 
+	c.makeViewMatrix(c.getEye, c.getCenter, c.getUp);
+	matrix4x4 vM = c.getViewMatrix();
+	/*matrix4x4 vMAux = vM.transposeM4x4();
 	for (int i = 0; i < 16; ++i) {
-		g_viewMatrix[i] = vMAux.data()[i];
-	}
+		g_viewMatrix[i] = vM.data()[i];
+	}*/
 
 	
 	matrix4x4 prespM = mf.prespMatrix(Fovy, aspect, 1, 10);

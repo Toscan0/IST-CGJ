@@ -389,21 +389,13 @@ void drawScene()
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	// Draw square (head)
-	glBindVertexArray(VaoIdParall);
+	glBindVertexArray(VaoIdSquare);
 	glUseProgram(ProgramId);
 
 	glProgramUniform4fv(ProgramId, colorId, 1, pink);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M1);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (GLvoid*)0);
-
-	// Draw Parall (legs)
-	glBindVertexArray(VaoIdParall);
-	glUseProgram(ProgramId);
-
-	glProgramUniform4fv(ProgramId, colorId, 1, green);
-	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M2);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (GLvoid*)0);
-
+	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	
 	// Draw triangle 
 	glBindVertexArray(VaoIdSTri);
 	glUseProgram(ProgramId);
@@ -412,29 +404,38 @@ void drawScene()
 	// foot
 	glProgramUniform4fv(ProgramId, colorId, 1, yellow);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M3);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// hand
 	glProgramUniform4fv(ProgramId, colorId, 1, black);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M4);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// Medium Triangle
 	// arm
 	glProgramUniform4fv(ProgramId, colorId, 1, red);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M5);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// Big triangle
 	// ass
 	glProgramUniform4fv(ProgramId, colorId, 1, purple);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M6);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	// body
 	glProgramUniform4fv(ProgramId, colorId, 1, blue);
 	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M7);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+
+	// Draw Parall (legs)
+/*	glBindVertexArray(VaoIdParall);
+	glUseProgram(ProgramId);
+
+	glProgramUniform4fv(ProgramId, colorId, 1, green);
+	glUniformMatrix4fv(UniformId, 1, GL_TRUE, M2);
+	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_BYTE, (GLvoid*)0);*/
 
 	glUseProgram(0);
 	glBindVertexArray(0);
@@ -575,15 +576,21 @@ void OnMouseMove(int x, int y) {
 		old_x = (float)x;
 		old_y = (float)y;
 
+
 		g_view = (g_center - g_eye);
 		g_view = g_view.normalizado();
 		g_up = g_up.normalizado();
 
-		matrix4x4 mRot = mf.rotationMatrix4x4(g_view, y_aux) * mf.rotationMatrix4x4(g_up, x_aux);
+		matrix4x4 mRot = mf.rotationMatrix4x4(g_up, x_aux);
 		matrix3x3 mRot_3x3(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
-		g_view = (mRot_3x3 * g_view);
-		g_up = (mRot_3x3 * g_up);
 
+		g_view = (mRot_3x3 * g_view);
+		vector3 side = cross(g_view, g_up);
+		mRot = mf.rotationMatrix4x4(side, y_aux);
+		matrix3x3 mRot_3x31(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
+		g_view = (mRot_3x31 * g_view);
+
+		g_up = (mRot_3x31 * g_up);
 
 		vector3 c = (g_eye + g_view);
 

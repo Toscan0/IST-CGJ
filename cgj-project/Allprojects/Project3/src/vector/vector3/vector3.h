@@ -8,7 +8,7 @@
 
 struct vector3 {
 	float _a, _b, _c;
-
+	vector3();
 	vector3(float, float, float);
 	vector3(std::tuple<float, float, float>);
 

@@ -1,5 +1,6 @@
 #include "matrix4x4.h"
 
+matrix4x4::matrix4x4(){}
 
 // -- Constructor --
 matrix4x4::matrix4x4(float a, float b, float c, float d, float e, float f, float g,

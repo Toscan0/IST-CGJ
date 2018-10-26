@@ -1,6 +1,11 @@
 #include "vector3.h"
 
 // -- Constructor --
+vector3::vector3() {
+
+}
+
+// -- Constructor --
 vector3::vector3(float a, float b, float c) {
 	_a = a;
 	_b = b;
