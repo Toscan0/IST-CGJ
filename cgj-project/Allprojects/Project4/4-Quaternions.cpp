@@ -22,154 +22,76 @@
 #include <string>
 #include <cassert>
 
+#include "qtrn.h"
+
 #define DEGREES_TO_RADIANS 0.01745329251994329547
 #define RADIANS_TO_DEGREES 57.29577951308232185913
 
+
 /////////////////////////////////////////////////////////////////////// VECTOR
 
-typedef struct {
-	float x, y, z, w;
-} vec4;
 
-const float vThreshold = (float)1.0e-5;
-
-const vec4 vNormalize(const vec4& v)
-{
-	vec4 vn;
-	float s = 1 / (v.w * sqrt(v.x*v.x + v.y*v.y + v.z*v.z));
-	vn.x = v.x * s;
-	vn.y = v.y * s;
-	vn.z = v.z * s;
-	vn.w = 1.0f;
-	return vn;
-}
-
-const void vPrint(const std::string s, const vec4& v)
-{
-	std::cout << s << " = (" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")" << std::endl;
-}
-
-const bool vEqual(const vec4& v0, const vec4& v1)
-{
-	return (fabs(v0.x - v1.x) < vThreshold && fabs(v0.y - v1.y) < vThreshold &&
-		fabs(v0.z - v1.z) < vThreshold && fabs(v0.w - v1.w) < vThreshold);
-}
-
-/////////////////////////////////////////////////////////////////////// mat4
-
-typedef float mat4[16]; // column major
-const float mThreshold = (float)1.0e-5;
-
-const vec4 mMultiply(mat4 m, vec4& v)
-{
-	vec4 r;
-	r.x = m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w;
-	r.y = m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w;
-	r.z = m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w;
-	r.w = m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w;
-	return r;
-}
-
-const void mClean(mat4 m)
-{
-	for (int i = 0; i < 16; i++) {
-		if (fabs(m[i]) < mThreshold) m[i] = 0.0f;
-	}
-}
-
-const void mPrint(const std::string s, const mat4 m)
-{
-	std::cout << s << " =" << std::endl;
-	std::cout << std::fixed << std::setprecision(3) << "| ";
-	std::cout.width(6); std::cout << m[0] << " ";
-	std::cout.width(6); std::cout << m[4] << " ";
-	std::cout.width(6); std::cout << m[8] << " ";
-	std::cout.width(6); std::cout << m[12] << " |" << std::endl << "| ";
-	std::cout.width(6); std::cout << m[1] << " ";
-	std::cout.width(6); std::cout << m[5] << " ";
-	std::cout.width(6); std::cout << m[9] << " ";
-	std::cout.width(6); std::cout << m[13] << " |" << std::endl << "| ";
-	std::cout.width(6); std::cout << m[2] << " ";
-	std::cout.width(6); std::cout << m[6] << " ";
-	std::cout.width(6); std::cout << m[10] << " ";
-	std::cout.width(6); std::cout << m[14] << " |" << std::endl << "| ";
-	std::cout.width(6); std::cout << m[3] << " ";
-	std::cout.width(6); std::cout << m[7] << " ";
-	std::cout.width(6); std::cout << m[11] << " ";
-	std::cout.width(6); std::cout << m[15] << " |" << std::endl;
-}
 
 /////////////////////////////////////////////////////////////////////// QUATERNION
+qtrn::qtrn() {}
 
-typedef struct {
-	float t, x, y, z;
-} qtrn;
+qtrn::qtrn(float t, float x, float y, float z) {
+	_t = t;
+	_x = x;
+	_y = y;
+	_z = z;
+}
+//get
+const float qtrn::getQThreshold() {
+	return _qThreshold;
+}
 
-const float qThreshold = (float)1.0e-5;
-
-const qtrn qFromAngleAxis(float theta, vec4 axis);
-const void qToAngleAxis(const qtrn& q, float& theta, vec4& axis);
-const void qClean(qtrn& q);
-const float qQuadrance(const qtrn& q);
-const float qNorm(const qtrn& q);
-const qtrn qNormalize(const qtrn& q);
-const qtrn qConjugate(const qtrn& q);
-const qtrn qInverse(const qtrn& q);
-const qtrn qMultiply(const qtrn& q, const float s);
-const qtrn qMultiply(const qtrn& q0, const qtrn& q1);
-const void qGLMatrix(const qtrn& q, mat4 matrix);
-const qtrn qLerp(const qtrn& q0, const qtrn& q1, float k);
-const qtrn qSlerp(const qtrn& q0, const qtrn& q1, float k);
-const bool qEqual(const qtrn& q0, const qtrn& q1);
-const void qPrint(const std::string& s, const qtrn& q);
-const void qPrintAngleAxis(const std::string& s, const qtrn& q);
-
-const qtrn qFromAngleAxis(float theta, vec4 axis)
+const qtrn qtrn::qFromAngleAxis(float theta, vec4 axis)
 {
 	vec4 axisn = vNormalize(axis);
 
 	qtrn q;
 	float a = theta * (float)DEGREES_TO_RADIANS;
-	q.t = cos(a / 2.0f);
+	q._t = cos(a / 2.0f);
 	float s = sin(a / 2.0f);
-	q.x = axisn.x * s;
-	q.y = axisn.y * s;
-	q.z = axisn.z * s;
+	q._x = axisn.x * s;
+	q._y = axisn.y * s;
+	q._z = axisn.z * s;
 
 	qClean(q);
 	return qNormalize(q);
 }
 
-const void qToAngleAxis(const qtrn& q, float& theta, vec4& axis)
+const void qtrn::qToAngleAxis(const qtrn& q, float& theta, vec4& axis)
 {
 	qtrn qn = qNormalize(q);
-	theta = 2.0f * acos(qn.t) * (float)RADIANS_TO_DEGREES;
-	float s = sqrt(1.0f - qn.t*qn.t);
-	if (s < qThreshold) {
+	theta = 2.0f * acos(qn._t) * (float)RADIANS_TO_DEGREES;
+	float s = sqrt(1.0f - qn._t*qn._t);
+	if (s < _qThreshold) {
 		axis.x = 1.0f;
 		axis.y = 0.0f;
 		axis.z = 0.0f;
 		axis.w = 1.0f;
 	}
 	else {
-		axis.x = qn.x / s;
-		axis.y = qn.y / s;
-		axis.z = qn.z / s;
+		axis.x = qn._x / s;
+		axis.y = qn._y / s;
+		axis.z = qn._z / s;
 		axis.w = 1.0f;
 	}
 }
 
-const void qClean(qtrn& q)
+const void qtrn::qClean(qtrn& q)
 {
-	if (fabs(q.t) < qThreshold) q.t = 0.0f;
-	if (fabs(q.x) < qThreshold) q.x = 0.0f;
-	if (fabs(q.y) < qThreshold) q.y = 0.0f;
-	if (fabs(q.z) < qThreshold) q.z = 0.0f;
+	if (fabs(q._t) < _qThreshold) q._t = 0.0f;
+	if (fabs(q._x) < _qThreshold) q._x = 0.0f;
+	if (fabs(q._y) < _qThreshold) q._y = 0.0f;
+	if (fabs(q._z) < _qThreshold) q._z = 0.0f;
 }
 
 const float qQuadrance(const qtrn& q)
 {
-	return q.t*q.t + q.x*q.x + q.y*q.y + q.z*q.z;
+	return q._t*q._t + q._x*q._x + q._y*q._y + q._z*q._z;
 }
 
 const float qNorm(const qtrn& q)
@@ -185,7 +107,7 @@ const qtrn qNormalize(const qtrn& q)
 
 const qtrn qConjugate(const qtrn& q)
 {
-	qtrn qconj = { q.t, -q.x, -q.y, -q.z };
+	qtrn qconj = { q._t, -q._x, -q._y, -q._z };
 	return qconj;
 }
 
@@ -197,30 +119,30 @@ const qtrn qInverse(const qtrn& q)
 const qtrn qAdd(const qtrn& q0, const qtrn& q1)
 {
 	qtrn q;
-	q.t = q0.t + q1.t;
-	q.x = q0.x + q1.x;
-	q.y = q0.y + q1.y;
-	q.z = q0.z + q1.z;
+	q._t = q0._t + q1._t;
+	q._x = q0._x + q1._x;
+	q._y = q0._y + q1._y;
+	q._z = q0._z + q1._z;
 	return q;
 }
 
 const qtrn qMultiply(const qtrn& q, const float s)
 {
 	qtrn sq;
-	sq.t = s * q.t;
-	sq.x = s * q.x;
-	sq.y = s * q.y;
-	sq.z = s * q.z;
+	sq._t = s * q._t;
+	sq._x = s * q._x;
+	sq._y = s * q._y;
+	sq._z = s * q._z;
 	return sq;
 }
 
 const qtrn qMultiply(const qtrn& q0, const qtrn& q1)
 {
 	qtrn q;
-	q.t = q0.t * q1.t - q0.x * q1.x - q0.y * q1.y - q0.z * q1.z;
-	q.x = q0.t * q1.x + q0.x * q1.t + q0.y * q1.z - q0.z * q1.y;
-	q.y = q0.t * q1.y + q0.y * q1.t + q0.z * q1.x - q0.x * q1.z;
-	q.z = q0.t * q1.z + q0.z * q1.t + q0.x * q1.y - q0.y * q1.x;
+	q._t = q0._t * q1._t - q0._x * q1._x - q0._y * q1._y - q0._z * q1._z;
+	q._x = q0._t * q1._x + q0._x * q1._t + q0._y * q1._z - q0._z * q1._y;
+	q._y = q0._t * q1._y + q0._y * q1._t + q0._z * q1._x - q0._x * q1._z;
+	q._z = q0._t * q1._z + q0._z * q1._t + q0._x * q1._y - q0._y * q1._x;
 	return q;
 }
 
@@ -228,15 +150,15 @@ const void qGLMatrix(const qtrn& q, mat4 matrix)
 {
 	qtrn qn = qNormalize(q);
 
-	float xx = qn.x * qn.x;
-	float xy = qn.x * qn.y;
-	float xz = qn.x * qn.z;
-	float xt = qn.x * qn.t;
-	float yy = qn.y * qn.y;
-	float yz = qn.y * qn.z;
-	float yt = qn.y * qn.t;
-	float zz = qn.z * qn.z;
-	float zt = qn.z * qn.t;
+	float xx = qn._x * qn._x;
+	float xy = qn._x * qn._y;
+	float xz = qn._x * qn._z;
+	float xt = qn._x * qn._t;
+	float yy = qn._y * qn._y;
+	float yz = qn._y * qn._z;
+	float yt = qn._y * qn._t;
+	float zz = qn._z * qn._z;
+	float zt = qn._z * qn._t;
 
 	matrix[0] = 1.0f - 2.0f * (yy + zz);
 	matrix[1] = 2.0f * (xy + zt);
@@ -261,18 +183,18 @@ const void qGLMatrix(const qtrn& q, mat4 matrix)
 	mClean(matrix);
 }
 
-const qtrn qLerp(const qtrn& q0, const qtrn& q1, float k)
+const qtrn qtrn::qLerp(const qtrn& q0, const qtrn& q1, float k)
 {
-	float cos_angle = q0.x*q1.x + q0.y*q1.y + q0.z*q1.z + q0.t*q1.t;
+	float cos_angle = q0._x*q1._x + q0._y*q1._y + q0._z*q1._z + q0._t*q1._t;
 	float k0 = 1.0f - k;
 	float k1 = (cos_angle > 0) ? k : -k;
 	qtrn qi = qAdd(qMultiply(q0, k0), qMultiply(q1, k1));
 	return qNormalize(qi);
 }
 
-const qtrn qSlerp(const qtrn& q0, const qtrn& q1, float k)
+const qtrn qtrn::qSlerp(const qtrn& q0, const qtrn& q1, float k)
 {
-	float angle = acos(q0.x*q1.x + q0.y*q1.y + q0.z*q1.z + q0.t*q1.t);
+	float angle = acos(q0._x*q1._x + q0._y*q1._y + q0._z*q1._z + q0._t*q1._t);
 	float k0 = sin((1 - k)*angle) / sin(angle);
 	float k1 = sin(k*angle) / sin(angle);
 	qtrn qi = qAdd(qMultiply(q0, k0), qMultiply(q1, k1));
@@ -281,16 +203,18 @@ const qtrn qSlerp(const qtrn& q0, const qtrn& q1, float k)
 
 const bool qEqual(const qtrn& q0, const qtrn& q1)
 {
-	return (fabs(q0.t - q1.t) < qThreshold && fabs(q0.x - q1.x) < qThreshold &&
-		fabs(q0.y - q1.y) < qThreshold && fabs(q0.z - q1.z) < qThreshold);
+	qtrn q;
+	float qThreshold = q.getQThreshold();
+	return (fabs(q0._t - q1._t) < qThreshold && fabs(q0._x - q1._x) < qThreshold &&
+		fabs(q0._y - q1._y) < qThreshold && fabs(q0._z - q1._z) < qThreshold);
 }
 
-const void qPrint(const std::string& s, const qtrn& q)
+const void qtrn::qPrint(const std::string& s, const qtrn& q)
 {
-	std::cout << s << " = (" << q.t << ", " << q.x << ", " << q.y << ", " << q.z << ")" << std::endl;
+	std::cout << s << " = (" << q._t << ", " << q._x << ", " << q._y << ", " << q._z << ")" << std::endl;
 }
 
-const void qPrintAngleAxis(const std::string& s, const qtrn& q)
+const void qtrn::qPrintAngleAxis(const std::string& s, const qtrn& q)
 {
 	std::cout << s << " = [" << std::endl;
 
@@ -305,7 +229,7 @@ const void qPrintAngleAxis(const std::string& s, const qtrn& q)
 ///////////////////////////////////////////////////////////////////////
 
 #define HEADER(X) std::cout<<std::endl<<(X)<<std::endl<<std::endl;
-
+/*
 void qtest1()
 {
 	HEADER("TEST 1 : Rotation of 90 degrees about the y-axis")
@@ -466,18 +390,18 @@ void qtest6()
 	qPrintAngleAxis("slerp(1/3)", qslerp);
 
 	assert(qEqual(qslerp, qe));
-}
+}*/
 
 ///////////////////////////////////////////////////////////////////////
 
 int main(int argc, char* argv[])
 {
-	qtest1();
+	/*qtest1();
 	qtest2();
 	qtest3();
 	qtest4();
 	qtest5();
-	qtest6();
+	qtest6();*/
 
 	std::cout << std::endl << "Press <return>.";
 	std::cin.ignore(1);
