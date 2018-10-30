@@ -18,9 +18,24 @@
     <ClCompile Include="4-Quaternions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="3-hellowHorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vec4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mat4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qtrn.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vec4.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mat4.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

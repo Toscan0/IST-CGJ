@@ -23,13 +23,11 @@
 #include <cassert>
 
 #include "qtrn.h"
+#include "mat4.h"
+#include "vec4.h"
 
 #define DEGREES_TO_RADIANS 0.01745329251994329547
 #define RADIANS_TO_DEGREES 57.29577951308232185913
-
-
-/////////////////////////////////////////////////////////////////////// VECTOR
-
 
 
 /////////////////////////////////////////////////////////////////////// QUATERNION
@@ -54,9 +52,9 @@ const qtrn qtrn::qFromAngleAxis(float theta, vec4 axis)
 	float a = theta * (float)DEGREES_TO_RADIANS;
 	q._t = cos(a / 2.0f);
 	float s = sin(a / 2.0f);
-	q._x = axisn.x * s;
-	q._y = axisn.y * s;
-	q._z = axisn.z * s;
+	q._x = axisn._x * s;
+	q._y = axisn._y * s;
+	q._z = axisn._z * s;
 
 	qClean(q);
 	return qNormalize(q);
@@ -68,16 +66,16 @@ const void qtrn::qToAngleAxis(const qtrn& q, float& theta, vec4& axis)
 	theta = 2.0f * acos(qn._t) * (float)RADIANS_TO_DEGREES;
 	float s = sqrt(1.0f - qn._t*qn._t);
 	if (s < _qThreshold) {
-		axis.x = 1.0f;
-		axis.y = 0.0f;
-		axis.z = 0.0f;
-		axis.w = 1.0f;
+		axis._x = 1.0f;
+		axis._y = 0.0f;
+		axis._z = 0.0f;
+		axis._w = 1.0f;
 	}
 	else {
-		axis.x = qn._x / s;
-		axis.y = qn._y / s;
-		axis.z = qn._z / s;
-		axis.w = 1.0f;
+		axis._x = qn._x / s;
+		axis._y = qn._y / s;
+		axis._z = qn._z / s;
+		axis._w = 1.0f;
 	}
 }
 
@@ -146,7 +144,7 @@ const qtrn qMultiply(const qtrn& q0, const qtrn& q1)
 	return q;
 }
 
-const void qGLMatrix(const qtrn& q, mat4 matrix)
+const void qGLMatrix(const qtrn& q, mat4 matrix4)
 {
 	qtrn qn = qNormalize(q);
 
@@ -159,7 +157,9 @@ const void qGLMatrix(const qtrn& q, mat4 matrix)
 	float yt = qn._y * qn._t;
 	float zz = qn._z * qn._z;
 	float zt = qn._z * qn._t;
-
+	
+	float* matrix = matrix4.data();
+	
 	matrix[0] = 1.0f - 2.0f * (yy + zz);
 	matrix[1] = 2.0f * (xy + zt);
 	matrix[2] = 2.0f * (xz - yt);
@@ -180,7 +180,7 @@ const void qGLMatrix(const qtrn& q, mat4 matrix)
 	matrix[14] = 0.0f;
 	matrix[15] = 1.0f;
 
-	mClean(matrix);
+	//mClean(matrix);
 }
 
 const qtrn qtrn::qLerp(const qtrn& q0, const qtrn& q1, float k)
@@ -229,38 +229,40 @@ const void qtrn::qPrintAngleAxis(const std::string& s, const qtrn& q)
 ///////////////////////////////////////////////////////////////////////
 
 #define HEADER(X) std::cout<<std::endl<<(X)<<std::endl<<std::endl;
-/*
+
 void qtest1()
 {
-	HEADER("TEST 1 : Rotation of 90 degrees about the y-axis")
+	HEADER("TEST 1 : Rotation of 90 degrees about the y-axis");
 
-		vec4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
-	qtrn q = qFromAngleAxis(90.0f, axis);
-	qPrint("   q", q);
+	vec4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
+	qtrn qAux;
+	qtrn q = qAux.qFromAngleAxis(90.0f, axis);
+	qAux.qPrint("   q", q);
 
 	qtrn vi = { 0.0f, 7.0f, 0.0f, 0.0f };
-	qPrint("  vi", vi);
+	qAux.qPrint("  vi", vi);
 
 	qtrn qe = { 0.0f, 0.0f, 0.0f, -7.0f };
-	qPrint("  qe", qe);
+	qAux.qPrint("  qe", qe);
 
 	qtrn qinv = qInverse(q);
-	qClean(qinv);
-	qPrint("qinv", qinv);
+	qAux.qClean(qinv);
+	qAux.qPrint("qinv", qinv);
 
 	qtrn qf = qMultiply(qMultiply(q, vi), qinv);
-	qPrint("  qf", qf);
+	qAux.qPrint("  qf", qf);
 
 	assert(qEqual(qf, qe));
 }
 
 void qtest2()
 {
-	HEADER("TEST 2 : Rotation of 90 degrees about the y-axis with matrix")
+	HEADER("TEST 2 : Rotation of 90 degrees about the y-axis with matrix");
 
-		vec4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
-	qtrn q = qFromAngleAxis(90.0f, axis);
-	qPrint(" q", q);
+	vec4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
+	qtrn qAux;
+	qtrn q = qAux.qFromAngleAxis(90.0f, axis);
+	qAux.qPrint(" q", q);
 
 	vec4 vi = { 7.0f, 0.0f, 0.0f, 1.0f };
 	vPrint("vi", vi);
@@ -280,132 +282,133 @@ void qtest2()
 
 void qtest3()
 {
-	HEADER("TEST 3 : Yaw 900 = Roll 180 + Pitch 180")
-
-		vec4 axis_x = { 1.0f, 0.0f, 0.0f, 1.0f };
+	HEADER("TEST 3 : Yaw 900 = Roll 180 + Pitch 180");
+	qtrn qAux;
+	vec4 axis_x = { 1.0f, 0.0f, 0.0f, 1.0f };
 	vec4 axis_y = { 0.0f, 1.0f, 0.0f, 1.0f };
 	vec4 axis_z = { 0.0f, 0.0f, 1.0f, 1.0f };
 
-	qtrn qyaw900 = qFromAngleAxis(900.0f, axis_y);
-	qPrint("  qyaw900", qyaw900);
+	qtrn qyaw900 = qAux.qFromAngleAxis(900.0f, axis_y);
+	qAux.qPrint("  qyaw900", qyaw900);
 
-	qtrn qroll180 = qFromAngleAxis(180.0f, axis_x);
-	qPrint(" qroll180", qroll180);
-	qtrn qpitch180 = qFromAngleAxis(180.0f, axis_z);
-	qPrint("qpitch180", qpitch180);
+	qtrn qroll180 = qAux.qFromAngleAxis(180.0f, axis_x);
+	qAux.qPrint(" qroll180", qroll180);
+	qtrn qpitch180 = qAux.qFromAngleAxis(180.0f, axis_z);
+	qAux.qPrint("qpitch180", qpitch180);
 	qtrn qrp = qMultiply(qpitch180, qroll180);
-	qPrint("      qrp", qrp);
+	qAux.qPrint("      qrp", qrp);
 	qtrn qpr = qMultiply(qroll180, qpitch180);
-	qPrint("      qpr", qpr);
+	qAux.qPrint("      qpr", qpr);
 
 	qtrn qi = { 0.0f, 1.0f, 0.0f, 0.0f }; // x-axis
-	qPrint("       qi", qi);
+	qAux.qPrint("       qi", qi);
 	qtrn qe = { 0.0f, -1.0f, 0.0f, 0.0f };
-	qPrint("       qe", qe);
+	qAux.qPrint("       qe", qe);
 
 	qtrn qyaw900inv = qInverse(qyaw900);
 	qtrn qfy = qMultiply(qMultiply(qyaw900, qi), qyaw900inv);
-	qPrint("       qy", qfy);
+	qAux.qPrint("       qy", qfy);
 	assert(qEqual(qe, qfy));
 
 	qtrn qrpinv = qInverse(qrp);
 	qtrn qfrp = qMultiply(qMultiply(qrp, qi), qrpinv);
-	qPrint("     qfrp", qfrp);
+	qAux.qPrint("     qfrp", qfrp);
 	assert(qEqual(qe, qfrp));
 
 	qtrn qprinv = qInverse(qpr);
 	qtrn qfpr = qMultiply(qMultiply(qpr, qi), qprinv);
-	qPrint("     qfpr", qfpr);
+	qAux.qPrint("     qfpr", qfpr);
 	assert(qEqual(qe, qfpr));
 }
 
 void qtest4()
 {
-	HEADER("TEST 4: Q <-> (angle, axis)")
-
-		float thetai = 45.0f;
+	HEADER("TEST 4: Q <-> (angle, axis)");
+	qtrn qAux;
+	float thetai = 45.0f;
 	vec4 axis_i = { 0.0f, 1.0f, 0.0f, 1.0f };
-	qtrn q = qFromAngleAxis(thetai, axis_i);
+	qtrn q = qAux.qFromAngleAxis(thetai, axis_i);
 	std::cout << thetai << " ";
 	vPrint("axis_i", axis_i);
 
 	float thetaf;
 	vec4 axis_f;
-	qToAngleAxis(q, thetaf, axis_f);
+	qAux.qToAngleAxis(q, thetaf, axis_f);
 	std::cout << thetaf << " ";
 	vPrint("axis_f", axis_f);
-
+	float qThreshold = qAux.getQThreshold();
 	assert(fabs(thetai - thetaf) < qThreshold && vEqual(axis_i, axis_f));
 }
 
 void qtest5()
 {
-	HEADER("TEST 5: LERP")
+	HEADER("TEST 5: LERP");
 
-		vec4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
-	qtrn q0 = qFromAngleAxis(0.0f, axis);
-	qPrint("       q0", q0);
-	qtrn q1 = qFromAngleAxis(90.0f, axis);
-	qPrint("       q1", q1);
-	qtrn qe = qFromAngleAxis(30.0f, axis);
-	qPrint("       qe", qe);
+	vec4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
+	qtrn qAux;
+	qtrn q0 = qAux.qFromAngleAxis(0.0f, axis);
+	qAux.qPrint("       q0", q0);
+	qtrn q1 = qAux.qFromAngleAxis(90.0f, axis);
+	qAux.qPrint("       q1", q1);
+	qtrn qe = qAux.qFromAngleAxis(30.0f, axis);
+	qAux.qPrint("       qe", qe);
 
-	qtrn qLerp0 = qLerp(q0, q1, 0.0f);
-	qPrint("  lerp(0)", qLerp0);
+	qtrn qLerp0 = qAux.qLerp(q0, q1, 0.0f);
+	qAux.qPrint("  lerp(0)", qLerp0);
 	assert(qEqual(qLerp0, q0));
 
-	qtrn qLerp1 = qLerp(q0, q1, 1.0f);
-	qPrint("  lerp(1)", qLerp1);
+	qtrn qLerp1 = qAux.qLerp(q0, q1, 1.0f);
+	qAux.qPrint("  lerp(1)", qLerp1);
 	assert(qEqual(qLerp1, q1));
 
-	qtrn qlerp = qLerp(q0, q1, 1 / 3.0f);
-	qPrint("lerp(1/3)", qlerp);
-	qPrintAngleAxis("lerp(1/3)", qlerp);
+	qtrn qlerp = qAux.qLerp(q0, q1, 1 / 3.0f);
+	qAux.qPrint("lerp(1/3)", qlerp);
+	qAux.qPrintAngleAxis("lerp(1/3)", qlerp);
 
 	assert(qEqual(qlerp, qe) == 0);
 }
 
 void qtest6()
 {
-	HEADER("TEST 6: SLERP")
+	HEADER("TEST 6: SLERP");
+	qtrn qAux;
+	vec4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
+	qtrn q0 = qAux.qFromAngleAxis(0.0f, axis);
+	qAux.qPrint("        q0", q0);
+	qtrn q1 = qAux.qFromAngleAxis(90.0f, axis);
+	qAux.qPrint("        q1", q1);
+	qtrn qe = qAux.qFromAngleAxis(30.0f, axis);
+	qAux.qPrint("        qe", qe);
 
-		vec4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
-	qtrn q0 = qFromAngleAxis(0.0f, axis);
-	qPrint("        q0", q0);
-	qtrn q1 = qFromAngleAxis(90.0f, axis);
-	qPrint("        q1", q1);
-	qtrn qe = qFromAngleAxis(30.0f, axis);
-	qPrint("        qe", qe);
-
-	qtrn qSlerp0 = qSlerp(q0, q1, 0.0f);
-	qPrint("  slerp(0)", qSlerp0);
+	qtrn qSlerp0 = qAux.qSlerp(q0, q1, 0.0f);
+	qAux.qPrint("  slerp(0)", qSlerp0);
 	assert(qEqual(qSlerp0, q0));
 
-	qtrn qSlerp1 = qSlerp(q0, q1, 1.0f);
-	qPrint("  slerp(1)", qSlerp1);
+	qtrn qSlerp1 = qAux.qSlerp(q0, q1, 1.0f);
+	qAux.qPrint("  slerp(1)", qSlerp1);
 	assert(qEqual(qSlerp1, q1));
 
-	qtrn qslerp = qSlerp(q0, q1, 1 / 3.0f);
-	qPrint("slerp(1/3)", qslerp);
-	qPrintAngleAxis("slerp(1/3)", qslerp);
+	qtrn qslerp = qAux.qSlerp(q0, q1, 1 / 3.0f);
+	qAux.qPrint("slerp(1/3)", qslerp);
+	qAux.qPrintAngleAxis("slerp(1/3)", qslerp);
 
 	assert(qEqual(qslerp, qe));
-}*/
+}
 
 ///////////////////////////////////////////////////////////////////////
-
+/*
 int main(int argc, char* argv[])
 {
-	/*qtest1();
+	qtest1();
 	qtest2();
 	qtest3();
 	qtest4();
 	qtest5();
-	qtest6();*/
+	qtest6();
 
 	std::cout << std::endl << "Press <return>.";
 	std::cin.ignore(1);
 	exit(EXIT_SUCCESS);
-}
+}*/
 
 ///////////////////////////////////////////////////////////////////////
