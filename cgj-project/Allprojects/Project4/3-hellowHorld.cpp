@@ -4,6 +4,11 @@
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 #include"qtrn.h"
+#include "src/camera/camera.h"
+#include "src/vector/vector3/vector3.h"
+#include "src/vector/vector4/vector4.h"
+#include "src/matrix/matrix3x3/matrix3x3.h"
+#include "src/matrix/matrix4x4/matrix4x4.h"
 
 #define CAPTION "Hello Modern 3D World"
 
@@ -22,7 +27,8 @@ const GLuint UBO_BP = 0;
 bool g_rot = true;
 int g_oldX;
 int g_oldY;
-
+camera c;
+matrixFactory mf;
 /////////////////////////////////////////////////////////////////////// ERRORS
 
 static std::string errorType(GLenum type)
@@ -306,7 +312,7 @@ const Matrix ViewMatrix2 = {
 	0.00f,  0.00f, -8.70f,  1.00f
 }; // Column Major
 
-// Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
+// Orthographic LeftRight(-2,2) TopBottom(2,-2) NearFar(1,10)
 const Matrix ProjectionMatrix1 = {
 	0.50f,  0.00f,  0.00f,  0.00f,
 	0.00f,  0.50f,  0.00f,  0.00f,
@@ -324,9 +330,14 @@ const Matrix ProjectionMatrix2 = {
 
 void drawScene()
 {
+	matrix4x4 vM = c.getViewMatrix();
+	Matrix viewMatrix;
+	for (int i = 0; i < 16; ++i) {
+		viewMatrix[i] = vM.data()[i];
+	}
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), ViewMatrix1);
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), ProjectionMatrix2);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), viewMatrix);
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), ProjectionMatrix1);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	glBindVertexArray(VaoId);
@@ -398,33 +409,21 @@ void OnMouseMove(int x, int y) {
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 
-		/*vector3 view = (c.getCenter() - c.getEye());
-		view = view.normalizado();
-		vector3 up = up.normalizado();
 
-		matrix4x4 mRot = mf.rotationMatrix4x4(up, x_aux);
+		vector3 eye = c.getEye();
+		eye = eye.normalizado();
+
+		matrix4x4 mRot = mf.rotationMatrix4x4(eye, x_aux);
 		matrix3x3 mRot_3x3(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
 
-		view = (mRot_3x3 * view);
-		vector3 side = cross(view, up);
-		mRot = mf.rotationMatrix4x4(side, y_aux);
+		mRot = mf.rotationMatrix4x4(eye, y_aux);
 		matrix3x3 mRot_3x31(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
-		view = (mRot_3x31 * view);
-
-		up = (mRot_3x31 * up);
+		eye = (mRot_3x31 * eye);
 
 
+		c.makeViewMatrix(eye, c.getCenter(), c.getUp());
 
-
-		vector3 newCenter = (c.getEye() + view);
-
-		vector3 aux = c.getEye();
-		c.makeViewMatrix(aux, newCenter, up);
-
-		c.setCenter(newCenter);
-		g_cx = newCenter._a;
-		g_cy = newCenter._b;
-		g_cz = newCenter._c;*/
+		c.setEye(eye);
 	}
 }
 
@@ -500,11 +499,30 @@ void setupGLUT(int argc, char* argv[])
 	}
 }
 
+void myInit() {
+	vector3 eye(5, 5, 5);
+	vector3 center(0, 0, 0);
+	vector3 up(0, 1, 0);
+	vector3 view = center - eye;
+	view = view.normalizado();
+
+	c.setEye(eye);
+	c.setCenter(center);
+	c.setUp(up);
+	c.setView(view);
+
+
+	c.makeViewMatrix(c.getEye(), c.getCenter(), c.getUp());
+	matrix4x4 vM = c.getViewMatrix();
+}
+
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
 	setupGLEW();
 	setupOpenGL();
+
+	myInit();
 	setupCallbacks();
 	createShaderProgram();
 	createBufferObjects();
