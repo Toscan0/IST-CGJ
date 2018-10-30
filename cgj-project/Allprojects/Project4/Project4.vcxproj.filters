@@ -110,12 +110,6 @@
     <ClInclude Include="src\camera\camera.h">
       <Filter>Source Files\src\camera</Filter>
     </ClInclude>
-    <ClInclude Include="src\shapes.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Vertex.h">
-      <Filter>Source Files\src</Filter>
-    </ClInclude>
     <ClInclude Include="src\random\random.h">
       <Filter>Source Files\src\random</Filter>
     </ClInclude>

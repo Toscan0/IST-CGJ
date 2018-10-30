@@ -155,11 +155,9 @@
     <ClInclude Include="src\matrix\matrixFactory\matrixFactory.h" />
     <ClInclude Include="src\random\random.h" />
     <ClInclude Include="src\shaders\shaders.h" />
-    <ClInclude Include="src\shapes.h" />
     <ClInclude Include="src\vector\vector2\vector2.h" />
     <ClInclude Include="src\vector\vector3\vector3.h" />
     <ClInclude Include="src\vector\vector4\vector4.h" />
-    <ClInclude Include="src\Vertex.h" />
     <ClInclude Include="vec4.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -25,10 +25,11 @@ GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
 
 bool g_rot = true;
-int g_oldX;
-int g_oldY;
+int g_oldX = 0;
+int g_oldY = 0;
 camera c;
 matrixFactory mf;
+bool g_gl = true;
 /////////////////////////////////////////////////////////////////////// ERRORS
 
 static std::string errorType(GLenum type)
@@ -281,14 +282,6 @@ void destroyBufferObjects()
 }
 
 /////////////////////////////////////////////////////////////////////// SCENE
-
-const Matrix I = {
-	1.0f,  0.0f,  0.0f,  0.0f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-};
-
 const Matrix ModelMatrix = {
 	1.0f,  0.0f,  0.0f,  0.0f,
 	0.0f,  1.0f,  0.0f,  0.0f,
@@ -304,28 +297,12 @@ const Matrix ViewMatrix1 = {
 	0.00f,  0.00f, -8.70f,  1.00f
 }; // Column Major
 
-// Eye(-5,-5,-5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix2 = {
-   -0.70f, -0.41f, -0.58f,  0.00f,
-	0.00f,  0.82f, -0.58f,  0.00f,
-	0.70f, -0.41f, -0.58f,  0.00f,
-	0.00f,  0.00f, -8.70f,  1.00f
-}; // Column Major
-
 // Orthographic LeftRight(-2,2) TopBottom(2,-2) NearFar(1,10)
 const Matrix ProjectionMatrix1 = {
 	0.50f,  0.00f,  0.00f,  0.00f,
 	0.00f,  0.50f,  0.00f,  0.00f,
 	0.00f,  0.00f, -0.22f,  0.00f,
 	0.00f,  0.00f, -1.22f,  1.00f
-}; // Column Major
-
-// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-const Matrix ProjectionMatrix2 = {
-	2.79f,  0.00f,  0.00f,  0.00f,
-	0.00f,  3.73f,  0.00f,  0.00f,
-	0.00f,  0.00f, -1.22f, -1.00f,
-	0.00f,  0.00f, -2.22f,  0.00f
 }; // Column Major
 
 void drawScene()
@@ -391,7 +368,16 @@ void timer(int value)
 	glutTimerFunc(1000, timer, 0);
 }
 
-//////////////////////////////////////////////////////////////////////// Mouse Eventes
+//////////////////////////////////////////////////////////////////////// Mouse/Key Eventes
+void keyboard_down(unsigned char key, int x, int y) {
+	switch (key) {
+		case 'G':
+		case 'g':
+			g_gl = !g_gl;
+			break;
+	}
+}
+
 void OnMouseDown(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		g_rot = true;
@@ -403,27 +389,40 @@ void OnMouseDown(int button, int state, int x, int y) {
 
 void OnMouseMove(int x, int y) {
 	if (g_rot == true) {
-		float x_aux = (x - g_oldX) * 0.005; // angle to rotate in x 
-		float y_aux = (y - g_oldY) * 0.005; // angle to rotate in y
-
+		float x_aux = (x - g_oldX); // angle to rotate in x 
+		float y_aux = (y - g_oldY); // angle to rotate in y
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 
+		std::cout << x_aux << std::endl << y_aux << std::endl;
+		vector3 view = (c.getCenter() - c.getEye());
+		view = view.normalizado();
+		vector3 up = up.normalizado();
 
-		vector3 eye = c.getEye();
-		eye = eye.normalizado();
-
-		matrix4x4 mRot = mf.rotationMatrix4x4(eye, x_aux);
+		matrix4x4 mRot = mf.rotationMatrix4x4(up, x_aux);
 		matrix3x3 mRot_3x3(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
 
-		mRot = mf.rotationMatrix4x4(eye, y_aux);
+		view = (mRot_3x3 * view);
+		vector3 side = cross(view, up);
+		view.printVc3();
+		up.printVc3();
+		side.printVc3();
+		mRot = mf.rotationMatrix4x4(side, y_aux);
 		matrix3x3 mRot_3x31(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
-		eye = (mRot_3x31 * eye);
+		view = (mRot_3x31 * view);
 
+		up = (mRot_3x31 * up);
 
-		c.makeViewMatrix(eye, c.getCenter(), c.getUp());
+		vector3 newCenter = (c.getEye() + view);
 
-		c.setEye(eye);
+		vector3 aux = c.getEye();
+		c.makeViewMatrix(aux, newCenter, up);
+
+		c.setCenter(newCenter);
+		c.setEye(aux);
+		c.setUp(up);
+		matrix4x4 vm = c.getViewMatrix();
+		vm.matrixPrint();
 	}
 }
 
@@ -437,6 +436,7 @@ void setupCallbacks()
 	glutReshapeFunc(reshape);
 	glutTimerFunc(0, timer, 0);
 
+	glutKeyboardFunc(keyboard_down);
 	glutMouseFunc(OnMouseDown);
 	glutMotionFunc(OnMouseMove);
 	
@@ -500,20 +500,15 @@ void setupGLUT(int argc, char* argv[])
 }
 
 void myInit() {
-	vector3 eye(5, 5, 5);
-	vector3 center(0, 0, 0);
-	vector3 up(0, 1, 0);
-	vector3 view = center - eye;
-	view = view.normalizado();
+	vector3 eye(5.0f, 5.0f, 5.0f);
+	vector3 center(0.0f, 0.0f, 0.0f);
+	vector3 up(0.0f, 1.0f, 0.0f);
 
 	c.setEye(eye);
 	c.setCenter(center);
 	c.setUp(up);
-	c.setView(view);
-
 
 	c.makeViewMatrix(c.getEye(), c.getCenter(), c.getUp());
-	matrix4x4 vM = c.getViewMatrix();
 }
 
 void init(int argc, char* argv[])
