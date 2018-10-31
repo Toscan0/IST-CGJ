@@ -394,10 +394,10 @@ void OnMouseMove(int x, int y) {
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 
-		std::cout << x_aux << std::endl << y_aux << std::endl;
 		vector3 view = (c.getCenter() - c.getEye());
 		view = view.normalizado();
-		vector3 up = up.normalizado();
+		vector3 up = c.getUp();
+		up = up.normalizado();
 
 		matrix4x4 mRot = mf.rotationMatrix4x4(up, x_aux);
 		matrix3x3 mRot_3x3(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
@@ -418,7 +418,7 @@ void OnMouseMove(int x, int y) {
 		vector3 aux = c.getEye();
 		c.makeViewMatrix(aux, newCenter, up);
 
-		//c.setCenter(newCenter);
+		c.setCenter(newCenter);
 		c.setEye(aux);
 		c.setUp(up);
 		matrix4x4 vm = c.getViewMatrix();
