@@ -13,38 +13,38 @@ const float qtrn::getQThreshold() {
 	return _qThreshold;
 }
 
-const qtrn qtrn::qFromAngleAxis(float theta, vec4 axis)
+const qtrn qtrn::qFromAngleAxis(float theta, vector4& axis)
 {
-	vec4 axisn = vNormalize(axis);
+	vector4 axisn = axis;
 
 	qtrn q;
 	float a = theta * (float)DEGREES_TO_RADIANS;
 	q._t = cos(a / 2.0f);
 	float s = sin(a / 2.0f);
-	q._x = axisn._x * s;
-	q._y = axisn._y * s;
-	q._z = axisn._z * s;
+	q._x = axisn._a * s;
+	q._y = axisn._b * s;
+	q._z = axisn._c * s;
 
 	qClean(q);
 	return qNormalize(q);
 }
 
-const void qtrn::qToAngleAxis(const qtrn& q, float& theta, vec4& axis)
+const void qtrn::qToAngleAxis(const qtrn& q, float& theta, vector4& axis)
 {
 	qtrn qn = qNormalize(q);
 	theta = 2.0f * acos(qn._t) * (float)RADIANS_TO_DEGREES;
 	float s = sqrt(1.0f - qn._t*qn._t);
 	if (s < _qThreshold) {
-		axis._x = 1.0f;
-		axis._y = 0.0f;
-		axis._z = 0.0f;
-		axis._w = 1.0f;
+		axis._a = 1.0f;
+		axis._b = 0.0f;
+		axis._c = 0.0f;
+		axis._d = 1.0f;
 	}
 	else {
-		axis._x = qn._x / s;
-		axis._y = qn._y / s;
-		axis._z = qn._z / s;
-		axis._w = 1.0f;
+		axis._a = qn._x / s;
+		axis._b = qn._y / s;
+		axis._c = qn._z / s;
+		axis._d = 1.0f;
 	}
 }
 
@@ -186,7 +186,7 @@ const void qtrn::qPrintAngleAxis(const std::string& s, const qtrn& q)
 	std::cout << s << " = [" << std::endl;
 
 	float thetaf;
-	vec4 axis_f;
+	vector4 axis_f;
 	qToAngleAxis(q, thetaf, axis_f);
 	std::cout << "  angle = " << thetaf << std::endl;
 	vPrint("  axis", axis_f);

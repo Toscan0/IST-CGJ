@@ -5,6 +5,7 @@
 #include <cassert>
 #include "mat4.h"
 #include "vec4.h"
+#include "src/vector/vector4/vector4.h"
 
 #define DEGREES_TO_RADIANS 0.01745329251994329547
 #define RADIANS_TO_DEGREES 57.29577951308232185913
@@ -17,8 +18,8 @@ struct qtrn {
 
 	const float _qThreshold = (float)1.0e-5;
 
-	const qtrn qFromAngleAxis(float theta, vec4 axis);
-	const void qToAngleAxis(const qtrn& q, float& theta, vec4& axis);
+	const qtrn qFromAngleAxis(float theta, vector4& axis);
+	const void qToAngleAxis(const qtrn& q, float& theta, vector4& axis);
 	const void qClean(qtrn& q);
 	friend const float qQuadrance(const qtrn& q);
 	friend const float qNorm(const qtrn& q);

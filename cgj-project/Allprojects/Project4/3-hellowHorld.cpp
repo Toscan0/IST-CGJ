@@ -35,6 +35,7 @@ vector3 XX(1, 0, 0);
 vector3 YY(0, 1, 0);
 matrix4x4 Rx;
 matrix4x4 Ry;
+qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
 /////////////////////////////////////////////////////////////////////// ERRORS
 
 static std::string errorType(GLenum type)
@@ -394,28 +395,28 @@ void OnMouseDown(int button, int state, int x, int y) {
 
 void OnMouseMove(int x, int y) {
 	if (g_rot == true) {
-		float tetaX = (x - g_oldX) * 0.005; // angle to rotate in x 
-		float tetaY = (y - g_oldY) * 0.005; // angle to rotate in y
+		float tetaX = (x - g_oldX)* 0.0174532925; // angle to rotate in x 
+		float tetaY = (y - g_oldY)* 0.0174532925; // angle to rotate in y
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 		if (g_gimbalLock == true) {
+			std::cout << "\n" << "GIMBAL LOCK ON" << "\n";
+
 			Rx = mf.rotationMatrix4x4(XX, tetaX) * Rx;
 			Ry = mf.rotationMatrix4x4(YY, tetaY) * Ry;
 			matrix4x4 R = Rx * Ry;
 
-			vector3 vT(0, 0, 5);
+			vector3 vT(0, 0, -5);
 			matrix4x4 T = mf.translationMatrix4x4(vT);
 
-			matrix4x4 vM = T * R ;
-			c.setViewMatrix(vM);
+			matrix4x4 vM = T * R ; // view matrix
+			matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta
+			c.setViewMatrix(vMT);
 
-			matrix4x4 m = c.getViewMatrix();
-			m.matrixPrint();
 		}
 		// Gimbal lock false
 		else { 
-			qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
-			//q = q()
+			std::cout << "\n" << "GIMBAL LOCK OFF" << "\n";
 		}
 	}
 }
@@ -494,7 +495,7 @@ void setupGLUT(int argc, char* argv[])
 }
 
 void myInit() {
-	vector3 eye(5.0f, 5.0f, 5.0f);
+	vector3 eye(0.0f, 0.0f, 5.0f);
 	vector3 center(0.0f, 0.0f, 0.0f);
 	vector3 up(0.0f, 1.0f, 0.0f);
 
@@ -522,7 +523,7 @@ void init(int argc, char* argv[])
 	createBufferObjects();
 }
 
-/**/
+/** /
 int main(int argc, char* argv[])
 {
 	init(argc, argv);

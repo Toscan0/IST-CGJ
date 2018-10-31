@@ -1,7 +1,8 @@
 #include "vector4.h"
 
 // -- Constructor --
-// Vector4
+vector4::vector4() {}
+
 vector4::vector4(float a, float b, float c, float d) {
 	_a = a;
 	_b = b;
@@ -29,6 +30,9 @@ float* vector4::data() {
 	return v;
 }
 
+const float vector4::getVTreshhold() {
+	return _vThreshold;
+}
 
 // -- Read --
 vector4 vector4::readVc4() {
@@ -62,6 +66,20 @@ void vector4::printVc4() {
 	std::cout << "(" << _a << "," << _b << "," << _c << "," << _d << ")" << "\n";
 }
 
+const void vPrint(const std::string s, const vector4& v){
+	std::cout << s << " = (" << v._a << ", " << v._b << ", " << v._c << ", " << v._d << ")" << std::endl;
+}
+
+// Normalize
+const vector4 vNormalize(const vector4& v){
+	vector4 vn;
+	float s = 1 / (v._d * sqrt(v._a*v._a + v._b*v._b + v._c*v._c));
+	vn._a = v._a * s;
+	vn._b = v._b * s;
+	vn._c = v._c * s;
+	vn._d = 1.0f;
+	return vn;
+}
 
 // Overloading operator =
 vector4 vector4::operator=(const vector4& v) {
@@ -76,6 +94,12 @@ bool vector4::operator==(const vector4& vc4) {
 	return _a == vc4._a && _b == vc4._b && _c == vc4._c && _d == vc4._d;
 }
 
+const bool vEqual(const vector4& v0, const vector4& v1){
+	vector4 vecAux;
+	const float vThreshold = vecAux.getVTreshhold();
+	return (fabs(v0._a - v1._a) < vThreshold && fabs(v0._b - v1._b) < vThreshold &&
+		fabs(v0._c - v1._c) < vThreshold && fabs(v0._d - v1._d) < vThreshold);
+}
 
 // Overloading operator +
 vector4 vector4::operator+(const vector4& vc4) {
