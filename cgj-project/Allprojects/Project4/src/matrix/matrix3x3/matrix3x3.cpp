@@ -2,6 +2,8 @@
 
 
 // -- Constructor --
+matrix3x3::matrix3x3(){}
+
 matrix3x3::matrix3x3(float a, float b, float c, float d, float e, float f, float g, float h, float i) {
 	_a = a;
 	_b = b;

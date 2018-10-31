@@ -3,7 +3,7 @@
 #include <string>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
-#include"qtrn.h"
+#include "qtrn.h"
 #include "src/camera/camera.h"
 #include "src/vector/vector3/vector3.h"
 #include "src/vector/vector4/vector4.h"
@@ -29,7 +29,12 @@ int g_oldX = 0;
 int g_oldY = 0;
 camera c;
 matrixFactory mf;
-bool g_gl = true;
+bool g_gimbalLock = true;
+
+vector3 XX(1, 0, 0);
+vector3 YY(0, 1, 0);
+matrix4x4 Rx;
+matrix4x4 Ry;
 /////////////////////////////////////////////////////////////////////// ERRORS
 
 static std::string errorType(GLenum type)
@@ -373,7 +378,7 @@ void keyboard_down(unsigned char key, int x, int y) {
 	switch (key) {
 		case 'G':
 		case 'g':
-			g_gl = !g_gl;
+			g_gimbalLock = !g_gimbalLock;
 			break;
 	}
 }
@@ -389,40 +394,29 @@ void OnMouseDown(int button, int state, int x, int y) {
 
 void OnMouseMove(int x, int y) {
 	if (g_rot == true) {
-		float x_aux = (x - g_oldX) * 0.005; // angle to rotate in x 
-		float y_aux = (y - g_oldY) * 0.005; // angle to rotate in y
+		float tetaX = (x - g_oldX) * 0.005; // angle to rotate in x 
+		float tetaY = (y - g_oldY) * 0.005; // angle to rotate in y
 		g_oldX = (float)x;
 		g_oldY = (float)y;
+		if (g_gimbalLock == true) {
+			Rx = mf.rotationMatrix4x4(XX, tetaX) * Rx;
+			Ry = mf.rotationMatrix4x4(YY, tetaY) * Ry;
+			matrix4x4 R = Rx * Ry;
 
-		vector3 view = (c.getCenter() - c.getEye());
-		view = view.normalizado();
-		vector3 up = c.getUp();
-		up = up.normalizado();
+			vector3 vT(0, 0, 5);
+			matrix4x4 T = mf.translationMatrix4x4(vT);
 
-		matrix4x4 mRot = mf.rotationMatrix4x4(up, x_aux);
-		matrix3x3 mRot_3x3(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
+			matrix4x4 vM = T * R ;
+			c.setViewMatrix(vM);
 
-		view = (mRot_3x3 * view);
-		vector3 side = cross(view, up);
-		view.printVc3();
-		up.printVc3();
-		side.printVc3();
-		mRot = mf.rotationMatrix4x4(side, y_aux);
-		matrix3x3 mRot_3x31(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
-		view = (mRot_3x31 * view);
-
-		up = (mRot_3x31 * up);
-
-		vector3 newCenter = (c.getEye() + view);
-
-		vector3 aux = c.getEye();
-		c.makeViewMatrix(aux, newCenter, up);
-
-		c.setCenter(newCenter);
-		c.setEye(aux);
-		c.setUp(up);
-		matrix4x4 vm = c.getViewMatrix();
-		vm.matrixPrint();
+			matrix4x4 m = c.getViewMatrix();
+			m.matrixPrint();
+		}
+		// Gimbal lock false
+		else { 
+			qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
+			//q = q()
+		}
 	}
 }
 
@@ -509,6 +503,11 @@ void myInit() {
 	c.setUp(up);
 
 	c.makeViewMatrix(c.getEye(), c.getCenter(), c.getUp());
+
+	////////
+
+	Rx = mf.identityMatrix4x4();
+	Ry = mf.identityMatrix4x4();
 }
 
 void init(int argc, char* argv[])
@@ -523,11 +522,12 @@ void init(int argc, char* argv[])
 	createBufferObjects();
 }
 
+/**/
 int main(int argc, char* argv[])
 {
 	init(argc, argv);
 	glutMainLoop();
 	exit(EXIT_SUCCESS);
 }
-
+/**/
 ///////////////////////////////////////////////////////////////////////

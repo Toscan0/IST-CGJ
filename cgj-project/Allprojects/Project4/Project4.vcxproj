@@ -133,6 +133,7 @@
     <ClCompile Include="3-hellowHorld.cpp" />
     <ClCompile Include="4-Quaternions.cpp" />
     <ClCompile Include="mat4.cpp" />
+    <ClCompile Include="qtrn.cpp" />
     <ClCompile Include="src\camera\camera.cpp" />
     <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp" />
     <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp" />

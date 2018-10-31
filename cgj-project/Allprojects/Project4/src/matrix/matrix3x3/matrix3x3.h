@@ -22,6 +22,7 @@
 struct matrix3x3 {
 	float _a, _b, _c, _d, _e, _f, _g, _h, _i;
 
+	matrix3x3();
 	matrix3x3(float, float, float, float, float, float, float, float, float);
 	matrix3x3(vector3& vc1, vector3& vc2, vector3& vc3);
 	matrix3x3(float lst[9]); // major column format

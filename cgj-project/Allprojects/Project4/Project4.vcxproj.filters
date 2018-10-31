@@ -96,6 +96,9 @@
     <ClCompile Include="src\vector\vector4\vector4.cpp">
       <Filter>Source Files\src\vector\vector4</Filter>
     </ClCompile>
+    <ClCompile Include="qtrn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qtrn.h">
