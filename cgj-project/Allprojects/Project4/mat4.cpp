@@ -1,12 +1,12 @@
 #include "mat4.h"
 
-const vec4 mMultiply(mat4 m, vec4& v)
+const vector4 mMultiply(mat4 m, vector4& v)
 {
-	vec4 r;
-	r._x = m[0] * v._x + m[4] * v._y + m[8] * v._z + m[12] * v._w;
-	r._y = m[1] * v._x + m[5] * v._y + m[9] * v._z + m[13] * v._w;
-	r._z = m[2] * v._x + m[6] * v._y + m[10] * v._z + m[14] * v._w;
-	r._w = m[3] * v._x + m[7] * v._y + m[11] * v._z + m[15] * v._w;
+	vector4 r;
+	r._a = m[0] * v._a + m[4] * v._b + m[8] * v._c + m[12] * v._d;
+	r._b = m[1] * v._a + m[5] * v._b + m[9] * v._c + m[13] * v._d;
+	r._c = m[2] * v._a + m[6] * v._b + m[10] * v._c + m[14] * v._d;
+	r._d = m[3] * v._a + m[7] * v._b + m[11] * v._c + m[15] * v._d;
 	return r;
 }
 

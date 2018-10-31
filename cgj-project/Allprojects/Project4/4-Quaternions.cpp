@@ -74,13 +74,13 @@ void qtest2()
 	vPrint("ve", ve);
 
 	mat4 m;
-	qGLMatrix(q, m);
+	/*qGLMatrix(q, m);
 	mPrint(" M", m);
 
-	//vector4 vf = mMultiply(m, vi);
-	//vPrint("vf", vf);
+	vector4 vf = mMultiply(m, vi);
+	vPrint("vf", vf);
 
-	//assert(vEqual(vf, ve));
+	assert(vEqual(vf, ve));*/
 }
 
 void qtest3()
