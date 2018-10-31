@@ -389,8 +389,8 @@ void OnMouseDown(int button, int state, int x, int y) {
 
 void OnMouseMove(int x, int y) {
 	if (g_rot == true) {
-		float x_aux = (x - g_oldX); // angle to rotate in x 
-		float y_aux = (y - g_oldY); // angle to rotate in y
+		float x_aux = (x - g_oldX) * 0.005; // angle to rotate in x 
+		float y_aux = (y - g_oldY) * 0.005; // angle to rotate in y
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 
@@ -418,7 +418,7 @@ void OnMouseMove(int x, int y) {
 		vector3 aux = c.getEye();
 		c.makeViewMatrix(aux, newCenter, up);
 
-		c.setCenter(newCenter);
+		//c.setCenter(newCenter);
 		c.setEye(aux);
 		c.setUp(up);
 		matrix4x4 vm = c.getViewMatrix();
