@@ -18,6 +18,8 @@ struct qtrn {
 
 	const float _qThreshold = (float)1.0e-5;
 
+	const float getQThreshold();
+
 	const qtrn qFromAngleAxis(float theta, vector4& axis);
 	const void qToAngleAxis(const qtrn& q, float& theta, vector4& axis);
 	const void qClean(qtrn& q);
@@ -32,11 +34,13 @@ struct qtrn {
 	const qtrn qLerp(const qtrn& q0, const qtrn& q1, float k);
 	const qtrn qSlerp(const qtrn& q0, const qtrn& q1, float k);
 	
-	const void qPrint(const std::string& s, const qtrn& q);
+	friend const void qPrint(const std::string& s, const qtrn& q);
 	const void qPrintAngleAxis(const std::string& s, const qtrn& q);
 
 	friend const bool qEqual(const qtrn& q0, const qtrn& q1);
 	friend const qtrn qAdd(const qtrn& q0, const qtrn& q1);
 
-	const float getQThreshold();
+	const qtrn operator=(const qtrn& v);
+
+	
 };

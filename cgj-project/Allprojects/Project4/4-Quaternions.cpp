@@ -38,20 +38,20 @@ void qtest1()
 	vector4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
 	qtrn qAux;
 	qtrn q = qAux.qFromAngleAxis(90.0f, axis);
-	qAux.qPrint("   q", q);
+	qPrint("   q", q);
 
 	qtrn vi = { 0.0f, 7.0f, 0.0f, 0.0f };
-	qAux.qPrint("  vi", vi);
+	qPrint("  vi", vi);
 
 	qtrn qe = { 0.0f, 0.0f, 0.0f, -7.0f };
-	qAux.qPrint("  qe", qe);
+	qPrint("  qe", qe);
 
 	qtrn qinv = qInverse(q);
 	qAux.qClean(qinv);
-	qAux.qPrint("qinv", qinv);
+	qPrint("qinv", qinv);
 
 	qtrn qf = qMultiply(qMultiply(q, vi), qinv);
-	qAux.qPrint("  qf", qf);
+	qPrint("  qf", qf);
 
 	assert(qEqual(qf, qe));
 }
@@ -63,7 +63,7 @@ void qtest2()
 	vector4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
 	qtrn qAux;
 	qtrn q = qAux.qFromAngleAxis(90.0f, axis);
-	qAux.qPrint(" q", q);
+	qPrint(" q", q);
 
 	vector4 vi = { 7.0f, 0.0f, 0.0f, 1.0f };
 	vPrint("vi", vi);
@@ -90,35 +90,35 @@ void qtest3()
 	vector4 axis_z = { 0.0f, 0.0f, 1.0f, 1.0f };
 
 	qtrn qyaw900 = qAux.qFromAngleAxis(900.0f, axis_y);
-	qAux.qPrint("  qyaw900", qyaw900);
+	qPrint("  qyaw900", qyaw900);
 
 	qtrn qroll180 = qAux.qFromAngleAxis(180.0f, axis_x);
-	qAux.qPrint(" qroll180", qroll180);
+	qPrint(" qroll180", qroll180);
 	qtrn qpitch180 = qAux.qFromAngleAxis(180.0f, axis_z);
-	qAux.qPrint("qpitch180", qpitch180);
+	qPrint("qpitch180", qpitch180);
 	qtrn qrp = qMultiply(qpitch180, qroll180);
-	qAux.qPrint("      qrp", qrp);
+	qPrint("      qrp", qrp);
 	qtrn qpr = qMultiply(qroll180, qpitch180);
-	qAux.qPrint("      qpr", qpr);
+	qPrint("      qpr", qpr);
 
 	qtrn qi = { 0.0f, 1.0f, 0.0f, 0.0f }; // x-axis
-	qAux.qPrint("       qi", qi);
+	qPrint("       qi", qi);
 	qtrn qe = { 0.0f, -1.0f, 0.0f, 0.0f };
-	qAux.qPrint("       qe", qe);
+	qPrint("       qe", qe);
 
 	qtrn qyaw900inv = qInverse(qyaw900);
 	qtrn qfy = qMultiply(qMultiply(qyaw900, qi), qyaw900inv);
-	qAux.qPrint("       qy", qfy);
+	qPrint("       qy", qfy);
 	assert(qEqual(qe, qfy));
 
 	qtrn qrpinv = qInverse(qrp);
 	qtrn qfrp = qMultiply(qMultiply(qrp, qi), qrpinv);
-	qAux.qPrint("     qfrp", qfrp);
+	qPrint("     qfrp", qfrp);
 	assert(qEqual(qe, qfrp));
 
 	qtrn qprinv = qInverse(qpr);
 	qtrn qfpr = qMultiply(qMultiply(qpr, qi), qprinv);
-	qAux.qPrint("     qfpr", qfpr);
+	qPrint("     qfpr", qfpr);
 	assert(qEqual(qe, qfpr));
 }
 
@@ -148,22 +148,22 @@ void qtest5()
 	vector4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
 	qtrn qAux;
 	qtrn q0 = qAux.qFromAngleAxis(0.0f, axis);
-	qAux.qPrint("       q0", q0);
+	qPrint("       q0", q0);
 	qtrn q1 = qAux.qFromAngleAxis(90.0f, axis);
-	qAux.qPrint("       q1", q1);
+	qPrint("       q1", q1);
 	qtrn qe = qAux.qFromAngleAxis(30.0f, axis);
-	qAux.qPrint("       qe", qe);
+	qPrint("       qe", qe);
 
 	qtrn qLerp0 = qAux.qLerp(q0, q1, 0.0f);
-	qAux.qPrint("  lerp(0)", qLerp0);
+	qPrint("  lerp(0)", qLerp0);
 	assert(qEqual(qLerp0, q0));
 
 	qtrn qLerp1 = qAux.qLerp(q0, q1, 1.0f);
-	qAux.qPrint("  lerp(1)", qLerp1);
+	qPrint("  lerp(1)", qLerp1);
 	assert(qEqual(qLerp1, q1));
 
 	qtrn qlerp = qAux.qLerp(q0, q1, 1 / 3.0f);
-	qAux.qPrint("lerp(1/3)", qlerp);
+	qPrint("lerp(1/3)", qlerp);
 	qAux.qPrintAngleAxis("lerp(1/3)", qlerp);
 
 	assert(qEqual(qlerp, qe) == 0);
@@ -175,29 +175,29 @@ void qtest6()
 	qtrn qAux;
 	vector4 axis = { 0.0f, 1.0f, 0.0f, 1.0f };
 	qtrn q0 = qAux.qFromAngleAxis(0.0f, axis);
-	qAux.qPrint("        q0", q0);
+	qPrint("        q0", q0);
 	qtrn q1 = qAux.qFromAngleAxis(90.0f, axis);
-	qAux.qPrint("        q1", q1);
+	qPrint("        q1", q1);
 	qtrn qe = qAux.qFromAngleAxis(30.0f, axis);
-	qAux.qPrint("        qe", qe);
+	qPrint("        qe", qe);
 
 	qtrn qSlerp0 = qAux.qSlerp(q0, q1, 0.0f);
-	qAux.qPrint("  slerp(0)", qSlerp0);
+	qPrint("  slerp(0)", qSlerp0);
 	assert(qEqual(qSlerp0, q0));
 
 	qtrn qSlerp1 = qAux.qSlerp(q0, q1, 1.0f);
-	qAux.qPrint("  slerp(1)", qSlerp1);
+	qPrint("  slerp(1)", qSlerp1);
 	assert(qEqual(qSlerp1, q1));
 
 	qtrn qslerp = qAux.qSlerp(q0, q1, 1 / 3.0f);
-	qAux.qPrint("slerp(1/3)", qslerp);
+	qPrint("slerp(1/3)", qslerp);
 	qAux.qPrintAngleAxis("slerp(1/3)", qslerp);
 
 	assert(qEqual(qslerp, qe));
 }
 
 ///////////////////////////////////////////////////////////////////////
-/**/
+/** /
 int main(int argc, char* argv[])
 {
 	qtest1();

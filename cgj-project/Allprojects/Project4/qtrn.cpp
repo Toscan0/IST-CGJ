@@ -185,7 +185,7 @@ const bool qEqual(const qtrn& q0, const qtrn& q1)
 		fabs(q0._y - q1._y) < qThreshold && fabs(q0._z - q1._z) < qThreshold);
 }
 
-const void qtrn::qPrint(const std::string& s, const qtrn& q)
+const void qPrint(const std::string& s, const qtrn& q)
 {
 	std::cout << s << " = (" << q._t << ", " << q._x << ", " << q._y << ", " << q._z << ")" << std::endl;
 }
@@ -200,4 +200,15 @@ const void qtrn::qPrintAngleAxis(const std::string& s, const qtrn& q)
 	std::cout << "  angle = " << thetaf << std::endl;
 	vPrint("  axis", axis_f);
 	std::cout << "]" << std::endl;
+}
+
+
+
+const qtrn qtrn::operator=(const qtrn& v) {
+	_t = v._t;
+	_x = v._x;
+	_y = v._y;
+	_z = v._z;
+
+	return *this;
 }

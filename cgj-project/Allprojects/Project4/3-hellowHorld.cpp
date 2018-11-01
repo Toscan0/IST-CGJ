@@ -33,6 +33,9 @@ bool g_gimbalLock = true;
 
 vector3 XX(1, 0, 0);
 vector3 YY(0, 1, 0);
+vector4 XX_4(1, 0, 0, 1);
+vector4 YY_4(0, 1, 0, 1);
+vector3 vT(0, 0, -5);
 matrix4x4 Rx;
 matrix4x4 Ry;
 qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
@@ -395,19 +398,19 @@ void OnMouseDown(int button, int state, int x, int y) {
 
 void OnMouseMove(int x, int y) {
 	if (g_rot == true) {
-		float tetaX = (x - g_oldX)* 0.0174532925; // angle to rotate in x 
-		float tetaY = (y - g_oldY)* 0.0174532925; // angle to rotate in y
+		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
+		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 		if (g_gimbalLock == true) {
 			std::cout << "\n" << "GIMBAL LOCK ON" << "\n";
 
-			Rx = mf.rotationMatrix4x4(XX, tetaX) * Rx;
-			Ry = mf.rotationMatrix4x4(YY, tetaY) * Ry;
+			Rx = mf.rotationMatrix4x4(XX, tetaX * 0.0174532925) * Rx;
+			Ry = mf.rotationMatrix4x4(YY, tetaY * 0.0174532925) * Ry;
 			matrix4x4 R = Rx * Ry;
 
-			vector3 vT(0, 0, -5);
-			matrix4x4 T = mf.translationMatrix4x4(vT);
+			
+			matrix4x4 T = mf.translationMatrix4x4(vT);  // matrix translação
 
 			matrix4x4 vM = T * R ; // view matrix
 			matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta
@@ -417,6 +420,20 @@ void OnMouseMove(int x, int y) {
 		// Gimbal lock false
 		else { 
 			std::cout << "\n" << "GIMBAL LOCK OFF" << "\n";
+			qtrn qAux;
+			
+			//Recive the angle in deg
+			q = qAux.qFromAngleAxis(tetaX, XX_4);
+			q = qMultiply(q, qAux.qFromAngleAxis(tetaY, YY_4));
+
+			matrix4x4 mAux;
+			matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
+	
+			matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação
+			
+			matrix4x4 vM = T * mR; // view matrix
+			matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta
+			c.setViewMatrix(vMT);
 		}
 	}
 }
@@ -523,7 +540,7 @@ void init(int argc, char* argv[])
 	createBufferObjects();
 }
 
-/** /
+/**/
 int main(int argc, char* argv[])
 {
 	init(argc, argv);
