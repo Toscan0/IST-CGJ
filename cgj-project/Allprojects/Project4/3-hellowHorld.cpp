@@ -405,9 +405,9 @@ void OnMouseMove(int x, int y) {
 		if (g_gimbalLock == true) {
 			std::cout << "\n" << "GIMBAL LOCK ON" << "\n";
 
-			Rx = mf.rotationMatrix4x4(XX, tetaX * 0.0174532925) * Rx;
-			Ry = mf.rotationMatrix4x4(YY, tetaY * 0.0174532925) * Ry;
-			matrix4x4 R = Rx * Ry;
+			Rx = mf.rotationMatrix4x4(YY, tetaX * 0.0174532925) * Rx;
+			Ry = mf.rotationMatrix4x4(XX, tetaY * 0.0174532925) * Ry;
+			matrix4x4 R = Ry * Rx;
 
 			
 			matrix4x4 T = mf.translationMatrix4x4(vT);  // matrix translação
@@ -417,14 +417,13 @@ void OnMouseMove(int x, int y) {
 			c.setViewMatrix(vMT);
 
 		}
-		// Gimbal lock false
-		else { 
+		else { // Gimbal lock false
 			std::cout << "\n" << "GIMBAL LOCK OFF" << "\n";
 			qtrn qAux;
 			
 			//Recive the angle in deg
-			q = qMultiply(qAux.qFromAngleAxis(tetaX, XX_4), q);
-			q = qMultiply(qAux.qFromAngleAxis(tetaY, YY_4), q);
+			q = qMultiply(qAux.qFromAngleAxis(tetaX, YY_4), q);
+			q = qMultiply(qAux.qFromAngleAxis(tetaY, XX_4), q);
 
 			matrix4x4 mAux;
 			matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
