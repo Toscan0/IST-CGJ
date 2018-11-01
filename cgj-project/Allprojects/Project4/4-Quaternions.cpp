@@ -23,8 +23,6 @@
 #include <cassert>
 
 #include "qtrn.h"
-#include "mat4.h"
-#include "vec4.h"
 
 #define DEGREES_TO_RADIANS 0.01745329251994329547
 #define RADIANS_TO_DEGREES 57.29577951308232185913
@@ -73,14 +71,14 @@ void qtest2()
 	vector4 ve = { 0.0f, 0.0f, -7.0f, 1.0f };
 	vPrint("ve", ve);
 
-	mat4 m;
-	/*qGLMatrix(q, m);
-	mPrint(" M", m);
+	matrix4x4 m;
+	matrix4x4 mAux = qGLMatrix(q, m);
+	mPrint(" M", mAux);
 
-	vector4 vf = mMultiply(m, vi);
+	vector4 vf = mMultiply(mAux, vi);
 	vPrint("vf", vf);
 
-	assert(vEqual(vf, ve));*/
+	assert(vEqual(vf, ve));
 }
 
 void qtest3()

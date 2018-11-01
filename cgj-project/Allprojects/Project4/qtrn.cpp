@@ -113,42 +113,51 @@ const qtrn qMultiply(const qtrn& q0, const qtrn& q1)
 	return q;
 }
 
-//const void qGLMatrix(const qtrn& q, mat4 matrix)
-//{
-//	qtrn qn = qNormalize(q);
-//
-//	float xx = qn._x * qn._x;
-//	float xy = qn._x * qn._y;
-//	float xz = qn._x * qn._z;
-//	float xt = qn._x * qn._t;
-//	float yy = qn._y * qn._y;
-//	float yz = qn._y * qn._z;
-//	float yt = qn._y * qn._t;
-//	float zz = qn._z * qn._z;
-//	float zt = qn._z * qn._t;
-//
-//	matrix[0] = 1.0f - 2.0f * (yy + zz);
-//	matrix[1] = 2.0f * (xy + zt);
-//	matrix[2] = 2.0f * (xz - yt);
-//	matrix[3] = 0.0f;
-//
-//	matrix[4] = 2.0f * (xy - zt);
-//	matrix[5] = 1.0f - 2.0f * (xx + zz);
-//	matrix[6] = 2.0f * (yz + xt);
-//	matrix[7] = 0.0f;
-//
-//	matrix[8] = 2.0f * (xz + yt);
-//	matrix[9] = 2.0f * (yz - xt);
-//	matrix[10] = 1.0f - 2.0f * (xx + yy);
-//	matrix[11] = 0.0f;
-//
-//	matrix[12] = 0.0f;
-//	matrix[13] = 0.0f;
-//	matrix[14] = 0.0f;
-//	matrix[15] = 1.0f;
-//
-//	//mClean(matrix);
-//}
+matrix4x4 qGLMatrix(const qtrn& q, matrix4x4 matrix){
+	qtrn qn = qNormalize(q);
+
+	float xx = qn._x * qn._x;
+	float xy = qn._x * qn._y;
+	float xz = qn._x * qn._z;
+	float xt = qn._x * qn._t;
+	float yy = qn._y * qn._y;
+	float yz = qn._y * qn._z;
+	float yt = qn._y * qn._t;
+	float zz = qn._z * qn._z;
+	float zt = qn._z * qn._t;
+
+	// passa de row major para column major
+	matrix4x4 mT = matrix.transposeM4x4();
+	float* m= mT.data();
+
+	m[0] = 1.0f - 2.0f * (yy + zz);
+	m[1] = 2.0f * (xy + zt);
+	m[2] = 2.0f * (xz - yt);
+	m[3] = 0.0f;
+
+	m[4] = 2.0f * (xy - zt);
+	m[5] = 1.0f - 2.0f * (xx + zz);
+	m[6] = 2.0f * (yz + xt);
+	m[7] = 0.0f;
+
+	m[8] = 2.0f * (xz + yt);
+	m[9] = 2.0f * (yz - xt);
+	m[10] = 1.0f - 2.0f * (xx + yy);
+	m[11] = 0.0f;
+
+	m[12] = 0.0f;
+	m[13] = 0.0f;
+	m[14] = 0.0f;
+	m[15] = 1.0f;
+
+	matrix4x4 mColum(m[0], m[1], m[2], m[3],
+		m[4], m[5], m[6], m[7],
+		m[8], m[9], m[10], m[11],
+		m[12], m[13], m[14], m[15]);
+	matrix4x4 mColumT = mColum.transposeM4x4(); // passa outra vez para row
+	//mClean(matrix);
+	return mColumT;
+}
 
 const qtrn qtrn::qLerp(const qtrn& q0, const qtrn& q1, float k)
 {

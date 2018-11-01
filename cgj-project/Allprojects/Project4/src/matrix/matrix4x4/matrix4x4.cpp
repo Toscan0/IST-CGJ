@@ -328,3 +328,49 @@ matrix4x4 matrix4x4::transposeM4x4() {
 
 	return mAux;
 }
+
+
+
+
+
+
+
+
+const vector4 mMultiply(matrix4x4& m, vector4& v)
+{
+	vector4 r;
+
+	matrix4x4 mT = m.transposeM4x4();
+	float* mAux = mT.data();
+
+	r._a = mAux[0] * v._a + mAux[4] * v._b + mAux[8] * v._c + mAux[12] * v._d;
+	r._b = mAux[1] * v._a + mAux[5] * v._b + mAux[9] * v._c + mAux[13] * v._d;
+	r._c = mAux[2] * v._a + mAux[6] * v._b + mAux[10] * v._c + mAux[14] * v._d;
+	r._d = mAux[3] * v._a + mAux[7] * v._b + mAux[11] * v._c + mAux[15] * v._d;
+	return r;
+}
+
+const void mPrint(const std::string s, matrix4x4& m)
+{
+	matrix4x4 mT = m.transposeM4x4();
+	float* mAux = mT.data();
+
+	std::cout << s << " =" << std::endl;
+	std::cout << std::fixed << std::setprecision(3) << "| ";
+	std::cout.width(6); std::cout << mAux[0] << " ";
+	std::cout.width(6); std::cout << mAux[4] << " ";
+	std::cout.width(6); std::cout << mAux[8] << " ";
+	std::cout.width(6); std::cout << mAux[12] << " |" << std::endl << "| ";
+	std::cout.width(6); std::cout << mAux[1] << " ";
+	std::cout.width(6); std::cout << mAux[5] << " ";
+	std::cout.width(6); std::cout << mAux[9] << " ";
+	std::cout.width(6); std::cout << mAux[13] << " |" << std::endl << "| ";
+	std::cout.width(6); std::cout << mAux[2] << " ";
+	std::cout.width(6); std::cout << mAux[6] << " ";
+	std::cout.width(6); std::cout << mAux[10] << " ";
+	std::cout.width(6); std::cout << mAux[14] << " |" << std::endl << "| ";
+	std::cout.width(6); std::cout << mAux[3] << " ";
+	std::cout.width(6); std::cout << mAux[7] << " ";
+	std::cout.width(6); std::cout << mAux[11] << " ";
+	std::cout.width(6); std::cout << mAux[15] << " |" << std::endl;
+}

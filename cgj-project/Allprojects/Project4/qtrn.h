@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <string>
 #include <cassert>
-//#include "mat4.h"
+
 #include "src/matrix/matrix4x4/matrix4x4.h"
 #include "src/vector/vector4/vector4.h"
 
@@ -28,7 +28,7 @@ struct qtrn {
 	friend const qtrn qInverse(const qtrn& q);
 	friend const qtrn qMultiply(const qtrn& q, const float s);
 	friend const qtrn qMultiply(const qtrn& q0, const qtrn& q1);
-	//friend const void qGLMatrix(const qtrn& q, matrix4x4 matrix);
+	friend matrix4x4 qGLMatrix(const qtrn& q, matrix4x4 matrix); //changed void -> matrix4x4
 	const qtrn qLerp(const qtrn& q0, const qtrn& q1, float k);
 	const qtrn qSlerp(const qtrn& q0, const qtrn& q1, float k);
 	

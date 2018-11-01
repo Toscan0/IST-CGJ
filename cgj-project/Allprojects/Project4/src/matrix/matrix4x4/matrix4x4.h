@@ -5,6 +5,8 @@
 #include <string>
 #include <tuple>
 #include <algorithm>
+#include <iomanip>
+#include <cassert>
 
 #include "../../vector/vector4/vector4.h"
 
@@ -45,4 +47,8 @@ struct matrix4x4 {
 
 	float detM4x4();
 	matrix4x4 transposeM4x4();
+
+	friend const vector4 mMultiply(matrix4x4& m, vector4& v);
+	//const void mClean(mat4 m);
+	friend const void mPrint(const std::string s, matrix4x4& m);
 };
