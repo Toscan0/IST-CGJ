@@ -423,8 +423,8 @@ void OnMouseMove(int x, int y) {
 			qtrn qAux;
 			
 			//Recive the angle in deg
-			q = qAux.qFromAngleAxis(tetaX, XX_4);
-			q = qMultiply(q, qAux.qFromAngleAxis(tetaY, YY_4));
+			q = qMultiply(qAux.qFromAngleAxis(tetaX, XX_4), q);
+			q = qMultiply(qAux.qFromAngleAxis(tetaY, YY_4), q);
 
 			matrix4x4 mAux;
 			matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
