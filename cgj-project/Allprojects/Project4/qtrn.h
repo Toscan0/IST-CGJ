@@ -28,8 +28,8 @@ struct qtrn {
 	friend const qtrn qNormalize(const qtrn& q);
 	friend const qtrn qConjugate(const qtrn& q);
 	friend const qtrn qInverse(const qtrn& q);
-	friend const qtrn qMultiply(const qtrn& q, const float s);
-	friend const qtrn qMultiply(const qtrn& q0, const qtrn& q1);
+	//friend const qtrn qMultiply(const qtrn& q, const float s);
+	//friend const qtrn qMultiply(const qtrn& q0, const qtrn& q1);
 	friend matrix4x4 qGLMatrix(const qtrn& q, matrix4x4 matrix); //changed void -> matrix4x4
 	const qtrn qLerp(const qtrn& q0, const qtrn& q1, float k);
 	const qtrn qSlerp(const qtrn& q0, const qtrn& q1, float k);
@@ -37,10 +37,15 @@ struct qtrn {
 	friend const void qPrint(const std::string& s, const qtrn& q);
 	const void qPrintAngleAxis(const std::string& s, const qtrn& q);
 
-	friend const bool qEqual(const qtrn& q0, const qtrn& q1);
+	//friend const bool qEqual(const qtrn& q0, const qtrn& q1);
 	friend const qtrn qAdd(const qtrn& q0, const qtrn& q1);
 
 	const qtrn operator=(const qtrn& v);
 
-	
+	friend const qtrn operator- (const qtrn&, const qtrn&);
+	friend const qtrn operator+ (const qtrn&, const qtrn&);
+	friend const qtrn operator*(const qtrn& q, const float s);
+	friend const qtrn operator*(const qtrn& q0, const qtrn& q1);
+	friend const bool operator==(const qtrn& q0, const qtrn& q1);
+	friend const std::ostream& operator<<(std::ostream& stream, const qtrn& q);
 };

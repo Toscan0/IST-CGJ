@@ -50,10 +50,10 @@ void qtest1()
 	qAux.qClean(qinv);
 	qPrint("qinv", qinv);
 
-	qtrn qf = qMultiply(qMultiply(q, vi), qinv);
+	qtrn qf = ((q * vi) * qinv);
 	qPrint("  qf", qf);
 
-	assert(qEqual(qf, qe));
+	assert((qf == qe));
 }
 
 void qtest2()
@@ -96,9 +96,9 @@ void qtest3()
 	qPrint(" qroll180", qroll180);
 	qtrn qpitch180 = qAux.qFromAngleAxis(180.0f, axis_z);
 	qPrint("qpitch180", qpitch180);
-	qtrn qrp = qMultiply(qpitch180, qroll180);
+	qtrn qrp = (qpitch180 * qroll180);
 	qPrint("      qrp", qrp);
-	qtrn qpr = qMultiply(qroll180, qpitch180);
+	qtrn qpr = (qroll180 * qpitch180);
 	qPrint("      qpr", qpr);
 
 	qtrn qi = { 0.0f, 1.0f, 0.0f, 0.0f }; // x-axis
@@ -107,19 +107,19 @@ void qtest3()
 	qPrint("       qe", qe);
 
 	qtrn qyaw900inv = qInverse(qyaw900);
-	qtrn qfy = qMultiply(qMultiply(qyaw900, qi), qyaw900inv);
+	qtrn qfy = ((qyaw900 *  qi) * qyaw900inv);
 	qPrint("       qy", qfy);
-	assert(qEqual(qe, qfy));
+	assert((qe == qfy));
 
 	qtrn qrpinv = qInverse(qrp);
-	qtrn qfrp = qMultiply(qMultiply(qrp, qi), qrpinv);
+	qtrn qfrp = ((qrp * qi) * qrpinv);
 	qPrint("     qfrp", qfrp);
-	assert(qEqual(qe, qfrp));
+	assert((qe == qfrp));
 
 	qtrn qprinv = qInverse(qpr);
-	qtrn qfpr = qMultiply(qMultiply(qpr, qi), qprinv);
+	qtrn qfpr = ((qpr * qi) * qprinv);
 	qPrint("     qfpr", qfpr);
-	assert(qEqual(qe, qfpr));
+	assert((qe == qfpr));
 }
 
 void qtest4()
@@ -156,17 +156,17 @@ void qtest5()
 
 	qtrn qLerp0 = qAux.qLerp(q0, q1, 0.0f);
 	qPrint("  lerp(0)", qLerp0);
-	assert(qEqual(qLerp0, q0));
+	assert((qLerp0 == q0));
 
 	qtrn qLerp1 = qAux.qLerp(q0, q1, 1.0f);
 	qPrint("  lerp(1)", qLerp1);
-	assert(qEqual(qLerp1, q1));
+	assert((qLerp1 == q1));
 
 	qtrn qlerp = qAux.qLerp(q0, q1, 1 / 3.0f);
 	qPrint("lerp(1/3)", qlerp);
 	qAux.qPrintAngleAxis("lerp(1/3)", qlerp);
 
-	assert(qEqual(qlerp, qe) == 0);
+	assert((qlerp == qe) == 0);
 }
 
 void qtest6()
@@ -183,17 +183,17 @@ void qtest6()
 
 	qtrn qSlerp0 = qAux.qSlerp(q0, q1, 0.0f);
 	qPrint("  slerp(0)", qSlerp0);
-	assert(qEqual(qSlerp0, q0));
+	assert((qSlerp0 == q0));
 
 	qtrn qSlerp1 = qAux.qSlerp(q0, q1, 1.0f);
 	qPrint("  slerp(1)", qSlerp1);
-	assert(qEqual(qSlerp1, q1));
+	assert((qSlerp1 == q1));
 
 	qtrn qslerp = qAux.qSlerp(q0, q1, 1 / 3.0f);
 	qPrint("slerp(1/3)", qslerp);
 	qAux.qPrintAngleAxis("slerp(1/3)", qslerp);
 
-	assert(qEqual(qslerp, qe));
+	assert((qslerp == qe));
 }
 
 ///////////////////////////////////////////////////////////////////////

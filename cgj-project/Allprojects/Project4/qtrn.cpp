@@ -69,7 +69,7 @@ const float qNorm(const qtrn& q)
 const qtrn qNormalize(const qtrn& q)
 {
 	float s = 1 / qNorm(q);
-	return qMultiply(q, s);
+	return (q * s);
 }
 
 const qtrn qConjugate(const qtrn& q)
@@ -80,7 +80,7 @@ const qtrn qConjugate(const qtrn& q)
 
 const qtrn qInverse(const qtrn& q)
 {
-	return qMultiply(qConjugate(q), 1.0f / qQuadrance(q));
+	return (qConjugate(q) *  (1.0f / qQuadrance(q)));
 }
 
 const qtrn qAdd(const qtrn& q0, const qtrn& q1)
@@ -92,7 +92,7 @@ const qtrn qAdd(const qtrn& q0, const qtrn& q1)
 	q._z = q0._z + q1._z;
 	return q;
 }
-
+/*
 const qtrn qMultiply(const qtrn& q, const float s)
 {
 	qtrn sq;
@@ -111,7 +111,7 @@ const qtrn qMultiply(const qtrn& q0, const qtrn& q1)
 	q._y = q0._t * q1._y + q0._y * q1._t + q0._z * q1._x - q0._x * q1._z;
 	q._z = q0._t * q1._z + q0._z * q1._t + q0._x * q1._y - q0._y * q1._x;
 	return q;
-}
+}*/
 
 matrix4x4 qGLMatrix(const qtrn& q, matrix4x4 matrix){
 	qtrn qn = qNormalize(q);
@@ -164,7 +164,7 @@ const qtrn qtrn::qLerp(const qtrn& q0, const qtrn& q1, float k)
 	float cos_angle = q0._x*q1._x + q0._y*q1._y + q0._z*q1._z + q0._t*q1._t;
 	float k0 = 1.0f - k;
 	float k1 = (cos_angle > 0) ? k : -k;
-	qtrn qi = qAdd(qMultiply(q0, k0), qMultiply(q1, k1));
+	qtrn qi = qAdd((q0 * k0), (q1 * k1));
 	return qNormalize(qi);
 }
 
@@ -173,7 +173,7 @@ const qtrn qtrn::qSlerp(const qtrn& q0, const qtrn& q1, float k)
 	float angle = acos(q0._x*q1._x + q0._y*q1._y + q0._z*q1._z + q0._t*q1._t);
 	float k0 = sin((1 - k)*angle) / sin(angle);
 	float k1 = sin(k*angle) / sin(angle);
-	qtrn qi = qAdd(qMultiply(q0, k0), qMultiply(q1, k1));
+	qtrn qi = qAdd((q0 * k0), (q1 * k1));
 	return qNormalize(qi);
 }
 
@@ -211,4 +211,54 @@ const qtrn qtrn::operator=(const qtrn& v) {
 	_z = v._z;
 
 	return *this;
+}
+
+
+
+const qtrn operator- (const qtrn& q0, const qtrn& q1){
+	qtrn q;
+	q._t = q0._t - q1._t;
+	q._x = q0._x - q1._x;
+	q._y = q0._y - q1._y;
+	q._z = q0._z - q1._z;
+	return q;
+}
+
+const qtrn operator+ (const qtrn& q0, const qtrn& q1) {
+	qtrn q;
+	q._t = q0._t + q1._t;
+	q._x = q0._x + q1._x;
+	q._y = q0._y + q1._y;
+	q._z = q0._z + q1._z;
+	return q;
+}
+
+const qtrn operator*(const qtrn& q, const float s) {
+	qtrn sq;
+	sq._t = s * q._t;
+	sq._x = s * q._x;
+	sq._y = s * q._y;
+	sq._z = s * q._z;
+	return sq;
+}
+
+const qtrn operator*(const qtrn& q0, const qtrn& q1) {
+	qtrn q;
+	q._t = q0._t * q1._t - q0._x * q1._x - q0._y * q1._y - q0._z * q1._z;
+	q._x = q0._t * q1._x + q0._x * q1._t + q0._y * q1._z - q0._z * q1._y;
+	q._y = q0._t * q1._y + q0._y * q1._t + q0._z * q1._x - q0._x * q1._z;
+	q._z = q0._t * q1._z + q0._z * q1._t + q0._x * q1._y - q0._y * q1._x;
+	return q;
+}
+
+const std::ostream& operator<<(std::ostream& out, const qtrn& q) {
+	out << " = (" << q._t << ", " << q._x << ", " << q._y << ", " << q._z << ")" << std::endl;
+	return out;
+}
+
+const bool operator==(const qtrn& q0, const qtrn& q1) {
+	qtrn q;
+	float qThreshold = q.getQThreshold();
+	return (fabs(q0._t - q1._t) < qThreshold && fabs(q0._x - q1._x) < qThreshold &&
+		fabs(q0._y - q1._y) < qThreshold && fabs(q0._z - q1._z) < qThreshold);
 }

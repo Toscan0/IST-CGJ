@@ -35,7 +35,7 @@ vector3 XX(1, 0, 0);
 vector3 YY(0, 1, 0);
 vector4 XX_4(1, 0, 0, 1);
 vector4 YY_4(0, 1, 0, 1);
-vector3 vT(0, 0, -5);
+//vector3 vT(0, 0, -5);
 matrix4x4 Rx;
 matrix4x4 Ry;
 qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
@@ -314,6 +314,13 @@ const Matrix ProjectionMatrix1 = {
 	0.00f,  0.00f, -1.22f,  1.00f
 }; // Column Major
 
+const Matrix ProjectionMatrix2 = {
+	2.79f,  0.00f,  0.00f,  0.00f,
+	0.00f,  3.73f,  0.00f,  0.00f,
+	0.00f,  0.00f, -1.22f, -1.00f,
+	0.00f,  0.00f, -2.22f,  0.00f
+}; // Column Major
+
 void drawScene()
 {
 	matrix4x4 vM = c.getViewMatrix();
@@ -323,7 +330,7 @@ void drawScene()
 	}
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), viewMatrix);
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), ProjectionMatrix1);
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), ProjectionMatrix2);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	glBindVertexArray(VaoId);
@@ -387,6 +394,21 @@ void keyboard_down(unsigned char key, int x, int y) {
 	}
 }
 
+void mouseWheel(int wheel, int direction, int x, int y) {
+	if (direction == -1) {
+		vector3 newEye(c.getEye()._a, c.getEye()._b, c.getEye()._c-1);
+		c.setEye(newEye);
+		c.makeViewMatrix(newEye, c.getCenter(), c.getUp());
+	}
+	if (direction == 1) {
+		vector3 newEye(c.getEye()._a, c.getEye()._b, c.getEye()._c + 1);
+		c.setEye(newEye);
+		c.makeViewMatrix(newEye, c.getCenter(), c.getUp());
+	}
+
+	
+}
+
 void OnMouseDown(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		g_rot = true;
@@ -409,7 +431,7 @@ void OnMouseMove(int x, int y) {
 			Ry = mf.rotationMatrix4x4(XX, tetaY * 0.0174532925) * Ry;
 			matrix4x4 R = Ry * Rx;
 
-			
+			vector3 vT(0, 0, -(c.getEye()._c));
 			matrix4x4 T = mf.translationMatrix4x4(vT);  // matrix translação
 
 			matrix4x4 vM = T * R ; // view matrix
@@ -422,12 +444,13 @@ void OnMouseMove(int x, int y) {
 			qtrn qAux;
 			
 			//Recive the angle in deg
-			q = qMultiply(qAux.qFromAngleAxis(tetaX, YY_4), q);
-			q = qMultiply(qAux.qFromAngleAxis(tetaY, XX_4), q);
+			q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
+			q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
 
 			matrix4x4 mAux;
 			matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
 	
+			vector3 vT(0, 0, -(c.getEye()._c));
 			matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação
 			
 			matrix4x4 vM = T * mR; // view matrix
@@ -450,7 +473,8 @@ void setupCallbacks()
 	glutKeyboardFunc(keyboard_down);
 	glutMouseFunc(OnMouseDown);
 	glutMotionFunc(OnMouseMove);
-	
+	glutMouseWheelFunc(mouseWheel);
+
 	setupErrors();
 }
 
