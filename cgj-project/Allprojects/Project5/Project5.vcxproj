@@ -18,6 +18,40 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="5-OBJ_loader.cpp" />
+    <ClCompile Include="6-classicgl-teapot.cpp" />
+    <ClCompile Include="7-MatrixStack.cpp" />
+    <ClCompile Include="8-SceneManager.cpp" />
+    <ClCompile Include="src\camera\camera.cpp" />
+    <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp" />
+    <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp" />
+    <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp" />
+    <ClCompile Include="src\matrix\matrixFactory\matrixFactory.cpp" />
+    <ClCompile Include="src\qtrn\qtrn.cpp" />
+    <ClCompile Include="src\random\random.cpp" />
+    <ClCompile Include="src\shaders\shaders.cpp" />
+    <ClCompile Include="src\vector\vector2\vector2.cpp" />
+    <ClCompile Include="src\vector\vector3\vector3.cpp" />
+    <ClCompile Include="src\vector\vector4\vector4.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\camera\camera.h" />
+    <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h" />
+    <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h" />
+    <ClInclude Include="src\matrix\matrix4x4\matrix4x4.h" />
+    <ClInclude Include="src\matrix\matrixFactory\matrixFactory.h" />
+    <ClInclude Include="src\qtrn\qtrn.h" />
+    <ClInclude Include="src\random\random.h" />
+    <ClInclude Include="src\shaders\shaders.h" />
+    <ClInclude Include="src\vector\vector2\vector2.h" />
+    <ClInclude Include="src\vector\vector3\vector3.h" />
+    <ClInclude Include="src\vector\vector4\vector4.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\cube_fs.glsl" />
+    <None Include="shaders\cube_vs.glsl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{63BD4D98-9290-4E3A-BF45-2BFD981331D5}</ProjectGuid>
@@ -129,12 +163,6 @@
       <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Downloads\5-OBJ_loader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\6-classicgl-teapot.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\7-MatrixStack.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\8-SceneManager.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
