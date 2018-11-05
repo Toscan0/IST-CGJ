@@ -568,8 +568,8 @@ void init(int argc, char* argv[])
 	createMesh(objToLoad);
 	//	createMesh(std::string("../../assets/models/blender_2.79/utah_teapot_vtn.obj"));
 	//	createMesh(std::string("../../assets/models/blender_2.79/standford_bunny_vn.obj"));
-	std::string vertexShader = std::string("assets/models/cube_vs.glsl");
-	std::string	fragmentShader = std::string("assets/models/cube_fs.glsl");
+	std::string vertexShader = std::string("./assets/models/cube_vs.glsl");
+	std::string	fragmentShader = std::string("./assets/models/cube_fs.glsl");
 	createShaderProgram(vertexShader, fragmentShader);
 	createBufferObjects();
 }
