@@ -33,7 +33,7 @@
 #include "GL/freeglut.h"
 #include "src/mesh/mesh.h"
 #include "src/shaders/shaders.h"
-
+#include "src/error/error.h"
 
 #define CAPTION "Loading World"
 #define VERTICES 0
@@ -44,87 +44,11 @@ int WinX = 640, WinY = 480;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
-GLuint VaoId, ProgramId;
-GLint ModelMatrix_UId, ViewMatrix_UId, ProjectionMatrix_UId;
+GLuint VaoId;
+
 mesh myMesh;
 shaders myShader;
-/////////////////////////////////////////////////////////////////////// ERRORS
 
-static std::string errorType(GLenum type)
-{
-	switch (type) {
-	case GL_DEBUG_TYPE_ERROR:				return "error";
-	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:	return "deprecated behavior";
-	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:	return "undefined behavior";
-	case GL_DEBUG_TYPE_PORTABILITY:			return "portability issue";
-	case GL_DEBUG_TYPE_PERFORMANCE:			return "performance issue";
-	case GL_DEBUG_TYPE_MARKER:				return "stream annotation";
-	case GL_DEBUG_TYPE_OTHER_ARB:			return "other";
-	default:								exit(EXIT_FAILURE);
-	}
-}
-
-static std::string errorSource(GLenum source)
-{
-	switch (source) {
-	case GL_DEBUG_SOURCE_API:				return "API";
-	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:		return "window system";
-	case GL_DEBUG_SOURCE_SHADER_COMPILER:	return "shader compiler";
-	case GL_DEBUG_SOURCE_THIRD_PARTY:		return "third party";
-	case GL_DEBUG_SOURCE_APPLICATION:		return "application";
-	case GL_DEBUG_SOURCE_OTHER:				return "other";
-	default:								exit(EXIT_FAILURE);
-	}
-}
-
-static std::string errorSeverity(GLenum severity)
-{
-	switch (severity) {
-	case GL_DEBUG_SEVERITY_HIGH:			return "high";
-	case GL_DEBUG_SEVERITY_MEDIUM:			return "medium";
-	case GL_DEBUG_SEVERITY_LOW:				return "low";
-	case GL_DEBUG_SEVERITY_NOTIFICATION:	return "notification";
-	default:								exit(EXIT_FAILURE);
-	}
-}
-
-static void error(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
-	const GLchar *message, const void *userParam)
-{
-	std::cerr << "ERROR:" << std::endl;
-	std::cerr << "  source:     " << errorSource(source) << std::endl;
-	std::cerr << "  type:       " << errorType(type) << std::endl;
-	std::cerr << "  severity:   " << errorSeverity(severity) << std::endl;
-	std::cerr << "  debug call: " << std::endl << message << std::endl << std::endl;
-}
-
-void setupErrors()
-{
-	glEnable(GL_DEBUG_OUTPUT);
-	glDebugMessageCallback(error, 0);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE);
-	// params: source, type, severity, count, ids, enabled
-}
-
-static bool isOpenGLError() {
-	bool isError = false;
-	GLenum errCode;
-	const GLubyte *errString;
-	while ((errCode = glGetError()) != GL_NO_ERROR) {
-		isError = true;
-		errString = gluErrorString(errCode);
-		std::cerr << "OpenGL ERROR [" << errString << "]." << std::endl;
-	}
-	return isError;
-}
-
-static void checkOpenGLError(std::string error)
-{
-	if (isOpenGLError()) {
-		std::cerr << error << std::endl;
-		exit(EXIT_FAILURE);
-	}
-}
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
@@ -233,11 +157,11 @@ const Matrix ProjectionMatrix2 = {
 void drawScene()
 {
 	glBindVertexArray(VaoId);
-	glUseProgram(ProgramId);
+	glUseProgram(myShader.getProgramId());
 
-	glUniformMatrix4fv(ModelMatrix_UId, 1, GL_FALSE, ModelMatrix);
-	glUniformMatrix4fv(ViewMatrix_UId, 1, GL_FALSE, ViewMatrix1);
-	glUniformMatrix4fv(ProjectionMatrix_UId, 1, GL_FALSE, ProjectionMatrix2);
+	glUniformMatrix4fv(myShader.getModelMatrix_UId(), 1, GL_FALSE, ModelMatrix);
+	glUniformMatrix4fv(myShader.getViewMatrix_UId(), 1, GL_FALSE, ViewMatrix1);
+	glUniformMatrix4fv(myShader.getProjectionMatrix_UId(), 1, GL_FALSE, ProjectionMatrix2);
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)myMesh.getVertices().size());
 
 	glUseProgram(0);
@@ -358,20 +282,13 @@ void init(int argc, char* argv[])
 	setupGLEW();
 	setupOpenGL();
 	setupCallbacks();
-	//	createMesh(std::string("../../assets/models/blender_2.79/cube_vn.obj"));
-	//	createMesh(std::string("../../assets/models/blender_2.79/cube_vtn.obj"));
-	//	createMesh(std::string("../../assets/models/blender_2.79/torus_vn.obj"));
-	//	createMesh(std::string("../../assets/models/blender_2.79/torus_smooth_vn.obj"));
-	//std::string objToLoad = std::string("../../assets/models/blender_2.79/suzanne_vtn.obj");
+
 	std::string objToLoad = std::string("assets/models/cube.obj");
 	myMesh.createMesh(objToLoad, myShader);
-	//	createMesh(std::string("../../assets/models/blender_2.79/utah_teapot_vtn.obj"));
-	//	createMesh(std::string("../../assets/models/blender_2.79/standford_bunny_vn.obj"));
-	//std::string vertexShader = std::string("./assets/models/cube_vs.glsl");
-	//std::string	fragmentShader = std::string("./assets/models/cube_fs.glsl");
-	//createShaderProgram(vertexShader, fragmentShader);
+
 	myShader.createShaderProgram(std::string("shaders/cube_vs.glsl"),
 		std::string("shaders/cube_fs.glsl"));
+
 	createBufferObjects();
 }
 

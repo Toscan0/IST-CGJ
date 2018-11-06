@@ -77,7 +77,7 @@ void shaders::createShaderProgram(const std::string& vs_file, const std::string&
 	_ViewMatrix_UId = glGetUniformLocation(_ProgramId, "ViewMatrix");
 	_ProjectionMatrix_UId = glGetUniformLocation(_ProgramId, "ProjectionMatrix");
 
-	//checkOpenGLError("ERROR: Could not create shaders.");
+	checkOpenGLError("ERROR: Could not create shaders.");
 }
 
 void shaders::destroyShaderProgram()
@@ -85,7 +85,7 @@ void shaders::destroyShaderProgram()
 	glUseProgram(0);
 	glDeleteProgram(_ProgramId);
 
-	//checkOpenGLError("ERROR: Could not destroy shaders.");
+	checkOpenGLError("ERROR: Could not destroy shaders.");
 }
 
 const bool shaders::getTexcoordsLoaded() {
@@ -102,4 +102,21 @@ const void shaders::setTexcoordsLoaded(const bool texCoordsLoaded) {
 
 const void shaders::setNormalsLoaded(const bool normalsLoaded) {
 	_NormalsLoaded = normalsLoaded;
+}
+
+
+const GLuint shaders::getProgramId() {
+	return _ProgramId;
+}
+
+const GLint shaders::getModelMatrix_UId() {
+	return _ModelMatrix_UId;
+}
+
+const GLint shaders::getViewMatrix_UId() {
+	return _ViewMatrix_UId;
+}
+
+const GLint shaders::getProjectionMatrix_UId() {
+	return _ProjectionMatrix_UId;
 }

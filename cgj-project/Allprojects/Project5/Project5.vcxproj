@@ -24,6 +24,7 @@
     <ClCompile Include="7-MatrixStack.cpp" />
     <ClCompile Include="8-SceneManager.cpp" />
     <ClCompile Include="src\camera\camera.cpp" />
+    <ClCompile Include="src\error\error.cpp" />
     <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp" />
     <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp" />
     <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp" />
@@ -38,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera\camera.h" />
+    <ClInclude Include="src\error\error.h" />
     <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h" />
     <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h" />
     <ClInclude Include="src\matrix\matrix4x4\matrix4x4.h" />

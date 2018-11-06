@@ -5,6 +5,7 @@
 #include <cstring>
 #include <fstream>
 #include "GL/glew.h"
+#include "../error/error.h"
 
 #define VERTICES 0
 #define TEXCOORDS 1
@@ -32,4 +33,9 @@ class shaders {
 		const bool getNormalsLoaded();
 		const void setTexcoordsLoaded(const bool texCoordsLoaded);
 		const void setNormalsLoaded(const bool normalsLoaded);
+
+		const GLuint getProgramId();
+		const GLint getModelMatrix_UId();
+		const GLint getViewMatrix_UId();
+		const GLint getProjectionMatrix_UId();
 };
