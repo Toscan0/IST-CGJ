@@ -28,26 +28,26 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-
 #include <vector>
-
 #include "GL/glew.h"
 #include "GL/freeglut.h"
+#include "src/mesh/mesh.h"
+#include "src/shaders/shaders.h"
+
 
 #define CAPTION "Loading World"
+#define VERTICES 0
+#define TEXCOORDS 1
+#define NORMALS 2
 
 int WinX = 640, WinY = 480;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
-#define VERTICES 0
-#define TEXCOORDS 1
-#define NORMALS 2
-bool TexcoordsLoaded, NormalsLoaded;
-
 GLuint VaoId, ProgramId;
 GLint ModelMatrix_UId, ViewMatrix_UId, ProjectionMatrix_UId;
-
+mesh myMesh;
+shaders myShader;
 /////////////////////////////////////////////////////////////////////// ERRORS
 
 static std::string errorType(GLenum type)
@@ -126,207 +126,6 @@ static void checkOpenGLError(std::string error)
 	}
 }
 
-
-/////////////////////////////////////////////////////////////////////// SHADERs
-
-const std::string read(const std::string& filename)
-{
-	std::ifstream ifile(filename);
-	std::string shader_string, line;
-	while (std::getline(ifile, line)) {
-		shader_string += line + "\n";
-	}
-	return shader_string;
-}
-
-const GLuint checkCompilation(const GLuint shader_id, const std::string& filename)
-{
-	GLint compiled;
-	glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compiled);
-	if (compiled == GL_FALSE) {
-		GLint length;
-		glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &length);
-		GLchar* const log = new char[length];
-		glGetShaderInfoLog(shader_id, length, &length, log);
-		std::cerr << "[" << filename << "] " << std::endl << log;
-		delete log;
-	}
-	return compiled;
-}
-
-void checkLinkage(const GLuint program_id) {
-	GLint linked;
-	glGetProgramiv(program_id, GL_LINK_STATUS, &linked);
-	if (linked == GL_FALSE) {
-		GLint length;
-		glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &length);
-		GLchar* const log = new char[length];
-		glGetProgramInfoLog(program_id, length, &length, log);
-		std::cerr << "[LINK] " << std::endl << log << std::endl;
-		delete log;
-	}
-}
-
-const GLuint addShader(const GLuint program_id, const GLenum shader_type, const std::string& filename)
-{
-	const GLuint shader_id = glCreateShader(shader_type);
-	const std::string scode = read(filename);
-	const GLchar* code = scode.c_str();
-	glShaderSource(shader_id, 1, &code, 0);
-	glCompileShader(shader_id);
-	checkCompilation(shader_id, filename);
-	glAttachShader(program_id, shader_id);
-	return shader_id;
-}
-
-void createShaderProgram(std::string& vs_file, std::string& fs_file)
-{
-	ProgramId = glCreateProgram();
-
-	GLuint VertexShaderId = addShader(ProgramId, GL_VERTEX_SHADER, vs_file);
-	GLuint FragmentShaderId = addShader(ProgramId, GL_FRAGMENT_SHADER, fs_file);
-
-	glBindAttribLocation(ProgramId, VERTICES, "inPosition");
-	if (TexcoordsLoaded)
-		glBindAttribLocation(ProgramId, TEXCOORDS, "inTexcoord");
-	if (NormalsLoaded)
-		glBindAttribLocation(ProgramId, NORMALS, "inNormal");
-
-	glLinkProgram(ProgramId);
-	checkLinkage(ProgramId);
-
-	glDetachShader(ProgramId, VertexShaderId);
-	glDetachShader(ProgramId, FragmentShaderId);
-	glDeleteShader(VertexShaderId);
-	glDeleteShader(FragmentShaderId);
-
-	ModelMatrix_UId = glGetUniformLocation(ProgramId, "ModelMatrix");
-	ViewMatrix_UId = glGetUniformLocation(ProgramId, "ViewMatrix");
-	ProjectionMatrix_UId = glGetUniformLocation(ProgramId, "ProjectionMatrix");
-
-	checkOpenGLError("ERROR: Could not create shaders.");
-}
-
-void destroyShaderProgram()
-{
-	glUseProgram(0);
-	glDeleteProgram(ProgramId);
-
-	checkOpenGLError("ERROR: Could not destroy shaders.");
-}
-
-/////////////////////////////////////////////////////////////////////// MESH
-
-typedef struct {
-	GLfloat x, y, z;
-} Vertex;
-
-typedef struct {
-	GLfloat u, v;
-} Texcoord;
-
-typedef struct {
-	GLfloat nx, ny, nz;
-} Normal;
-
-std::vector <Vertex> Vertices, vertexData;
-std::vector <Texcoord> Texcoords, texcoordData;
-std::vector <Normal> Normals, normalData;
-
-std::vector <unsigned int> vertexIdx, texcoordIdx, normalIdx;
-
-void parseVertex(std::stringstream& sin)
-{
-	Vertex v;
-	sin >> v.x >> v.y >> v.z;
-	vertexData.push_back(v);
-}
-
-void parseTexcoord(std::stringstream& sin)
-{
-	Texcoord t;
-	sin >> t.u >> t.v;
-	texcoordData.push_back(t);
-}
-
-void parseNormal(std::stringstream& sin)
-{
-	Normal n;
-	sin >> n.nx >> n.ny >> n.nz;
-	normalData.push_back(n);
-}
-
-void parseFace(std::stringstream& sin)
-{
-	std::string token;
-	for (int i = 0; i < 3; i++) {
-		std::getline(sin, token, '/');
-		if (token.size() > 0) vertexIdx.push_back(std::stoi(token));
-		std::getline(sin, token, '/');
-		if (token.size() > 0) texcoordIdx.push_back(std::stoi(token));
-		std::getline(sin, token, ' ');
-		if (token.size() > 0) normalIdx.push_back(std::stoi(token));
-	}
-}
-
-void parseLine(std::stringstream& sin)
-{
-	std::string s;
-	sin >> s;
-	if (s.compare("v") == 0) parseVertex(sin);
-	else if (s.compare("vt") == 0) parseTexcoord(sin);
-	else if (s.compare("vn") == 0) parseNormal(sin);
-	else if (s.compare("f") == 0) parseFace(sin);
-}
-
-void loadMeshData(std::string& filename)
-{
-	std::ifstream ifile(filename);
-	std::string line;
-	while (std::getline(ifile, line)) {
-		std::stringstream sin = std::stringstream(line);
-		parseLine(sin);
-	}
-	TexcoordsLoaded = (texcoordIdx.size() > 0);
-	NormalsLoaded = (normalIdx.size() > 0);
-}
-
-void processMeshData()
-{
-	for (unsigned int i = 0; i < vertexIdx.size(); i++) {
-		unsigned int vi = vertexIdx[i];
-		Vertex v = vertexData[vi - 1];
-		Vertices.push_back(v);
-		if (TexcoordsLoaded) {
-			unsigned int ti = texcoordIdx[i];
-			Texcoord t = texcoordData[ti - 1];
-			Texcoords.push_back(t);
-		}
-		if (NormalsLoaded) {
-			unsigned int ni = normalIdx[i];
-			Normal n = normalData[ni - 1];
-			Normals.push_back(n);
-		}
-	}
-}
-
-void freeMeshData()
-{
-	vertexData.clear();
-	texcoordData.clear();
-	normalData.clear();
-	vertexIdx.clear();
-	texcoordIdx.clear();
-	normalIdx.clear();
-}
-
-const void createMesh(std::string& filename)
-{
-	loadMeshData(filename);
-	processMeshData();
-	freeMeshData();
-}
-
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -338,23 +137,23 @@ void createBufferObjects()
 	{
 		glGenBuffers(1, &VboVertices);
 		glBindBuffer(GL_ARRAY_BUFFER, VboVertices);
-		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(Vertex), &Vertices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, myMesh.getVertices().size() * sizeof(Vertex), &myMesh.getVertices()[0], GL_STATIC_DRAW);
 		glEnableVertexAttribArray(VERTICES);
 		glVertexAttribPointer(VERTICES, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
-		if (TexcoordsLoaded)
+		if (myShader.getTexcoordsLoaded())
 		{
 			glGenBuffers(1, &VboTexcoords);
 			glBindBuffer(GL_ARRAY_BUFFER, VboTexcoords);
-			glBufferData(GL_ARRAY_BUFFER, Texcoords.size() * sizeof(Texcoord), &Texcoords[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, myMesh.getTexcoords().size() * sizeof(Texcoord), &myMesh.getTexcoords()[0], GL_STATIC_DRAW);
 			glEnableVertexAttribArray(TEXCOORDS);
 			glVertexAttribPointer(TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(Texcoord), 0);
 		}
-		if (NormalsLoaded)
+		if (myShader.getNormalsLoaded())
 		{
 			glGenBuffers(1, &VboNormals);
 			glBindBuffer(GL_ARRAY_BUFFER, VboNormals);
-			glBufferData(GL_ARRAY_BUFFER, Normals.size() * sizeof(Normal), &Normals[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, myMesh.getNormals().size() * sizeof(Normal), &myMesh.getNormals()[0], GL_STATIC_DRAW);
 			glEnableVertexAttribArray(NORMALS);
 			glVertexAttribPointer(NORMALS, 3, GL_FLOAT, GL_FALSE, sizeof(Normal), 0);
 		}
@@ -439,7 +238,7 @@ void drawScene()
 	glUniformMatrix4fv(ModelMatrix_UId, 1, GL_FALSE, ModelMatrix);
 	glUniformMatrix4fv(ViewMatrix_UId, 1, GL_FALSE, ViewMatrix1);
 	glUniformMatrix4fv(ProjectionMatrix_UId, 1, GL_FALSE, ProjectionMatrix2);
-	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
+	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)myMesh.getVertices().size());
 
 	glUseProgram(0);
 	glBindVertexArray(0);
@@ -451,7 +250,7 @@ void drawScene()
 
 void cleanup()
 {
-	destroyShaderProgram();
+	myShader.destroyShaderProgram();
 	destroyBufferObjects();
 }
 
@@ -565,12 +364,14 @@ void init(int argc, char* argv[])
 	//	createMesh(std::string("../../assets/models/blender_2.79/torus_smooth_vn.obj"));
 	//std::string objToLoad = std::string("../../assets/models/blender_2.79/suzanne_vtn.obj");
 	std::string objToLoad = std::string("assets/models/cube.obj");
-	createMesh(objToLoad);
+	myMesh.createMesh(objToLoad, myShader);
 	//	createMesh(std::string("../../assets/models/blender_2.79/utah_teapot_vtn.obj"));
 	//	createMesh(std::string("../../assets/models/blender_2.79/standford_bunny_vn.obj"));
-	std::string vertexShader = std::string("./assets/models/cube_vs.glsl");
-	std::string	fragmentShader = std::string("./assets/models/cube_fs.glsl");
-	createShaderProgram(vertexShader, fragmentShader);
+	//std::string vertexShader = std::string("./assets/models/cube_vs.glsl");
+	//std::string	fragmentShader = std::string("./assets/models/cube_fs.glsl");
+	//createShaderProgram(vertexShader, fragmentShader);
+	myShader.createShaderProgram(std::string("shaders/cube_vs.glsl"),
+		std::string("shaders/cube_fs.glsl"));
 	createBufferObjects();
 }
 

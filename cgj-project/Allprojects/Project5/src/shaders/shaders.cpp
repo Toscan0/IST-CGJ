@@ -1,208 +1,105 @@
 #include "shaders.h"
 
-std::string shaders::readShaderFile(const char *shader_file)
+shaders::shaders() {}
+
+const std::string shaders::read(const std::string& filename)
 {
-	//open file in read mode
-	std::ifstream file(shader_file);
-	if (!file) {
-		return std::string();
+	std::ifstream ifile(filename);
+	std::string shader_string, line;
+	while (std::getline(ifile, line)) {
+		shader_string += line + "\n";
 	}
-
-	file.ignore(std::numeric_limits<std::streamsize>::max());
-	auto size = file.gcount();
-
-	if (size > 0x10000) {
-		return std::string();
-	}
-
-	file.clear();
-	file.seekg(0, std::ios_base::beg);
-
-	std::stringstream sstr;
-	sstr << file.rdbuf();
-	file.close();
-
-	return sstr.str();
+	return shader_string;
 }
 
-void shaders::createShader(const char* vertexPath, const char* fragPath) {
-	std::string vertex_source = readShaderFile(vertexPath);
-	const char *vertexShader = vertex_source.c_str();
+const GLuint shaders::checkCompilation(const GLuint shader_id, const std::string& filename)
+{
+	GLint compiled;
+	glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compiled);
+	if (compiled == GL_FALSE) {
+		GLint length;
+		glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &length);
+		GLchar* const log = new char[length];
+		glGetShaderInfoLog(shader_id, length, &length, log);
+		std::cerr << "[" << filename << "] " << std::endl << log;
+		delete log;
+	}
+	return compiled;
+}
 
-	_VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(_VertexShaderId, 1, &vertexShader, 0);
-	glCompileShader(_VertexShaderId);
+void shaders::checkLinkage(const GLuint program_id) {
+	GLint linked;
+	glGetProgramiv(program_id, GL_LINK_STATUS, &linked);
+	if (linked == GL_FALSE) {
+		GLint length;
+		glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &length);
+		GLchar* const log = new char[length];
+		glGetProgramInfoLog(program_id, length, &length, log);
+		std::cerr << "[LINK] " << std::endl << log << std::endl;
+		delete log;
+	}
+}
 
-	std::string fragment_source = readShaderFile(fragPath);
-	const char *fragmentShader = fragment_source.c_str();
+const GLuint shaders::addShader(const GLuint program_id, const GLenum shader_type, const std::string& filename)
+{
+	const GLuint shader_id = glCreateShader(shader_type);
+	const std::string scode = read(filename);
+	const GLchar* code = scode.c_str();
+	glShaderSource(shader_id, 1, &code, 0);
+	glCompileShader(shader_id);
+	checkCompilation(shader_id, filename);
+	glAttachShader(program_id, shader_id);
+	return shader_id;
+}
 
-	_FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(_FragmentShaderId, 1, &fragmentShader, 0);
-	glCompileShader(_FragmentShaderId);
-
+void shaders::createShaderProgram(const std::string& vs_file, const std::string& fs_file)
+{
 	_ProgramId = glCreateProgram();
-	glAttachShader(_ProgramId, _VertexShaderId);
-	glAttachShader(_ProgramId, _FragmentShaderId);
 
-	glBindAttribLocation(_ProgramId, VERTICES, "in_Position");
-	glBindAttribLocation(_ProgramId, COLORS, "in_Color");
+	GLuint VertexShaderId = addShader(_ProgramId, GL_VERTEX_SHADER, vs_file);
+	GLuint FragmentShaderId = addShader(_ProgramId, GL_FRAGMENT_SHADER, fs_file);
+
+	glBindAttribLocation(_ProgramId, VERTICES, "inPosition");
+	if (_TexcoordsLoaded)
+		glBindAttribLocation(_ProgramId, TEXCOORDS, "inTexcoord");
+	if (_NormalsLoaded)
+		glBindAttribLocation(_ProgramId, NORMALS, "inNormal");
 
 	glLinkProgram(_ProgramId);
-	
+	checkLinkage(_ProgramId);
 
-	glDetachShader(_ProgramId, _VertexShaderId);
-	glDeleteShader(_VertexShaderId);
-	glDetachShader(_ProgramId, _FragmentShaderId);
-	glDeleteShader(_FragmentShaderId);
+	glDetachShader(_ProgramId, VertexShaderId);
+	glDetachShader(_ProgramId, FragmentShaderId);
+	glDeleteShader(VertexShaderId);
+	glDeleteShader(FragmentShaderId);
+
+	_ModelMatrix_UId = glGetUniformLocation(_ProgramId, "ModelMatrix");
+	_ViewMatrix_UId = glGetUniformLocation(_ProgramId, "ViewMatrix");
+	_ProjectionMatrix_UId = glGetUniformLocation(_ProgramId, "ProjectionMatrix");
 
 	//checkOpenGLError("ERROR: Could not create shaders.");
 }
 
-void shaders::destroyShader(){
+void shaders::destroyShaderProgram()
+{
 	glUseProgram(0);
 	glDeleteProgram(_ProgramId);
 
 	//checkOpenGLError("ERROR: Could not destroy shaders.");
 }
 
-/*
-void shaders::createBuffer() {
-	// Triangle
-	glGenVertexArrays(1, &_VaoIdSTri);
-	glBindVertexArray(_VaoIdSTri);
-	{
-		glGenBuffers(2, _VboIdSTri);
-
-		glBindBuffer(GL_ARRAY_BUFFER, _VboIdSTri[0]);
-		{
-			glBufferData(GL_ARRAY_BUFFER, sizeof(VerticesSTri), VerticesSTri, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(VERTICES);
-			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-			glEnableVertexAttribArray(COLORS);
-			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(VerticesSTri[0].XYZW));
-		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _VboIdSTri[1]);
-		{
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(IndicesSTri), IndicesSTri, GL_STATIC_DRAW);
-		}
-	}
-
-	// Square
-	glGenVertexArrays(1, &_VaoIdSquare);
-	glBindVertexArray(_VaoIdSquare);
-	{
-		glGenBuffers(2, _VboIdSquare);
-
-		glBindBuffer(GL_ARRAY_BUFFER, _VboIdSquare[0]);
-		{
-			glBufferData(GL_ARRAY_BUFFER, sizeof(VerticesSquare), VerticesSquare, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(VERTICES);
-			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-			glEnableVertexAttribArray(COLORS);
-			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(VerticesSquare[0].XYZW));
-		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _VboIdSquare[1]);
-		{
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(IndicesSquare), IndicesSquare, GL_STATIC_DRAW);
-		}
-	}
-
-	// Parall
-	glGenVertexArrays(1, &_VaoIdParall);
-	glBindVertexArray(_VaoIdParall);
-	{
-		glGenBuffers(2, _VboIdParall);
-
-		glBindBuffer(GL_ARRAY_BUFFER, _VboIdParall[0]);
-		{
-			glBufferData(GL_ARRAY_BUFFER, sizeof(VerticesParall), VerticesParall, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(VERTICES);
-			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-			glEnableVertexAttribArray(COLORS);
-			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(VerticesParall[0].XYZW));
-		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _VboIdParall[1]);
-		{
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(IndicesParall), IndicesParall, GL_STATIC_DRAW);
-		}
-	}
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	//checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
-}*/
-
-/*
-void shaders::destroyBuffer() {
-	glBindVertexArray(_VaoIdSTri);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, _VboIdSTri);
-	glDeleteVertexArrays(1, &_VaoIdSTri);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(_VaoIdSquare);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, _VboIdSquare);
-	glDeleteVertexArrays(1, &_VaoIdSquare);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(_VaoIdParall);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, _VboIdParall);
-	glDeleteVertexArrays(1, &_VaoIdParall);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
-
-	//checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
-}*/
-
-
-// get
-/*
-GLuint shaders::getVaoIdSTri(){
-	return _VaoIdSTri;
+const bool shaders::getTexcoordsLoaded() {
+	return _TexcoordsLoaded;
 }
 
-GLuint shaders::getVboIdSTri() {
-	return _VboIdSTri[2];
-
+const bool shaders::getNormalsLoaded() {
+	return _NormalsLoaded;
 }
 
-GLuint shaders::getVaoIdSquare() {
-	return _VaoIdSquare;
-
+const void shaders::setTexcoordsLoaded(const bool texCoordsLoaded) {
+	_TexcoordsLoaded = texCoordsLoaded;
 }
 
-GLuint shaders::getVboIdSquare() {
-	return _VboIdSquare[2];
-
-}
-
-GLuint shaders::getVaoIdParall() {
-	return _VaoIdParall;
-
-}
-
-GLuint shaders::getVboIdParall() {
-	return _VboIdParall[2];
-}*/
-
-GLuint shaders::getVertexShaderId() {
-	return _VertexShaderId;
-}
-
-GLuint shaders::getFragmentShaderId() {
-	return _FragmentShaderId;
-}
-GLuint shaders::getProgramId() {
-	return _ProgramId;
+const void shaders::setNormalsLoaded(const bool normalsLoaded) {
+	_NormalsLoaded = normalsLoaded;
 }

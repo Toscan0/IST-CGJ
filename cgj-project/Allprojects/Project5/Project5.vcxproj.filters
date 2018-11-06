@@ -64,6 +64,9 @@
     <Filter Include="Source Files\shaders">
       <UniqueIdentifier>{ffcc290e-986a-4601-a61b-5c1745dad236}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\mesh">
+      <UniqueIdentifier>{86906a98-db3d-4fa8-b7bc-bae84900082f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp">
@@ -111,6 +114,9 @@
     <ClCompile Include="src\vector\vector4\vector4.cpp">
       <Filter>Source Files\src\vector\vector4</Filter>
     </ClCompile>
+    <ClCompile Include="src\mesh\mesh.cpp">
+      <Filter>Source Files\src\mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera\camera.h">
@@ -145,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="src\qtrn\qtrn.h">
       <Filter>Source Files\src\qtrn</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mesh\mesh.h">
+      <Filter>Source Files\src\mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -28,6 +28,7 @@
     <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp" />
     <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp" />
     <ClCompile Include="src\matrix\matrixFactory\matrixFactory.cpp" />
+    <ClCompile Include="src\mesh\mesh.cpp" />
     <ClCompile Include="src\qtrn\qtrn.cpp" />
     <ClCompile Include="src\random\random.cpp" />
     <ClCompile Include="src\shaders\shaders.cpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h" />
     <ClInclude Include="src\matrix\matrix4x4\matrix4x4.h" />
     <ClInclude Include="src\matrix\matrixFactory\matrixFactory.h" />
+    <ClInclude Include="src\mesh\mesh.h" />
     <ClInclude Include="src\qtrn\qtrn.h" />
     <ClInclude Include="src\random\random.h" />
     <ClInclude Include="src\shaders\shaders.h" />

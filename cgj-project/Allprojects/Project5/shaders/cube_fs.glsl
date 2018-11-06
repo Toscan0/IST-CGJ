@@ -1,5 +1,7 @@
 #version 330 core
 
+uniform vec4 force_color;
+
 in vec4 ex_Color;
 out vec4 out_Color;
 
