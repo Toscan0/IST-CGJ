@@ -61,6 +61,9 @@ void createBufferObjects()
 	{
 		glGenBuffers(1, &VboVertices);
 		glBindBuffer(GL_ARRAY_BUFFER, VboVertices);
+		std::cout << myMesh.getVertices().size()  << "  myMesh.getVertices().size()\n";
+		std::cout << &myMesh.getVertices() << "  &myMesh.getVertices()\n";
+		std::cout << &myMesh.getVertices()[0] << "  &myMesh.getVertices()[0]\n";
 		glBufferData(GL_ARRAY_BUFFER, myMesh.getVertices().size() * sizeof(Vertex), &myMesh.getVertices()[0], GL_STATIC_DRAW);
 		glEnableVertexAttribArray(VERTICES);
 		glVertexAttribPointer(VERTICES, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
