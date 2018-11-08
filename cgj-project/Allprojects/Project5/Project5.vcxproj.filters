@@ -55,15 +55,6 @@
     <Filter Include="Source Files\src\vector\vector4">
       <UniqueIdentifier>{efa00b72-9069-4799-9f72-f710f9e31aef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\assets">
-      <UniqueIdentifier>{db076bc4-2c08-4e4e-8a32-c6fc716acb5e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\assets\models">
-      <UniqueIdentifier>{f180cbd8-4fff-4a07-8e5a-94719f0a8752}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\shaders">
-      <UniqueIdentifier>{ffcc290e-986a-4601-a61b-5c1745dad236}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\src\mesh">
       <UniqueIdentifier>{86906a98-db3d-4fa8-b7bc-bae84900082f}</UniqueIdentifier>
     </Filter>
@@ -166,11 +157,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\cube_fs.glsl">
-      <Filter>Source Files\shaders</Filter>
+    <None Include="..\..\assets\shaders\cube_fs.glsl">
+      <Filter>Resource Files</Filter>
     </None>
-    <None Include="shaders\cube_vs.glsl">
-      <Filter>Source Files\shaders</Filter>
+    <None Include="..\..\assets\shaders\cube_vs.glsl">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
 </Project>

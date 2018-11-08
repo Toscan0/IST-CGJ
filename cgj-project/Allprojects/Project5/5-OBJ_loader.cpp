@@ -34,6 +34,12 @@
 #include "src/mesh/mesh.h"
 #include "src/shaders/shaders.h"
 #include "src/error/error.h"
+#include "src/camera/camera.h"
+#include "src/vector/vector3/vector3.h"
+#include "src/vector/vector4/vector4.h"
+#include "src/matrix/matrix3x3/matrix3x3.h"
+#include "src/matrix/matrix4x4/matrix4x4.h"
+#include "src/qtrn/qtrn.h"
 
 #define CAPTION "Loading World"
 #define VERTICES 0
@@ -49,6 +55,21 @@ GLuint VaoId;
 mesh myMesh;
 shaders myShader;
 
+bool g_rot = true;
+int g_oldX = 0;
+int g_oldY = 0;
+camera c;
+matrixFactory mf;
+bool g_gimbalLock = true;
+
+vector3 XX(1, 0, 0);
+vector3 YY(0, 1, 0);
+vector4 XX_4(1, 0, 0, 1);
+vector4 YY_4(0, 1, 0, 1);
+//vector3 vT(0, 0, -5);
+matrix4x4 Rx;
+matrix4x4 Ry;
+qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
@@ -163,7 +184,12 @@ void drawScene()
 	glUseProgram(myShader.getProgramId());
 
 	glUniformMatrix4fv(myShader.getModelMatrix_UId(), 1, GL_FALSE, ModelMatrix);
-	glUniformMatrix4fv(myShader.getViewMatrix_UId(), 1, GL_FALSE, ViewMatrix1);
+	matrix4x4 vM = c.getViewMatrix();
+	Matrix viewMatrix;
+	for (int i = 0; i < 16; ++i) {
+		viewMatrix[i] = vM.data()[i];
+	}
+	glUniformMatrix4fv(myShader.getViewMatrix_UId(), 1, GL_FALSE, viewMatrix);
 	glUniformMatrix4fv(myShader.getProjectionMatrix_UId(), 1, GL_FALSE, ProjectionMatrix2);
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)myMesh.getVertices().size());
 
@@ -212,6 +238,84 @@ void timer(int value)
 	glutTimerFunc(1000, timer, 0);
 }
 
+//////////////////////////////////////////////////////////////////////// Mouse/Key Eventes
+
+void keyboard_down(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'G':
+	case 'g':
+		g_gimbalLock = !g_gimbalLock;
+		break;
+	}
+}
+
+void mouseWheel(int wheel, int direction, int x, int y) {
+	if (direction == -1) {
+		vector3 newEye(c.getEye()._a, c.getEye()._b, c.getEye()._c - 1);
+		c.setEye(newEye);
+		c.makeViewMatrix(newEye, c.getCenter(), c.getUp());
+	}
+	if (direction == 1) {
+		vector3 newEye(c.getEye()._a, c.getEye()._b, c.getEye()._c + 1);
+		c.setEye(newEye);
+		c.makeViewMatrix(newEye, c.getCenter(), c.getUp());
+	}
+
+
+}
+
+void OnMouseDown(int button, int state, int x, int y) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		g_rot = true;
+		g_oldX = x;
+		g_oldY = y;
+	}
+}
+
+
+void OnMouseMove(int x, int y) {
+	if (g_rot == true) {
+		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
+		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
+		g_oldX = (float)x;
+		g_oldY = (float)y;
+		if (g_gimbalLock == true) {
+			std::cout << "\n" << "GIMBAL LOCK ON" << "\n";
+
+			Rx = mf.rotationMatrix4x4(YY, tetaX * 0.0174532925) * Rx;
+			Ry = mf.rotationMatrix4x4(XX, tetaY * 0.0174532925) * Ry;
+			matrix4x4 R = Ry * Rx;
+
+			vector3 vT(0, 0, -(c.getEye()._c));
+			matrix4x4 T = mf.translationMatrix4x4(vT);  // matrix translação
+
+			matrix4x4 vM = T * R; // view matrix em row major
+			matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
+			c.setViewMatrix(vMT);
+
+		}
+		else { // Gimbal lock false
+			std::cout << "\n" << "GIMBAL LOCK OFF" << "\n";
+			qtrn qAux;
+
+			//Recive the angle in deg
+			q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
+			q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
+
+			matrix4x4 mAux;
+			matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
+
+			vector3 vT(0, 0, -(c.getEye()._c));
+			matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação 
+
+			matrix4x4 vM = T * mR; // view matrix
+			matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
+			c.setViewMatrix(vMT);
+		}
+	}
+}
+
+
 /////////////////////////////////////////////////////////////////////// SETUP
 
 void setupCallbacks()
@@ -221,6 +325,13 @@ void setupCallbacks()
 	glutIdleFunc(idle);
 	glutReshapeFunc(reshape);
 	glutTimerFunc(0, timer, 0);
+
+	//Mine
+	glutKeyboardFunc(keyboard_down);
+	glutMouseFunc(OnMouseDown);
+	glutMotionFunc(OnMouseMove);
+	glutMouseWheelFunc(mouseWheel);
+
 	setupErrors();
 }
 
@@ -279,6 +390,32 @@ void setupGLUT(int argc, char* argv[])
 	}
 }
 
+void myInit() {
+	vector3 eye(0.0f, 0.0f, 5.0f);
+	vector3 center(0.0f, 0.0f, 0.0f);
+	vector3 up(0.0f, 1.0f, 0.0f);
+
+	c.setEye(eye);
+	c.setCenter(center);
+	c.setUp(up);
+
+	c.makeViewMatrix(c.getEye(), c.getCenter(), c.getUp());
+	
+	// gimbal lock rotation
+	Rx = mf.identityMatrix4x4();
+	Ry = mf.identityMatrix4x4();
+
+	// Mesh load
+	std::string objToLoad = std::string("../../assets/models/ex.obj");
+	myMesh.createMesh(objToLoad, myShader);
+
+	// Shaders load
+	myShader.createShaderProgram(std::string("../../assets/shaders/cube_vs.glsl"),
+		std::string("../../assets/shaders/cube_fs.glsl"));
+	
+	createBufferObjects();
+}
+
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
@@ -286,13 +423,7 @@ void init(int argc, char* argv[])
 	setupOpenGL();
 	setupCallbacks();
 
-	std::string objToLoad = std::string("assets/models/cube.obj");
-	myMesh.createMesh(objToLoad, myShader);
-
-	myShader.createShaderProgram(std::string("shaders/cube_vs.glsl"),
-		std::string("shaders/cube_fs.glsl"));
-
-	createBufferObjects();
+	myInit();
 }
 
 int main(int argc, char* argv[])

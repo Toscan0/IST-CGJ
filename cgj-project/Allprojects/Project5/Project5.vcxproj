@@ -53,8 +53,8 @@
     <ClInclude Include="src\vector\vector4\vector4.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\cube_fs.glsl" />
-    <None Include="shaders\cube_vs.glsl" />
+    <None Include="..\..\assets\shaders\cube_fs.glsl" />
+    <None Include="..\..\assets\shaders\cube_vs.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
