@@ -55,12 +55,11 @@ GLuint VaoId;
 mesh myMesh;
 shaders myShader;
 
-bool g_rot = true;
+bool g_rot = false;
 int g_oldX = 0;
 int g_oldY = 0;
 camera c;
 matrixFactory mf;
-bool g_gimbalLock = true;
 
 vector3 XX(1, 0, 0);
 vector3 YY(0, 1, 0);
@@ -82,9 +81,6 @@ void createBufferObjects()
 	{
 		glGenBuffers(1, &VboVertices);
 		glBindBuffer(GL_ARRAY_BUFFER, VboVertices);
-		std::cout << myMesh.getVertices().size()  << "  myMesh.getVertices().size()\n";
-		std::cout << &myMesh.getVertices() << "  &myMesh.getVertices()\n";
-		std::cout << &myMesh.getVertices()[0] << "  &myMesh.getVertices()[0]\n";
 		glBufferData(GL_ARRAY_BUFFER, myMesh.getVertices().size() * sizeof(Vertex), &myMesh.getVertices()[0], GL_STATIC_DRAW);
 		glEnableVertexAttribArray(VERTICES);
 		glVertexAttribPointer(VERTICES, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
@@ -242,10 +238,7 @@ void timer(int value)
 
 void keyboard_down(unsigned char key, int x, int y) {
 	switch (key) {
-	case 'G':
-	case 'g':
-		g_gimbalLock = !g_gimbalLock;
-		break;
+	
 	}
 }
 
@@ -270,6 +263,9 @@ void OnMouseDown(int button, int state, int x, int y) {
 		g_oldX = x;
 		g_oldY = y;
 	}
+	else {
+		g_rot = false;
+	}
 }
 
 
@@ -279,39 +275,23 @@ void OnMouseMove(int x, int y) {
 		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
 		g_oldX = (float)x;
 		g_oldY = (float)y;
-		if (g_gimbalLock == true) {
-			std::cout << "\n" << "GIMBAL LOCK ON" << "\n";
+		
+		// Gimbal lock false
+		qtrn qAux;
 
-			Rx = mf.rotationMatrix4x4(YY, tetaX * 0.0174532925) * Rx;
-			Ry = mf.rotationMatrix4x4(XX, tetaY * 0.0174532925) * Ry;
-			matrix4x4 R = Ry * Rx;
+		//Recive the angle in deg
+		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
+		q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
 
-			vector3 vT(0, 0, -(c.getEye()._c));
-			matrix4x4 T = mf.translationMatrix4x4(vT);  // matrix translação
+		matrix4x4 mAux;
+		matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
 
-			matrix4x4 vM = T * R; // view matrix em row major
-			matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
-			c.setViewMatrix(vMT);
+		vector3 vT(0, 0, -(c.getEye()._c));
+		matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação 
 
-		}
-		else { // Gimbal lock false
-			std::cout << "\n" << "GIMBAL LOCK OFF" << "\n";
-			qtrn qAux;
-
-			//Recive the angle in deg
-			q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
-			q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
-
-			matrix4x4 mAux;
-			matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
-
-			vector3 vT(0, 0, -(c.getEye()._c));
-			matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação 
-
-			matrix4x4 vM = T * mR; // view matrix
-			matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
-			c.setViewMatrix(vMT);
-		}
+		matrix4x4 vM = T * mR; // view matrix
+		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
+		c.setViewMatrix(vMT);
 	}
 }
 
@@ -406,8 +386,10 @@ void myInit() {
 	Ry = mf.identityMatrix4x4();
 
 	// Mesh load
-	std::string objToLoad = std::string("../../assets/models/ex.obj");
-	myMesh.createMesh(objToLoad, myShader);
+	// myMesh.createMesh(std::string("../../assets/models/cube.obj"), myShader); // cube
+	myMesh.createMesh(std::string("../../assets/models/tangram/cube.obj"), myShader); // cube
+	myMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj"), myShader); // parallelogram
+	myMesh.createMesh(std::string("../../assets/models/tangram/triangular.obj"), myShader); // triangle
 
 	// Shaders load
 	myShader.createShaderProgram(std::string("../../assets/shaders/cube_vs.glsl"),

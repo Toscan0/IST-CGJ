@@ -33,14 +33,14 @@ class mesh{
 	public:
 		mesh();
 
-		const void createMesh(std::string& filename, shaders& myShader);
+		const void createMesh(const std::string& filename, shaders& myShader);
 
 		void parseVertex(std::stringstream& sin);
 		void parseTexcoord(std::stringstream& sin);
 		void parseNormal(std::stringstream& sin);
 		void parseFace(std::stringstream& sin);
 		void parseLine(std::stringstream& sin);
-		void loadMeshData(std::string& filename, shaders& myShader);
+		void loadMeshData(const std::string& filename, shaders& myShader);
 		void processMeshData(shaders& myShader);
 		void freeMeshData();
 

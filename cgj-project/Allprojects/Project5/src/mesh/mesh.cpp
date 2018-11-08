@@ -46,7 +46,7 @@ void mesh::parseLine(std::stringstream& sin)
 	else if (s.compare("f") == 0) parseFace(sin);
 }
 
-void mesh::loadMeshData(std::string& filename, shaders& myShader)
+void mesh::loadMeshData(const std::string& filename, shaders& myShader)
 {
 	std::ifstream ifile(filename);
 	std::string line;
@@ -87,7 +87,7 @@ void mesh::freeMeshData()
 	_normalIdx.clear();
 }
 
-const void mesh::createMesh(std::string& filename, shaders& myShader)
+const void mesh::createMesh(const std::string& filename, shaders& myShader)
 {
 	loadMeshData(filename, myShader);
 	processMeshData(myShader);

@@ -61,6 +61,9 @@
     <Filter Include="Source Files\src\error">
       <UniqueIdentifier>{549fea47-5c0f-4e96-8576-9372040cfb7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaders">
+      <UniqueIdentifier>{567662b1-ad38-418e-b5fb-ee9e3f4bbc7a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp">
@@ -157,11 +160,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\assets\shaders\cube_fs.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\..\assets\shaders\cube_vs.glsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\cube_fs.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
