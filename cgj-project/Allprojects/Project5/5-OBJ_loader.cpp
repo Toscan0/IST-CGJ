@@ -52,24 +52,25 @@ unsigned int FrameCount = 0;
 
 GLuint VaoId;
 
-mesh myMesh;
-shaders myShader;
-
 bool g_rot = false;
+bool g_cam = false;
 int g_oldX = 0;
 int g_oldY = 0;
-camera c;
-matrixFactory mf;
 
-vector3 XX(1, 0, 0);
-vector3 YY(0, 1, 0);
+vector3 eye(0.0f, 0.0f, 5.0f);
+vector3 center(0.0f, 0.0f, 0.0f);
+vector3 up(0.0f, 1.0f, 0.0f);
+
 vector4 XX_4(1, 0, 0, 1);
 vector4 YY_4(0, 1, 0, 1);
-//vector3 vT(0, 0, -5);
-matrix4x4 Rx;
-matrix4x4 Ry;
 qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
 
+camera mainCamera;
+matrixFactory mf;
+mesh myMesh;
+mesh tableMesh;
+shaders myShader;
+shaders tableShader;
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -180,7 +181,7 @@ void drawScene()
 	glUseProgram(myShader.getProgramId());
 
 	glUniformMatrix4fv(myShader.getModelMatrix_UId(), 1, GL_FALSE, ModelMatrix);
-	matrix4x4 vM = c.getViewMatrix();
+	matrix4x4 vM = mainCamera.getViewMatrix();
 	Matrix viewMatrix;
 	for (int i = 0; i < 16; ++i) {
 		viewMatrix[i] = vM.data()[i];
@@ -244,39 +245,44 @@ void keyboard_down(unsigned char key, int x, int y) {
 
 void mouseWheel(int wheel, int direction, int x, int y) {
 	if (direction == -1) {
-		vector3 newEye(c.getEye()._a, c.getEye()._b, c.getEye()._c - 1);
-		c.setEye(newEye);
-		c.makeViewMatrix(newEye, c.getCenter(), c.getUp());
+		vector3 newEye(mainCamera.getEye()._a, mainCamera.getEye()._b, mainCamera.getEye()._c - 1);
+		mainCamera.setEye(newEye);
+		mainCamera.makeViewMatrix(newEye, mainCamera.getCenter(), mainCamera.getUp());
 	}
 	if (direction == 1) {
-		vector3 newEye(c.getEye()._a, c.getEye()._b, c.getEye()._c + 1);
-		c.setEye(newEye);
-		c.makeViewMatrix(newEye, c.getCenter(), c.getUp());
+		vector3 newEye(mainCamera.getEye()._a, mainCamera.getEye()._b, mainCamera.getEye()._c + 1);
+		mainCamera.setEye(newEye);
+		mainCamera.makeViewMatrix(newEye, mainCamera.getCenter(), mainCamera.getUp());
 	}
 
 
 }
 
 void OnMouseDown(int button, int state, int x, int y) {
+	// Camera 
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-		g_rot = true;
+		//g_cam = true;
+		g_rot = false;
 		g_oldX = x;
 		g_oldY = y;
 	}
-	else {
-		g_rot = false;
-	}
+	// Rotate the image
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) { 
+		g_rot = true;
+		g_cam = false;
+		g_oldX = x;
+		g_oldY = y;
+	}	
 }
 
 
 void OnMouseMove(int x, int y) {
-	if (g_rot == true) {
+	if (g_rot == true) { 	// Gimbal lock false
 		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
 		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 		
-		// Gimbal lock false
 		qtrn qAux;
 
 		//Recive the angle in deg
@@ -286,12 +292,40 @@ void OnMouseMove(int x, int y) {
 		matrix4x4 mAux;
 		matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
 
-		vector3 vT(0, 0, -(c.getEye()._c));
+		vector3 vT(0, 0, -(mainCamera.getEye()._c));
 		matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação 
 
 		matrix4x4 vM = T * mR; // view matrix
 		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
-		c.setViewMatrix(vMT);
+		mainCamera.setViewMatrix(vMT);
+	}
+	if (g_cam == true) {
+		float x_aux = (x - g_oldX); // angle to rotate in x (DEG)
+		float y_aux = (y - g_oldY); // angle to rotate in y (DEG)
+		g_oldX = (float)x;
+		g_oldY = (float)y;
+
+		vector3 view = (mainCamera.getCenter() - mainCamera.getEye());
+		view = view.normalizado();
+		vector3 up = up.normalizado();
+
+		matrix4x4 mRot = mf.rotationMatrix4x4(up, x_aux);
+		matrix3x3 mRot_3x3(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
+
+		view = (mRot_3x3 * view);
+		vector3 side = cross(view, up);
+		mRot = mf.rotationMatrix4x4(side, y_aux);
+		matrix3x3 mRot_3x31(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
+		view = (mRot_3x31 * view);
+
+		up = (mRot_3x31 * up);
+
+		vector3 newCenter = (mainCamera.getEye() + view);
+
+		vector3 aux = mainCamera.getEye();
+		mainCamera.makeViewMatrix(aux, newCenter, up);
+
+		mainCamera.setCenter(newCenter);
 	}
 }
 
@@ -371,30 +405,26 @@ void setupGLUT(int argc, char* argv[])
 }
 
 void myInit() {
-	vector3 eye(0.0f, 0.0f, 5.0f);
-	vector3 center(0.0f, 0.0f, 0.0f);
-	vector3 up(0.0f, 1.0f, 0.0f);
+	mainCamera.setEye(eye);
+	mainCamera.setCenter(center);
+	mainCamera.setUp(up);
 
-	c.setEye(eye);
-	c.setCenter(center);
-	c.setUp(up);
-
-	c.makeViewMatrix(c.getEye(), c.getCenter(), c.getUp());
+	mainCamera.makeViewMatrix(mainCamera.getEye(), mainCamera.getCenter(), mainCamera.getUp());
 	
-	// gimbal lock rotation
-	Rx = mf.identityMatrix4x4();
-	Ry = mf.identityMatrix4x4();
-
 	// Mesh load
-	// myMesh.createMesh(std::string("../../assets/models/cube.obj"), myShader); // cube
-	myMesh.createMesh(std::string("../../assets/models/tangram/cube.obj"), myShader); // cube
+	//myMesh.createMesh(std::string("../../assets/models/cube.obj"), myShader); // cube
+	//myMesh.createMesh(std::string("../../assets/models/duck.obj"), myShader); // duck
+	// tangram
+	myMesh.createMesh(std::string("../../assets/models/tangram/square.obj"), myShader); // cube
 	myMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj"), myShader); // parallelogram
-	myMesh.createMesh(std::string("../../assets/models/tangram/triangular.obj"), myShader); // triangle
+	myMesh.createMesh(std::string("../../assets/models/tangram/triangle.obj"), myShader); // triangle
+	//table
+	myMesh.createMesh(std::string("../../assets/models/table/table.obj"), myShader); // triangle
 
 	// Shaders load
-	myShader.createShaderProgram(std::string("../../assets/shaders/cube_vs.glsl"),
-		std::string("../../assets/shaders/cube_fs.glsl"));
-	
+	myShader.createShaderProgram(std::string("../../assets/shaders/tangramShader/tangram_vs.glsl"),
+		std::string("../../assets/shaders/tangramShader/tangram_fs.glsl"));;
+
 	createBufferObjects();
 }
 

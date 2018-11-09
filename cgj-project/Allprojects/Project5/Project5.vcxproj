@@ -25,6 +25,7 @@
     <ClCompile Include="8-SceneManager.cpp" />
     <ClCompile Include="src\camera\camera.cpp" />
     <ClCompile Include="src\error\error.cpp" />
+    <ClCompile Include="src\eventListener\eventListener.cpp" />
     <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp" />
     <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp" />
     <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp" />
@@ -40,6 +41,7 @@
   <ItemGroup>
     <ClInclude Include="src\camera\camera.h" />
     <ClInclude Include="src\error\error.h" />
+    <ClInclude Include="src\eventListener\eventListener.h" />
     <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h" />
     <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h" />
     <ClInclude Include="src\matrix\matrix4x4\matrix4x4.h" />
@@ -53,8 +55,10 @@
     <ClInclude Include="src\vector\vector4\vector4.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\assets\shaders\cube_fs.glsl" />
-    <None Include="..\..\assets\shaders\cube_vs.glsl" />
+    <None Include="..\..\assets\shaders\tableShader\table_fs.glsl" />
+    <None Include="..\..\assets\shaders\tableShader\table_vs.glsl" />
+    <None Include="..\..\assets\shaders\tangramShader\tangram_fs.glsl" />
+    <None Include="..\..\assets\shaders\tangramShader\tangram_vs.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

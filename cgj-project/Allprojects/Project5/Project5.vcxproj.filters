@@ -64,6 +64,15 @@
     <Filter Include="Resource Files\shaders">
       <UniqueIdentifier>{567662b1-ad38-418e-b5fb-ee9e3f4bbc7a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaders\tangramShader">
+      <UniqueIdentifier>{826b8839-58c4-43a5-be3f-18d633126e1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\tableShader">
+      <UniqueIdentifier>{63baebbd-de47-4849-bbb2-770d68bc918a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\eventListener">
+      <UniqueIdentifier>{f2e2f01a-9fe7-43c8-99ca-c11086bc9f39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp">
@@ -117,6 +126,9 @@
     <ClCompile Include="src\error\error.cpp">
       <Filter>Source Files\src\error</Filter>
     </ClCompile>
+    <ClCompile Include="src\eventListener\eventListener.cpp">
+      <Filter>Source Files\src\eventListener</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera\camera.h">
@@ -158,13 +170,22 @@
     <ClInclude Include="src\error\error.h">
       <Filter>Source Files\src\error</Filter>
     </ClInclude>
+    <ClInclude Include="src\eventListener\eventListener.h">
+      <Filter>Source Files\src\eventListener</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\assets\shaders\cube_vs.glsl">
-      <Filter>Resource Files\shaders</Filter>
+    <None Include="..\..\assets\shaders\tableShader\table_fs.glsl">
+      <Filter>Resource Files\shaders\tableShader</Filter>
     </None>
-    <None Include="..\..\assets\shaders\cube_fs.glsl">
-      <Filter>Resource Files\shaders</Filter>
+    <None Include="..\..\assets\shaders\tableShader\table_vs.glsl">
+      <Filter>Resource Files\shaders\tableShader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\tangram_fs.glsl">
+      <Filter>Resource Files\shaders\tangramShader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\tangram_vs.glsl">
+      <Filter>Resource Files\shaders\tangramShader</Filter>
     </None>
   </ItemGroup>
 </Project>
