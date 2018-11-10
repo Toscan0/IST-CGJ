@@ -133,7 +133,8 @@ matrix4x4 matrixFactory::orthMatrix(float l, float r, float t, float b, float n,
 	return mOrth;
 }
 
-matrix4x4 matrixFactory::prespMatrix(float fovy, float aspect, float n, float f) {
+matrix4x4 matrixFactory::prespMatrix(const float fovy, const float aspect, 
+	const float n, const float f) {
 	float teta = (fovy / 2.0f);
 	float d = (1.0f / (tan(teta)));
 

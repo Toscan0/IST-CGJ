@@ -33,7 +33,9 @@
     <ClCompile Include="src\mesh\mesh.cpp" />
     <ClCompile Include="src\qtrn\qtrn.cpp" />
     <ClCompile Include="src\random\random.cpp" />
-    <ClCompile Include="src\shaders\shaders.cpp" />
+    <ClCompile Include="src\scene\sceneGraph.cpp" />
+    <ClCompile Include="src\scene\sceneNode.cpp" />
+    <ClCompile Include="src\shader\shader.cpp" />
     <ClCompile Include="src\vector\vector2\vector2.cpp" />
     <ClCompile Include="src\vector\vector3\vector3.cpp" />
     <ClCompile Include="src\vector\vector4\vector4.cpp" />
@@ -49,7 +51,9 @@
     <ClInclude Include="src\mesh\mesh.h" />
     <ClInclude Include="src\qtrn\qtrn.h" />
     <ClInclude Include="src\random\random.h" />
-    <ClInclude Include="src\shaders\shaders.h" />
+    <ClInclude Include="src\scene\sceneGraph.h" />
+    <ClInclude Include="src\scene\sceneNode.h" />
+    <ClInclude Include="src\shader\shader.h" />
     <ClInclude Include="src\vector\vector2\vector2.h" />
     <ClInclude Include="src\vector\vector3\vector3.h" />
     <ClInclude Include="src\vector\vector4\vector4.h" />

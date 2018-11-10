@@ -28,9 +28,6 @@
     <Filter Include="Source Files\src\random">
       <UniqueIdentifier>{3a830da3-c906-4e2d-875f-437c1d9cd79b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\src\shaders">
-      <UniqueIdentifier>{16292e60-5db4-4bcd-bf19-35d38ec44d14}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\src\vector">
       <UniqueIdentifier>{f5e0c384-8104-482d-bc2b-61676cc279db}</UniqueIdentifier>
     </Filter>
@@ -73,6 +70,12 @@
     <Filter Include="Source Files\src\eventListener">
       <UniqueIdentifier>{f2e2f01a-9fe7-43c8-99ca-c11086bc9f39}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\scene">
+      <UniqueIdentifier>{8b6ca3ca-f243-4b82-8ed4-3001f443cc44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\shader">
+      <UniqueIdentifier>{16292e60-5db4-4bcd-bf19-35d38ec44d14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp">
@@ -111,9 +114,6 @@
     <ClCompile Include="src\vector\vector3\vector3.cpp">
       <Filter>Source Files\src\vector\vector3</Filter>
     </ClCompile>
-    <ClCompile Include="src\shaders\shaders.cpp">
-      <Filter>Source Files\src\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="src\qtrn\qtrn.cpp">
       <Filter>Source Files\src\qtrn</Filter>
     </ClCompile>
@@ -128,6 +128,15 @@
     </ClCompile>
     <ClCompile Include="src\eventListener\eventListener.cpp">
       <Filter>Source Files\src\eventListener</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\sceneNode.cpp">
+      <Filter>Source Files\src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\sceneGraph.cpp">
+      <Filter>Source Files\src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shader\shader.cpp">
+      <Filter>Source Files\src\shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,9 +167,6 @@
     <ClInclude Include="src\vector\vector4\vector4.h">
       <Filter>Source Files\src\vector\vector4</Filter>
     </ClInclude>
-    <ClInclude Include="src\shaders\shaders.h">
-      <Filter>Source Files\src\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="src\qtrn\qtrn.h">
       <Filter>Source Files\src\qtrn</Filter>
     </ClInclude>
@@ -172,6 +178,15 @@
     </ClInclude>
     <ClInclude Include="src\eventListener\eventListener.h">
       <Filter>Source Files\src\eventListener</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\sceneNode.h">
+      <Filter>Source Files\src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\sceneGraph.h">
+      <Filter>Source Files\src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shader\shader.h">
+      <Filter>Source Files\src\shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

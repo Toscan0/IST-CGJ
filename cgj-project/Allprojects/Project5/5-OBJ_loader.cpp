@@ -32,7 +32,7 @@
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 #include "src/mesh/mesh.h"
-#include "src/shaders/shaders.h"
+#include "src/shader/shader.h"
 #include "src/error/error.h"
 #include "src/camera/camera.h"
 #include "src/vector/vector3/vector3.h"
@@ -45,6 +45,8 @@
 #define VERTICES 0
 #define TEXCOORDS 1
 #define NORMALS 2
+#define DEGTORAD 0.0174532925
+#define M_PI 3.14159265358979323846
 
 int WinX = 640, WinY = 480;
 int WindowHandle = 0;
@@ -69,8 +71,8 @@ camera mainCamera;
 matrixFactory mf;
 mesh myMesh;
 mesh tableMesh;
-shaders myShader;
-shaders tableShader;
+shader myShader;
+shader tableShader;
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -142,7 +144,7 @@ const Matrix ModelMatrix = {
 	0.0f,  0.0f,  1.0f,  0.0f,
 	0.0f,  0.0f,  0.0f,  1.0f
 }; // Column Major
-
+/*
 // Eye(5,5,5) Center(0,0,0) Up(0,1,0)
 const Matrix ViewMatrix1 = {
 	0.70f, -0.41f,  0.58f,  0.00f,
@@ -158,7 +160,7 @@ const Matrix ViewMatrix2 = {
 	0.70f, -0.41f, -0.58f,  0.00f,
 	0.00f,  0.00f, -8.70f,  1.00f
 }; // Column Major
-
+*/
 // Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
 const Matrix ProjectionMatrix1 = {
 	0.50f,  0.00f,  0.00f,  0.00f,
@@ -166,7 +168,7 @@ const Matrix ProjectionMatrix1 = {
 	0.00f,  0.00f, -0.22f,  0.00f,
 	0.00f,  0.00f, -1.22f,  1.00f
 }; // Column Major
-
+/*
 // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
 const Matrix ProjectionMatrix2 = {
 	2.79f,  0.00f,  0.00f,  0.00f,
@@ -174,6 +176,7 @@ const Matrix ProjectionMatrix2 = {
 	0.00f,  0.00f, -1.22f, -1.00f,
 	0.00f,  0.00f, -2.22f,  0.00f
 }; // Column Major
+*/
 
 void drawScene()
 {
@@ -187,7 +190,12 @@ void drawScene()
 		viewMatrix[i] = vM.data()[i];
 	}
 	glUniformMatrix4fv(myShader.getViewMatrix_UId(), 1, GL_FALSE, viewMatrix);
-	glUniformMatrix4fv(myShader.getProjectionMatrix_UId(), 1, GL_FALSE, ProjectionMatrix2);
+	matrix4x4 mP = mainCamera.getPrespMatrix();
+	Matrix prespMatrix;
+	for (int i = 0; i < 16; ++i) {
+		prespMatrix[i] = mP.data()[i];
+	}
+	glUniformMatrix4fv(myShader.getProjectionMatrix_UId(), 1, GL_FALSE, prespMatrix);
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)myMesh.getVertices().size());
 
 	glUseProgram(0);
@@ -300,32 +308,7 @@ void OnMouseMove(int x, int y) {
 		mainCamera.setViewMatrix(vMT);
 	}
 	if (g_cam == true) {
-		float x_aux = (x - g_oldX); // angle to rotate in x (DEG)
-		float y_aux = (y - g_oldY); // angle to rotate in y (DEG)
-		g_oldX = (float)x;
-		g_oldY = (float)y;
-
-		vector3 view = (mainCamera.getCenter() - mainCamera.getEye());
-		view = view.normalizado();
-		vector3 up = up.normalizado();
-
-		matrix4x4 mRot = mf.rotationMatrix4x4(up, x_aux);
-		matrix3x3 mRot_3x3(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
-
-		view = (mRot_3x3 * view);
-		vector3 side = cross(view, up);
-		mRot = mf.rotationMatrix4x4(side, y_aux);
-		matrix3x3 mRot_3x31(mRot._a, mRot._b, mRot._c, mRot._e, mRot._f, mRot._g, mRot._i, mRot._j, mRot._k);
-		view = (mRot_3x31 * view);
-
-		up = (mRot_3x31 * up);
-
-		vector3 newCenter = (mainCamera.getEye() + view);
-
-		vector3 aux = mainCamera.getEye();
-		mainCamera.makeViewMatrix(aux, newCenter, up);
-
-		mainCamera.setCenter(newCenter);
+		
 	}
 }
 
@@ -409,8 +392,11 @@ void myInit() {
 	mainCamera.setCenter(center);
 	mainCamera.setUp(up);
 
+	//view Matrix
 	mainCamera.makeViewMatrix(mainCamera.getEye(), mainCamera.getCenter(), mainCamera.getUp());
-	
+	// projection Matrix Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
+	mainCamera.makePrespMatrix((M_PI / 6), (640.0f / 480.0f), 1, 10);
+
 	// Mesh load
 	//myMesh.createMesh(std::string("../../assets/models/cube.obj"), myShader); // cube
 	//myMesh.createMesh(std::string("../../assets/models/duck.obj"), myShader); // duck

@@ -25,5 +25,5 @@ struct matrixFactory {
 
 	const static matrix4x4 viewMatrix(const vector3&, const vector3&, const vector3&);
 	static matrix4x4 orthMatrix(float, float, float, float, float, float);
-	static matrix4x4 prespMatrix(float, float, float, float);
+	static matrix4x4 prespMatrix(const float, const float, const float, const float);
 };

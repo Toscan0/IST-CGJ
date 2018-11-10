@@ -1,8 +1,8 @@
-#include "shaders.h"
+#include "shader.h"
 
-shaders::shaders() {}
+shader::shader() {}
 
-const std::string shaders::read(const std::string& filename)
+const std::string shader::read(const std::string& filename)
 {
 	std::ifstream ifile(filename);
 	std::string shader_string, line;
@@ -12,7 +12,7 @@ const std::string shaders::read(const std::string& filename)
 	return shader_string;
 }
 
-const GLuint shaders::checkCompilation(const GLuint shader_id, const std::string& filename)
+const GLuint shader::checkCompilation(const GLuint shader_id, const std::string& filename)
 {
 	GLint compiled;
 	glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compiled);
@@ -27,7 +27,7 @@ const GLuint shaders::checkCompilation(const GLuint shader_id, const std::string
 	return compiled;
 }
 
-void shaders::checkLinkage(const GLuint program_id) {
+void shader::checkLinkage(const GLuint program_id) {
 	GLint linked;
 	glGetProgramiv(program_id, GL_LINK_STATUS, &linked);
 	if (linked == GL_FALSE) {
@@ -40,7 +40,7 @@ void shaders::checkLinkage(const GLuint program_id) {
 	}
 }
 
-const GLuint shaders::addShader(const GLuint program_id, const GLenum shader_type, const std::string& filename)
+const GLuint shader::addShader(const GLuint program_id, const GLenum shader_type, const std::string& filename)
 {
 	const GLuint shader_id = glCreateShader(shader_type);
 	const std::string scode = read(filename);
@@ -52,7 +52,7 @@ const GLuint shaders::addShader(const GLuint program_id, const GLenum shader_typ
 	return shader_id;
 }
 
-void shaders::createShaderProgram(const std::string& vs_file, const std::string& fs_file)
+void shader::createShaderProgram(const std::string& vs_file, const std::string& fs_file)
 {
 	_ProgramId = glCreateProgram();
 
@@ -80,7 +80,7 @@ void shaders::createShaderProgram(const std::string& vs_file, const std::string&
 	checkOpenGLError("ERROR: Could not create shaders.");
 }
 
-void shaders::destroyShaderProgram()
+void shader::destroyShaderProgram()
 {
 	glUseProgram(0);
 	glDeleteProgram(_ProgramId);
@@ -88,35 +88,35 @@ void shaders::destroyShaderProgram()
 	checkOpenGLError("ERROR: Could not destroy shaders.");
 }
 
-const bool shaders::getTexcoordsLoaded() {
+const bool shader::getTexcoordsLoaded() {
 	return _TexcoordsLoaded;
 }
 
-const bool shaders::getNormalsLoaded() {
+const bool shader::getNormalsLoaded() {
 	return _NormalsLoaded;
 }
 
-const void shaders::setTexcoordsLoaded(const bool texCoordsLoaded) {
+const void shader::setTexcoordsLoaded(const bool texCoordsLoaded) {
 	_TexcoordsLoaded = texCoordsLoaded;
 }
 
-const void shaders::setNormalsLoaded(const bool normalsLoaded) {
+const void shader::setNormalsLoaded(const bool normalsLoaded) {
 	_NormalsLoaded = normalsLoaded;
 }
 
 
-const GLuint shaders::getProgramId() {
+const GLuint shader::getProgramId() {
 	return _ProgramId;
 }
 
-const GLint shaders::getModelMatrix_UId() {
+const GLint shader::getModelMatrix_UId() {
 	return _ModelMatrix_UId;
 }
 
-const GLint shaders::getViewMatrix_UId() {
+const GLint shader::getViewMatrix_UId() {
 	return _ViewMatrix_UId;
 }
 
-const GLint shaders::getProjectionMatrix_UId() {
+const GLint shader::getProjectionMatrix_UId() {
 	return _ProjectionMatrix_UId;
 }

@@ -7,6 +7,7 @@ const matrix4x4 camera::makeViewMatrix(const vector3& eye, const vector3& center
 	typedef GLfloat Matrix[16];
 	Matrix ViewMatrix;
 	matrixFactory mf;
+	
 	matrix4x4 vM = mf.viewMatrix(eye, center, up);
 	matrix4x4 vMAux = vM.transposeM4x4();
 
@@ -15,6 +16,19 @@ const matrix4x4 camera::makeViewMatrix(const vector3& eye, const vector3& center
 	return vMAux;
 }
 
+const matrix4x4 camera::makePrespMatrix(const float fovy, const float aspect,
+	const float n, const float f) {
+	typedef GLfloat Matrix[16];
+	Matrix ViewMatrix;
+	matrixFactory mf;
+	
+	matrix4x4 mP = mf.prespMatrix(fovy, aspect, n, f); // matrix prespetiva
+	matrix4x4 mPAux = mP.transposeM4x4();
+
+	setPrespMatrix(mPAux);
+
+	return mPAux;
+}
 
 
 

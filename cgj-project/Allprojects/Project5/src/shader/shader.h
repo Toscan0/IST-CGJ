@@ -11,14 +11,14 @@
 #define TEXCOORDS 1
 #define NORMALS 2
 
-class shaders {
+class shader {
 	protected:
 		bool _TexcoordsLoaded, _NormalsLoaded;
 		GLuint _ProgramId;
 		GLint _ModelMatrix_UId, _ViewMatrix_UId, _ProjectionMatrix_UId;
 	
 	public:	
-		shaders();
+		shader();
 		
 		const std::string read(const std::string& filename);
 		const GLuint checkCompilation(const GLuint shader_id, const std::string& filename);

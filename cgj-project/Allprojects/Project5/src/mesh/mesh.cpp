@@ -46,7 +46,7 @@ void mesh::parseLine(std::stringstream& sin)
 	else if (s.compare("f") == 0) parseFace(sin);
 }
 
-void mesh::loadMeshData(const std::string& filename, shaders& myShader)
+void mesh::loadMeshData(const std::string& filename, shader& myShader)
 {
 	std::ifstream ifile(filename);
 	std::string line;
@@ -58,7 +58,7 @@ void mesh::loadMeshData(const std::string& filename, shaders& myShader)
 	myShader.setNormalsLoaded((_normalIdx.size() > 0));
 }
 
-void mesh::processMeshData(shaders& myShader)
+void mesh::processMeshData(shader& myShader)
 {
 	for (unsigned int i = 0; i < _vertexIdx.size(); i++) {
 		unsigned int vi = _vertexIdx[i];
@@ -87,7 +87,7 @@ void mesh::freeMeshData()
 	_normalIdx.clear();
 }
 
-const void mesh::createMesh(const std::string& filename, shaders& myShader)
+const void mesh::createMesh(const std::string& filename, shader& myShader)
 {
 	loadMeshData(filename, myShader);
 	processMeshData(myShader);

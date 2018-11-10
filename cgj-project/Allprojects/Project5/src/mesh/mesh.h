@@ -9,7 +9,7 @@
 #include "../matrix/matrixFactory/matrixFactory.h"
 #include "../matrix/matrix4x4/matrix4x4.h"
 #include "../vector/vector3/vector3.h"
-#include "../shaders/shaders.h"
+#include "../shader/shader.h"
 
 typedef struct {
 	GLfloat x, y, z;
@@ -33,15 +33,15 @@ class mesh{
 	public:
 		mesh();
 
-		const void createMesh(const std::string& filename, shaders& myShader);
+		const void createMesh(const std::string& filename, shader& myShader);
 
 		void parseVertex(std::stringstream& sin);
 		void parseTexcoord(std::stringstream& sin);
 		void parseNormal(std::stringstream& sin);
 		void parseFace(std::stringstream& sin);
 		void parseLine(std::stringstream& sin);
-		void loadMeshData(const std::string& filename, shaders& myShader);
-		void processMeshData(shaders& myShader);
+		void loadMeshData(const std::string& filename, shader& myShader);
+		void processMeshData(shader& myShader);
 		void freeMeshData();
 
 		// get & set

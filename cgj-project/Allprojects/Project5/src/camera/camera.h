@@ -15,9 +15,9 @@ class camera {
 	
 	public:
 		camera();
-		//camera(vector3&, vector3&);
+		
 		const matrix4x4 makeViewMatrix(const vector3&, const vector3&, const vector3&);
-
+		const matrix4x4 makePrespMatrix(const float fovy, const float aspect, const float n, const float f);
 		// get & set
 		const matrix4x4 getViewMatrix();
 		const matrix4x4 getPrespMatrix();
