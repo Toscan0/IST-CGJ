@@ -14,17 +14,10 @@ public:
 	camera* _camera;
 	shader* _shader;
 	sceneNode* _root;
-	GLuint uboHandle;
-	GLuint UboID;
-	GLubyte *blockBuffer;
-	GLint blockSize;
-	GLuint indices[7];
-	GLint offset[7];
-	GLchar *names[7];
 
 	sceneGraph(camera* camera, shader* shader);
 
-	void InitializeUniformBlock();
+	//void InitializeUniformBlock();
 
 	void setCamera(camera *c);
 	camera* getCamera();
@@ -34,6 +27,4 @@ public:
 
 	void setRoot(sceneNode *r);
 	sceneNode *getRoot();
-
-	void draw();
 };
