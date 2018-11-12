@@ -1,11 +1,11 @@
 #include "sceneGraph.h"
 
-sceneGraph::sceneGraph(camera* camera, shader* shader) {
-	_camera = camera;
-	_shader = shader;
-}
+sceneGraph::sceneGraph() {}
 
-//void sceneGraph::InitializeUniformBlock();
+sceneGraph::sceneGraph(camera* camera, shader* shader) {
+	this->setCamera(camera);
+	this->setShader(shader);
+}
 
 void sceneGraph::setCamera(camera* c) {
 	_camera = c;

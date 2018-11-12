@@ -2,6 +2,13 @@
 
 mesh::mesh() {}
 
+const void mesh::createMesh(const std::string& filename, shader& myShader)
+{
+	loadMeshData(filename, myShader);
+	processMeshData(myShader);
+	freeMeshData();
+}
+
 void mesh::parseVertex(std::stringstream& sin)
 {
 	Vertex v;
@@ -56,6 +63,8 @@ void mesh::loadMeshData(const std::string& filename, shader& myShader)
 	}
 	myShader.setTexcoordsLoaded((_texcoordIdx.size() > 0));
 	myShader.setNormalsLoaded((_normalIdx.size() > 0));
+	//_TexcoordsLoaded = (_texcoordIdx.size() > 0);
+	//_NormalsLoaded = (_normalIdx.size() > 0);
 }
 
 void mesh::processMeshData(shader& myShader)
@@ -87,12 +96,17 @@ void mesh::freeMeshData()
 	_normalIdx.clear();
 }
 
-const void mesh::createMesh(const std::string& filename, shader& myShader)
-{
-	loadMeshData(filename, myShader);
-	processMeshData(myShader);
-	freeMeshData();
-}
+/*void mesh::destroyBufferObjects(){
+	glBindVertexArray(_VaoId);
+	glDisableVertexAttribArray(VERTICES);
+	glDisableVertexAttribArray(TEXCOORDS);
+	glDisableVertexAttribArray(NORMALS);
+	glDeleteVertexArrays(1, &_VaoId);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
+}*/
 
 // get
 const std::vector<Vertex> mesh::getVertices() {
@@ -130,3 +144,7 @@ const std::vector<unsigned int> mesh::getTexcoodIdx() {
 const std::vector<unsigned int> mesh::getNormalIdx() {
 	return _normalIdx;
 }
+
+/*const GLuint mesh::getVaoId() {
+	return _VaoId;
+}*/

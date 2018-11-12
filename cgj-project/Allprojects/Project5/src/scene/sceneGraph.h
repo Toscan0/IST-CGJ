@@ -15,9 +15,8 @@ public:
 	shader* _shader;
 	sceneNode* _root;
 
+	sceneGraph();
 	sceneGraph(camera* camera, shader* shader);
-
-	//void InitializeUniformBlock();
 
 	void setCamera(camera *c);
 	camera* getCamera();

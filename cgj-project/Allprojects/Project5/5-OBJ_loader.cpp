@@ -41,6 +41,9 @@
 #include "src/matrix/matrix4x4/matrix4x4.h"
 #include "src/qtrn/qtrn.h"
 
+#include "src/scene/sceneGraph.h"
+#include "src/scene/sceneNode.h"
+
 #define CAPTION "Loading World"
 #define VERTICES 0
 #define TEXCOORDS 1
@@ -73,6 +76,9 @@ mesh myMesh;
 mesh tableMesh;
 shader myShader;
 shader tableShader;
+
+sceneGraph sG;
+sceneNode * rootNode;
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -267,17 +273,8 @@ void mouseWheel(int wheel, int direction, int x, int y) {
 }
 
 void OnMouseDown(int button, int state, int x, int y) {
-	// Camera 
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-		//g_cam = true;
-		g_rot = false;
-		g_oldX = x;
-		g_oldY = y;
-	}
-	// Rotate the image
-	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) { 
 		g_rot = true;
-		g_cam = false;
 		g_oldX = x;
 		g_oldY = y;
 	}	
@@ -306,9 +303,6 @@ void OnMouseMove(int x, int y) {
 		matrix4x4 vM = T * mR; // view matrix
 		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
 		mainCamera.setViewMatrix(vMT);
-	}
-	if (g_cam == true) {
-		
 	}
 }
 
@@ -392,11 +386,11 @@ void myInit() {
 	mainCamera.setCenter(center);
 	mainCamera.setUp(up);
 
-	//view Matrix
+	// View Matrix
 	mainCamera.makeViewMatrix(mainCamera.getEye(), mainCamera.getCenter(), mainCamera.getUp());
 	// projection Matrix Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
 	mainCamera.makePrespMatrix((M_PI / 6), (640.0f / 480.0f), 1, 10);
-
+	
 	// Mesh load
 	//myMesh.createMesh(std::string("../../assets/models/cube.obj"), myShader); // cube
 	//myMesh.createMesh(std::string("../../assets/models/duck.obj"), myShader); // duck
@@ -414,6 +408,27 @@ void myInit() {
 	createBufferObjects();
 }
 
+
+void createScene() {
+	sG.setCamera(&mainCamera);
+	sG.setShader(&myShader);
+	
+	rootNode = new sceneNode();
+	rootNode->setModelMatrix(mf.identityMatrix4x4());
+	rootNode->setMesh(&myMesh);
+	rootNode->setShader(&myShader);
+
+	sceneNode* node;
+	node = new sceneNode();
+	node->setModelMatrix(mf.identityMatrix4x4());
+	node->setMesh(&myMesh);
+	node->setShader(&myShader);
+	rootNode->addNode(node);
+
+	sG.setRoot(rootNode);
+
+}
+
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
@@ -422,6 +437,7 @@ void init(int argc, char* argv[])
 	setupCallbacks();
 
 	myInit();
+	createScene();
 }
 
 int main(int argc, char* argv[])

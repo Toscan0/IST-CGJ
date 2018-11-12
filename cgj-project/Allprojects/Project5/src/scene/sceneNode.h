@@ -14,14 +14,22 @@ class sceneNode {
 		//vector3 _color;
 		shader* _shader;
 		std::vector<sceneNode*> _nodes;
+	
 	public:
 		sceneNode();
-		void setModelMatrix(matrix4x4 &modelMatrix);
+		
+		void setModelMatrix(const matrix4x4 &modelMatrix);
 		const matrix4x4 getModelMatrix();
+		
 		void setMesh(mesh* m);
 		const mesh* getMesh();
+
 		void setShader(shader* s);
 		const shader* getShader();
-		void draw(matrix4x4& modelMatrix);
+		
+		
 		void addNode(sceneNode *node);
+		const std::vector<sceneNode*> getNodes();
+	
+		void draw(matrix4x4& modelMatrix);
 };

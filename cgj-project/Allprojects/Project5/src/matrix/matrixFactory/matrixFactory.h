@@ -17,7 +17,7 @@ struct matrixFactory {
 	static matrix3x3 rodriguez(vector3&, double);
 
 	// matrix4x4
-	static matrix4x4 identityMatrix4x4();
+	static const matrix4x4 identityMatrix4x4();
 
 	static matrix4x4 translationMatrix4x4(vector3& vc);
 	static matrix4x4 scalingMatrix4x4(vector3& vc);

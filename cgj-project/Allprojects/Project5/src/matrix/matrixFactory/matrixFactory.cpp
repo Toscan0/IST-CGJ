@@ -12,7 +12,7 @@ matrix3x3 matrixFactory::identityMatrix3x3() {
 }
 
 // Matrix 4x4
-matrix4x4 matrixFactory::identityMatrix4x4() {
+const matrix4x4 matrixFactory::identityMatrix4x4() {
 
 	matrix4x4 ind(1, 0, 0, 0, 
 				0, 1, 0, 0,

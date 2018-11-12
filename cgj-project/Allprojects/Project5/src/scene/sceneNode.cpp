@@ -2,7 +2,7 @@
 
 sceneNode::sceneNode() {}
 
-void sceneNode::setModelMatrix(matrix4x4 &modelMatrix) {
+void sceneNode::setModelMatrix(const matrix4x4 &modelMatrix) {
 	_modelMatrix = modelMatrix;
 }
 
@@ -28,4 +28,8 @@ const shader* sceneNode::getShader() {
 
 void sceneNode::addNode(sceneNode* node) {
 	_nodes.push_back(node);
+}
+
+const std::vector<sceneNode*> sceneNode::getNodes() {
+	return _nodes;
 }

@@ -29,7 +29,16 @@ class mesh{
 		std::vector <Texcoord> _Texcoords, _texcoordData;
 		std::vector <Normal> _Normals, _normalData;
 		std::vector <unsigned int> _vertexIdx, _texcoordIdx, _normalIdx;
+		//GLuint _VaoId;
+		/////////
+		bool _TexcoordsLoaded;
+		bool _NormalsLoaded;
 
+		#define VERTICES 0
+		#define TEXCOORDS 1
+		#define NORMALS 2
+
+		GLuint _VaoId;
 	public:
 		mesh();
 
@@ -43,6 +52,7 @@ class mesh{
 		void loadMeshData(const std::string& filename, shader& myShader);
 		void processMeshData(shader& myShader);
 		void freeMeshData();
+		//void destroyBufferObjects();
 
 		// get & set
 		const std::vector<Vertex> getVertices();
@@ -54,5 +64,6 @@ class mesh{
 		const std::vector<unsigned int> getVertexID();
 		const std::vector<unsigned int> getTexcoodIdx();
 		const std::vector<unsigned int> getNormalIdx();
+		//const GLuint getVaoId();
 };
 

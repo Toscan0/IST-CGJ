@@ -76,6 +76,12 @@
     <Filter Include="Source Files\src\shader">
       <UniqueIdentifier>{16292e60-5db4-4bcd-bf19-35d38ec44d14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\scene\sceneNode">
+      <UniqueIdentifier>{7140567f-be01-4641-80a3-061a7c549188}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\scene\sceneGraph">
+      <UniqueIdentifier>{bd3207f1-2b3c-4fb7-adea-92bb891bc8c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp">
@@ -129,14 +135,14 @@
     <ClCompile Include="src\eventListener\eventListener.cpp">
       <Filter>Source Files\src\eventListener</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\sceneNode.cpp">
-      <Filter>Source Files\src\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene\sceneGraph.cpp">
-      <Filter>Source Files\src\scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\shader\shader.cpp">
       <Filter>Source Files\src\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\sceneNode.cpp">
+      <Filter>Source Files\src\scene\sceneNode</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\sceneGraph.cpp">
+      <Filter>Source Files\src\scene\sceneGraph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,14 +185,14 @@
     <ClInclude Include="src\eventListener\eventListener.h">
       <Filter>Source Files\src\eventListener</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\sceneNode.h">
-      <Filter>Source Files\src\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\sceneGraph.h">
-      <Filter>Source Files\src\scene</Filter>
-    </ClInclude>
     <ClInclude Include="src\shader\shader.h">
       <Filter>Source Files\src\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\sceneNode.h">
+      <Filter>Source Files\src\scene\sceneNode</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\sceneGraph.h">
+      <Filter>Source Files\src\scene\sceneGraph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
