@@ -13,7 +13,7 @@
 
 class shader {
 	protected:
-		bool _TexcoordsLoaded, _NormalsLoaded;
+		//bool _TexcoordsLoaded, _NormalsLoaded;
 		GLuint _ProgramId;
 		GLint _ModelMatrix_UId, _ViewMatrix_UId, _ProjectionMatrix_UId;
 	
@@ -25,14 +25,14 @@ class shader {
 		void checkLinkage(const GLuint program_id);
 		const GLuint addShader(const GLuint program_id, 
 			const GLenum shader_type, const std::string& filename);
-		void createShaderProgram(const std::string& vs_file, const std::string& fs_file);
+		void createShaderProgram(const std::string& vs_file, const std::string& fs_file, bool texcoordsLoaded, bool mormalsLoaded);
 		void destroyShaderProgram();
 
 		// get & set
-		const bool getTexcoordsLoaded(); 
-		const bool getNormalsLoaded();
-		const void setTexcoordsLoaded(const bool texCoordsLoaded);
-		const void setNormalsLoaded(const bool normalsLoaded);
+		//const bool getTexcoordsLoaded(); 
+		//const bool getNormalsLoaded();
+		//const void setTexcoordsLoaded(const bool texCoordsLoaded);
+		//const void setNormalsLoaded(const bool normalsLoaded);
 
 		const GLuint getProgramId();
 		const GLint getModelMatrix_UId();

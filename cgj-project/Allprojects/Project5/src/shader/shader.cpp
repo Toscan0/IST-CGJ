@@ -52,7 +52,7 @@ const GLuint shader::addShader(const GLuint program_id, const GLenum shader_type
 	return shader_id;
 }
 
-void shader::createShaderProgram(const std::string& vs_file, const std::string& fs_file)
+void shader::createShaderProgram(const std::string& vs_file, const std::string& fs_file, bool texcoordsLoaded, bool mormalsLoaded)
 {
 	_ProgramId = glCreateProgram();
 
@@ -60,9 +60,9 @@ void shader::createShaderProgram(const std::string& vs_file, const std::string& 
 	GLuint FragmentShaderId = addShader(_ProgramId, GL_FRAGMENT_SHADER, fs_file);
 
 	glBindAttribLocation(_ProgramId, VERTICES, "inPosition");
-	if (_TexcoordsLoaded)
+	if (texcoordsLoaded)
 		glBindAttribLocation(_ProgramId, TEXCOORDS, "inTexcoord");
-	if (_NormalsLoaded)
+	if (mormalsLoaded)
 		glBindAttribLocation(_ProgramId, NORMALS, "inNormal");
 
 	glLinkProgram(_ProgramId);
@@ -88,7 +88,7 @@ void shader::destroyShaderProgram()
 	checkOpenGLError("ERROR: Could not destroy shaders.");
 }
 
-const bool shader::getTexcoordsLoaded() {
+/*const bool shader::getTexcoordsLoaded() {
 	return _TexcoordsLoaded;
 }
 
@@ -102,7 +102,7 @@ const void shader::setTexcoordsLoaded(const bool texCoordsLoaded) {
 
 const void shader::setNormalsLoaded(const bool normalsLoaded) {
 	_NormalsLoaded = normalsLoaded;
-}
+}*/
 
 
 const GLuint shader::getProgramId() {

@@ -61,10 +61,10 @@ void mesh::loadMeshData(const std::string& filename, shader& myShader)
 		std::stringstream sin = std::stringstream(line);
 		parseLine(sin);
 	}
-	myShader.setTexcoordsLoaded((_texcoordIdx.size() > 0));
-	myShader.setNormalsLoaded((_normalIdx.size() > 0));
-	//_TexcoordsLoaded = (_texcoordIdx.size() > 0);
-	//_NormalsLoaded = (_normalIdx.size() > 0);
+	//myShader.setTexcoordsLoaded((_texcoordIdx.size() > 0));
+	//myShader.setNormalsLoaded((_normalIdx.size() > 0));
+	_TexcoordsLoaded = (_texcoordIdx.size() > 0);
+	_NormalsLoaded = (_normalIdx.size() > 0);
 }
 
 void mesh::processMeshData(shader& myShader)
@@ -73,12 +73,12 @@ void mesh::processMeshData(shader& myShader)
 		unsigned int vi = _vertexIdx[i];
 		Vertex v = _vertexData[vi - 1];
 		_Vertices.push_back(v);
-		if (myShader.getTexcoordsLoaded()) {
+		if (_TexcoordsLoaded) {
 			unsigned int ti = _texcoordIdx[i];
 			Texcoord t = _texcoordData[ti - 1];
 			_Texcoords.push_back(t);
 		}
-		if (myShader.getNormalsLoaded()) {
+		if (_NormalsLoaded) {
 			unsigned int ni = _normalIdx[i];
 			Normal n = _normalData[ni - 1];
 			_Normals.push_back(n);
@@ -96,7 +96,71 @@ void mesh::freeMeshData()
 	_normalIdx.clear();
 }
 
-/*void mesh::destroyBufferObjects(){
+void mesh::draw(shader shader, camera camera) {
+	glBindVertexArray(_VaoId);
+	glUseProgram(shader.getProgramId());
+
+	glUniformMatrix4fv(shader.getModelMatrix_UId(), 1, GL_FALSE, ModelMatrix);
+	matrix4x4 vM = camera.getViewMatrix();
+	Matrix viewMatrix;
+	for (int i = 0; i < 16; ++i) {
+		viewMatrix[i] = vM.data()[i];
+	}
+	glUniformMatrix4fv(shader.getViewMatrix_UId(), 1, GL_FALSE, viewMatrix);
+	matrix4x4 mP = camera.getPrespMatrix();
+	Matrix prespMatrix;
+	for (int i = 0; i < 16; ++i) {
+		prespMatrix[i] = mP.data()[i];
+	}
+	glUniformMatrix4fv(shader.getProjectionMatrix_UId(), 1, GL_FALSE, prespMatrix);
+	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)_Vertices.size());
+
+	glUseProgram(0);
+	glBindVertexArray(0);
+
+	checkOpenGLError("ERROR: Could not draw scene.");
+}
+
+void mesh::createBufferObjects()
+{
+	GLuint VboVertices, VboTexcoords, VboNormals;
+
+	glGenVertexArrays(1, &_VaoId);
+	glBindVertexArray(_VaoId);
+	{
+		glGenBuffers(1, &VboVertices);
+		glBindBuffer(GL_ARRAY_BUFFER, VboVertices);
+		glBufferData(GL_ARRAY_BUFFER, _Vertices.size() * sizeof(Vertex), &_Vertices[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(VERTICES);
+		glVertexAttribPointer(VERTICES, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
+		if (_TexcoordsLoaded)
+		{
+			glGenBuffers(1, &VboTexcoords);
+			glBindBuffer(GL_ARRAY_BUFFER, VboTexcoords);
+			glBufferData(GL_ARRAY_BUFFER, _Texcoords.size() * sizeof(Texcoord), &_Texcoords[0], GL_STATIC_DRAW);
+			glEnableVertexAttribArray(TEXCOORDS);
+			glVertexAttribPointer(TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(Texcoord), 0);
+		}
+		if (_NormalsLoaded)
+		{
+			glGenBuffers(1, &VboNormals);
+			glBindBuffer(GL_ARRAY_BUFFER, VboNormals);
+			glBufferData(GL_ARRAY_BUFFER, _Normals.size() * sizeof(Normal), &_Normals[0], GL_STATIC_DRAW);
+			glEnableVertexAttribArray(NORMALS);
+			glVertexAttribPointer(NORMALS, 3, GL_FLOAT, GL_FALSE, sizeof(Normal), 0);
+		}
+	}
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDeleteBuffers(1, &VboVertices);
+	glDeleteBuffers(1, &VboTexcoords);
+	glDeleteBuffers(1, &VboNormals);
+
+	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
+}
+
+void mesh::destroyBufferObjects(){
 	glBindVertexArray(_VaoId);
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(TEXCOORDS);
@@ -106,7 +170,10 @@ void mesh::freeMeshData()
 	glBindVertexArray(0);
 
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
-}*/
+}
+
+
+
 
 // get
 const std::vector<Vertex> mesh::getVertices() {
@@ -145,6 +212,14 @@ const std::vector<unsigned int> mesh::getNormalIdx() {
 	return _normalIdx;
 }
 
-/*const GLuint mesh::getVaoId() {
+const GLuint mesh::getVaoId() {
 	return _VaoId;
-}*/
+}
+
+const bool mesh::getTexcoordsLoaded() {
+	return _TexcoordsLoaded;
+}
+
+const bool mesh::getNormalsLoaded() {
+	return _NormalsLoaded;
+}

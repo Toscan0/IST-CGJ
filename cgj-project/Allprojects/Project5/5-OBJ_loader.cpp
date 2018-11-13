@@ -55,8 +55,6 @@ int WinX = 640, WinY = 480;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
-GLuint VaoId;
-
 bool g_rot = false;
 bool g_cam = false;
 int g_oldX = 0;
@@ -83,131 +81,19 @@ sceneNode * rootNode;
 
 void createBufferObjects()
 {
-	GLuint VboVertices, VboTexcoords, VboNormals;
-
-	glGenVertexArrays(1, &VaoId);
-	glBindVertexArray(VaoId);
-	{
-		glGenBuffers(1, &VboVertices);
-		glBindBuffer(GL_ARRAY_BUFFER, VboVertices);
-		glBufferData(GL_ARRAY_BUFFER, myMesh.getVertices().size() * sizeof(Vertex), &myMesh.getVertices()[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(VERTICES);
-		glVertexAttribPointer(VERTICES, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-
-		if (myShader.getTexcoordsLoaded())
-		{
-			glGenBuffers(1, &VboTexcoords);
-			glBindBuffer(GL_ARRAY_BUFFER, VboTexcoords);
-			glBufferData(GL_ARRAY_BUFFER, myMesh.getTexcoords().size() * sizeof(Texcoord), &myMesh.getTexcoords()[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(TEXCOORDS);
-			glVertexAttribPointer(TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(Texcoord), 0);
-		}
-		if (myShader.getNormalsLoaded())
-		{
-			glGenBuffers(1, &VboNormals);
-			glBindBuffer(GL_ARRAY_BUFFER, VboNormals);
-			glBufferData(GL_ARRAY_BUFFER, myMesh.getNormals().size() * sizeof(Normal), &myMesh.getNormals()[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(NORMALS);
-			glVertexAttribPointer(NORMALS, 3, GL_FLOAT, GL_FALSE, sizeof(Normal), 0);
-		}
-	}
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &VboVertices);
-	glDeleteBuffers(1, &VboTexcoords);
-	glDeleteBuffers(1, &VboNormals);
-
-	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
+	myMesh.createBufferObjects();
 }
 
 void destroyBufferObjects()
 {
-	glBindVertexArray(VaoId);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(TEXCOORDS);
-	glDisableVertexAttribArray(NORMALS);
-	glDeleteVertexArrays(1, &VaoId);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
+	myMesh.destroyBufferObjects();
 }
 
 /////////////////////////////////////////////////////////////////////// SCENE
 
-typedef GLfloat Matrix[16];
-
-const Matrix I = {
-	1.0f,  0.0f,  0.0f,  0.0f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-};
-
-const Matrix ModelMatrix = {
-	1.0f,  0.0f,  0.0f,  0.0f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-}; // Column Major
-/*
-// Eye(5,5,5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix1 = {
-	0.70f, -0.41f,  0.58f,  0.00f,
-	0.00f,  0.82f,  0.58f,  0.00f,
-   -0.70f, -0.41f,  0.58f,  0.00f,
-	0.00f,  0.00f, -8.70f,  1.00f
-}; // Column Major
-
-// Eye(-5,-5,-5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix2 = {
-   -0.70f, -0.41f, -0.58f,  0.00f,
-	0.00f,  0.82f, -0.58f,  0.00f,
-	0.70f, -0.41f, -0.58f,  0.00f,
-	0.00f,  0.00f, -8.70f,  1.00f
-}; // Column Major
-*/
-// Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
-const Matrix ProjectionMatrix1 = {
-	0.50f,  0.00f,  0.00f,  0.00f,
-	0.00f,  0.50f,  0.00f,  0.00f,
-	0.00f,  0.00f, -0.22f,  0.00f,
-	0.00f,  0.00f, -1.22f,  1.00f
-}; // Column Major
-/*
-// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-const Matrix ProjectionMatrix2 = {
-	2.79f,  0.00f,  0.00f,  0.00f,
-	0.00f,  3.73f,  0.00f,  0.00f,
-	0.00f,  0.00f, -1.22f, -1.00f,
-	0.00f,  0.00f, -2.22f,  0.00f
-}; // Column Major
-*/
-
 void drawScene()
 {
-	glBindVertexArray(VaoId);
-	glUseProgram(myShader.getProgramId());
-
-	glUniformMatrix4fv(myShader.getModelMatrix_UId(), 1, GL_FALSE, ModelMatrix);
-	matrix4x4 vM = mainCamera.getViewMatrix();
-	Matrix viewMatrix;
-	for (int i = 0; i < 16; ++i) {
-		viewMatrix[i] = vM.data()[i];
-	}
-	glUniformMatrix4fv(myShader.getViewMatrix_UId(), 1, GL_FALSE, viewMatrix);
-	matrix4x4 mP = mainCamera.getPrespMatrix();
-	Matrix prespMatrix;
-	for (int i = 0; i < 16; ++i) {
-		prespMatrix[i] = mP.data()[i];
-	}
-	glUniformMatrix4fv(myShader.getProjectionMatrix_UId(), 1, GL_FALSE, prespMatrix);
-	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)myMesh.getVertices().size());
-
-	glUseProgram(0);
-	glBindVertexArray(0);
-
-	checkOpenGLError("ERROR: Could not draw scene.");
+	myMesh.draw(myShader, mainCamera);
 }
 
 /////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -400,10 +286,12 @@ void myInit() {
 	myMesh.createMesh(std::string("../../assets/models/tangram/triangle.obj"), myShader); // triangle
 	//table
 	myMesh.createMesh(std::string("../../assets/models/table/table.obj"), myShader); // triangle
-
+	
 	// Shaders load
 	myShader.createShaderProgram(std::string("../../assets/shaders/tangramShader/tangram_vs.glsl"),
-		std::string("../../assets/shaders/tangramShader/tangram_fs.glsl"));;
+		std::string("../../assets/shaders/tangramShader/tangram_fs.glsl"),
+		myMesh.getTexcoordsLoaded(),
+		myMesh.getNormalsLoaded());
 
 	createBufferObjects();
 }
