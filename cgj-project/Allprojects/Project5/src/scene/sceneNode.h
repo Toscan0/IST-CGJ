@@ -31,5 +31,5 @@ class sceneNode {
 		void addNode(sceneNode *node);
 		const std::vector<sceneNode*> getNodes();
 	
-		void draw(matrix4x4& modelMatrix);
+		void draw(const matrix4x4& modelMatrix, camera& cam);
 };

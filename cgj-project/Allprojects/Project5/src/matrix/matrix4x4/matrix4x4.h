@@ -41,9 +41,11 @@ struct matrix4x4 {
 	bool operator== (const matrix4x4&);
 	matrix4x4 operator+ (const matrix4x4&);
 	matrix4x4 operator- (const matrix4x4&);
-	matrix4x4 operator* (const matrix4x4&);
+	//matrix4x4 operator* (const matrix4x4&);
 	matrix4x4 operator* (const float);
 	vector4 operator* (const vector4& vc);
+
+	friend const matrix4x4 operator*(const matrix4x4&, const matrix4x4&);
 
 	float detM4x4();
 	matrix4x4 transposeM4x4();

@@ -70,9 +70,17 @@ qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
 
 camera mainCamera;
 matrixFactory mf;
-mesh myMesh;
+
+//mesh myMesh;
+mesh cubeMesh;
+mesh triangleMesh;
+mesh parallelogramMesh;
 mesh tableMesh;
-shader myShader;
+
+//shader myShader;
+shader cubeShader;
+shader triangleShader;
+shader parallelogramShader;
 shader tableShader;
 
 sceneGraph sG;
@@ -81,7 +89,10 @@ sceneNode * rootNode;
 
 void createBufferObjects()
 {
-	myMesh.createBufferObjects();
+	cubeMesh.createBufferObjects();
+	triangleMesh.createBufferObjects();
+	parallelogramMesh.createBufferObjects();
+
 	tableMesh.createBufferObjects();
 }
 
@@ -94,15 +105,19 @@ void destroyBufferObjects()
 
 void drawScene()
 {
-	myMesh.draw(myShader, mainCamera);
-	tableMesh.draw(tableShader, mainCamera);
+	//myMesh.draw(myShader, mainCamera);
+	//tableMesh.draw(tableShader, mainCamera);
+
+	sG.draw(mf.identityMatrix4x4());
 }
 
 /////////////////////////////////////////////////////////////////////// CALLBACKS
 
 void cleanup()
 {
-	myShader.destroyShaderProgram();
+	cubeShader.destroyShaderProgram();
+	triangleShader.destroyShaderProgram();
+	parallelogramShader.destroyShaderProgram();
 	destroyBufferObjects();
 }
 
@@ -283,19 +298,28 @@ void myInit() {
 	//myMesh.createMesh(std::string("../../assets/models/cube.obj"), myShader); // cube
 	//myMesh.createMesh(std::string("../../assets/models/duck.obj"), myShader); // duck
 	// tangram
-	myMesh.createMesh(std::string("../../assets/models/tangram/square.obj")); // cube
-	myMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj")); // parallelogram
-	myMesh.createMesh(std::string("../../assets/models/tangram/triangle.obj")); // triangle
+	cubeMesh.createMesh(std::string("../../assets/models/tangram/square.obj")); // cube
+	triangleMesh.createMesh(std::string("../../assets/models/tangram/triangle.obj")); // triangle
+	parallelogramMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj")); // parallelogram
 	//table
 	tableMesh.createMesh(std::string("../../assets/models/table/table.obj")); // table
 	
 	// Shaders load
-	myShader.createShaderProgram(
+	cubeShader.createShaderProgram(
 		std::string("../../assets/shaders/tangramShader/tangram_vs.glsl"),
 		std::string("../../assets/shaders/tangramShader/tangram_fs.glsl"),
-		myMesh.getTexcoordsLoaded(),
-		myMesh.getNormalsLoaded());
-
+		cubeMesh.getTexcoordsLoaded(),
+		cubeMesh.getNormalsLoaded());
+	triangleShader.createShaderProgram(
+		std::string("../../assets/shaders/tangramShader/tangram_vs.glsl"),
+		std::string("../../assets/shaders/tangramShader/tangram_fs.glsl"),
+		triangleMesh.getTexcoordsLoaded(),
+		triangleMesh.getNormalsLoaded());
+	parallelogramShader.createShaderProgram(
+		std::string("../../assets/shaders/tangramShader/tangram_vs.glsl"),
+		std::string("../../assets/shaders/tangramShader/tangram_fs.glsl"),
+		parallelogramMesh.getTexcoordsLoaded(),
+		parallelogramMesh.getNormalsLoaded());
 	tableShader.createShaderProgram(
 		std::string("../../assets/shaders/tableShader/table_vs.glsl"),
 		std::string("../../assets/shaders/tableShader/table_fs.glsl"),
@@ -307,23 +331,45 @@ void myInit() {
 
 
 void createScene() {
+	sceneNode *tangramNode, *cubePieceNode, *trianglePieceNode, *parallelogramPieceNode, *tableNode;
+
 	sG.setCamera(&mainCamera);
-	sG.setShader(&myShader);
+	//sG.setShader(&myShader);
 	
 	rootNode = new sceneNode();
 	rootNode->setModelMatrix(mf.identityMatrix4x4());
-	rootNode->setMesh(&myMesh);
-	rootNode->setShader(&myShader);
 
-	sceneNode* node;
-	node = new sceneNode();
-	node->setModelMatrix(mf.identityMatrix4x4());
-	node->setMesh(&myMesh);
-	node->setShader(&myShader);
-	rootNode->addNode(node);
+	
+	/*tangramNode = new sceneNode();
+	tangramNode->setModelMatrix(mf.identityMatrix4x4());
+	rootNode->addNode(tangramNode);*/
+
+	cubePieceNode = new sceneNode();
+	cubePieceNode->setModelMatrix(mf.identityMatrix4x4());
+	cubePieceNode->setMesh(&cubeMesh);
+	cubePieceNode->setShader(&cubeShader);
+	rootNode->addNode(cubePieceNode);
+
+	trianglePieceNode = new sceneNode();
+	vector3 v(1, 0, 0);
+	trianglePieceNode->setModelMatrix(mf.translationMatrix4x4(v) * mf.identityMatrix4x4());
+	trianglePieceNode->setMesh(&triangleMesh);
+	trianglePieceNode->setShader(&triangleShader);
+	rootNode->addNode(trianglePieceNode);
+
+	parallelogramPieceNode = new sceneNode();
+	parallelogramPieceNode->setModelMatrix(mf.identityMatrix4x4());
+	parallelogramPieceNode->setMesh(&parallelogramMesh);
+	parallelogramPieceNode->setShader(&parallelogramShader);
+	rootNode->addNode(parallelogramPieceNode);
+
+	tableNode = new sceneNode();
+	tableNode->setModelMatrix(mf.identityMatrix4x4());
+	tableNode->setMesh(&tableMesh);
+	tableNode->setShader(&tableShader);
+	rootNode->addNode(tableNode);
 
 	sG.setRoot(rootNode);
-
 }
 
 void init(int argc, char* argv[])
@@ -340,6 +386,14 @@ void init(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
 	init(argc, argv);
+	matrix4x4 m1(1, 0, 0, -2,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1);
+	matrix4x4 m2 = mf.identityMatrix4x4();
+
+	m1 = m1 * m2;
+	m1.matrixPrint();
 	glutMainLoop();
 	exit(EXIT_SUCCESS);
 }

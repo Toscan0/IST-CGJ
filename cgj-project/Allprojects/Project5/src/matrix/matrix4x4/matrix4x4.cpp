@@ -273,26 +273,26 @@ matrix4x4 matrix4x4::operator*(const float x) {
 }
 
 // Another matrix4x4
-matrix4x4 matrix4x4::operator*(const matrix4x4& m1) {
-	float a = (_a * m1._a) + (_b * m1._e) + (_c * m1._i) + (_d * m1._m);
-	float b = (_a * m1._b) + (_b * m1._f) + (_c * m1._j) + (_d * m1._n);
-	float c = (_a * m1._c) + (_b * m1._g) + (_c * m1._k) + (_d * m1._o);
-	float d = (_a * m1._d) + (_b * m1._h) + (_c * m1._l) + (_d * m1._p);
+const matrix4x4 operator*(const matrix4x4& m1, const matrix4x4& m2) {
+	float a = (m1._a * m2._a) + (m1._b * m2._e) + (m1._c * m2._i) + (m1._d * m2._m);
+	float b = (m1._a * m2._b) + (m1._b * m2._f) + (m1._c * m2._j) + (m1._d * m2._n);
+	float c = (m1._a * m2._c) + (m1._b * m2._g) + (m1._c * m2._k) + (m1._d * m2._o);
+	float d = (m1._a * m2._d) + (m1._b * m2._h) + (m1._c * m2._l) + (m1._d * m2._p);
 
-	float e = (_e * m1._a) + (_f * m1._e) + (_g * m1._i) + (_h * m1._m);
-	float f = (_e * m1._b) + (_f * m1._f) + (_g * m1._j) + (_h * m1._n);
-	float g = (_e * m1._c) + (_f * m1._g) + (_g * m1._k) + (_h * m1._o);
-	float h = (_e * m1._d) + (_f * m1._h) + (_g * m1._l) + (_h * m1._p);
+	float e = (m1._e * m2._a) + (m1._f * m2._e) + (m1._g * m2._i) + (m1._h * m2._m);
+	float f = (m1._e * m2._b) + (m1._f * m2._f) + (m1._g * m2._j) + (m1._h * m2._n);
+	float g = (m1._e * m2._c) + (m1._f * m2._g) + (m1._g * m2._k) + (m1._h * m2._o);
+	float h = (m1._e * m2._d) + (m1._f * m2._h) + (m1._g * m2._l) + (m1._h * m2._p);
 
-	float i = (_i * m1._a) + (_j * m1._e) + (_k * m1._i) + (_l * m1._m);
-	float j = (_i * m1._b) + (_j * m1._f) + (_k * m1._j) + (_l * m1._n);
-	float k = (_i * m1._c) + (_j * m1._g) + (_k * m1._k) + (_l * m1._o);
-	float l = (_i * m1._d) + (_j * m1._h) + (_k * m1._l) + (_l * m1._p);
+	float i = (m1._i * m2._a) + (m1._j * m2._e) + (m1._k * m2._i) + (m1._l * m2._m);
+	float j = (m1._i * m2._b) + (m1._j * m2._f) + (m1._k * m2._j) + (m1._l * m2._n);
+	float k = (m1._i * m2._c) + (m1._j * m2._g) + (m1._k * m2._k) + (m1._l * m2._o);
+	float l = (m1._i * m2._d) + (m1._j * m2._h) + (m1._k * m2._l) + (m1._l * m2._p);
 
-	float m = (_m * m1._a) + (_n * m1._e) + (_o * m1._i) + (_p * m1._m);
-	float n = (_m * m1._b) + (_n * m1._f) + (_o * m1._j) + (_p * m1._n);
-	float o = (_m * m1._c) + (_n * m1._g) + (_o * m1._k) + (_p * m1._o);
-	float p = (_m * m1._d) + (_n * m1._h) + (_o * m1._l) + (_p * m1._p);
+	float m = (m1._m * m2._a) + (m1._n * m2._e) + (m1._o * m2._i) + (m1._p * m2._m);
+	float n = (m1._m * m2._b) + (m1._n * m2._f) + (m1._o * m2._j) + (m1._p * m2._n);
+	float o = (m1._m * m2._c) + (m1._n * m2._g) + (m1._o * m2._k) + (m1._p * m2._o);
+	float p = (m1._m * m2._d) + (m1._n * m2._h) + (m1._o * m2._l) + (m1._p * m2._p);
 
 	matrix4x4 mMut(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
 

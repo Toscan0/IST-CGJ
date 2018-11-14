@@ -33,12 +33,13 @@ const Matrix I = {
 			0.0f,  0.0f,  0.0f,  1.0f
 };
 
-const Matrix ModelMatrix = {
+/*const Matrix ModelMatrix = {
 	1.0f,  0.0f,  0.0f,  0.0f,
 	0.0f,  1.0f,  0.0f,  0.0f,
 	0.0f,  0.0f,  1.0f,  0.0f,
 	0.0f,  0.0f,  0.0f,  1.0f
 }; // Column Major
+*/
 /*
 // Eye(5,5,5) Center(0,0,0) Up(0,1,0)
 const Matrix ViewMatrix1 = {
@@ -101,7 +102,7 @@ class mesh{
 		void processMeshData();
 		void freeMeshData();
 		
-		void draw(shader shader, camera camera);
+		void draw(const matrix4x4& modelMatrix, shader& shader, camera& camera);
 		
 		void createBufferObjects();
 		void destroyBufferObjects();

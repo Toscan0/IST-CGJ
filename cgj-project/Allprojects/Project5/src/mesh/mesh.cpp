@@ -94,23 +94,15 @@ void mesh::freeMeshData()
 	_normalIdx.clear();
 }
 
-void mesh::draw(shader shader, camera camera) {
+void mesh::draw(const matrix4x4& modelMatrix, shader& shader, camera& camera) {
 	glBindVertexArray(_VaoId);
 	glUseProgram(shader.getProgramId());
-
-	glUniformMatrix4fv(shader.getModelMatrix_UId(), 1, GL_FALSE, ModelMatrix);
+	matrix4x4 mM = modelMatrix;
+	glUniformMatrix4fv(shader.getModelMatrix_UId(), 1, GL_TRUE, mM.data()); // need to be trasposed
 	matrix4x4 vM = camera.getViewMatrix();
-	Matrix viewMatrix;
-	for (int i = 0; i < 16; ++i) {
-		viewMatrix[i] = vM.data()[i];
-	}
-	glUniformMatrix4fv(shader.getViewMatrix_UId(), 1, GL_FALSE, viewMatrix);
+	glUniformMatrix4fv(shader.getViewMatrix_UId(), 1, GL_FALSE, vM.data());
 	matrix4x4 mP = camera.getPrespMatrix();
-	Matrix prespMatrix;
-	for (int i = 0; i < 16; ++i) {
-		prespMatrix[i] = mP.data()[i];
-	}
-	glUniformMatrix4fv(shader.getProjectionMatrix_UId(), 1, GL_FALSE, prespMatrix);
+	glUniformMatrix4fv(shader.getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)_Vertices.size());
 
 	glUseProgram(0);
