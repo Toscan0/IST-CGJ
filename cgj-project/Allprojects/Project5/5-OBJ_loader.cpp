@@ -55,15 +55,16 @@ int WinX = 640, WinY = 480;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
-bool g_rot = false;
-bool g_cam = false;
-int g_oldX = 0;
-int g_oldY = 0;
+bool g_rot = false; // quarterion rotation
+int g_oldX = 0; // last coord x of mouse in window
+int g_oldY = 0;	// last coord y of mouse in window
+int g_x = 0; // value to translate the scene graph
 
 vector3 eye(0.0f, 0.0f, 5.0f);
 vector3 center(0.0f, 0.0f, 0.0f);
 vector3 up(0.0f, 1.0f, 0.0f);
 
+//Quarterion rotation
 vector4 XX_4(1, 0, 0, 1);
 vector4 YY_4(0, 1, 0, 1);
 qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
@@ -98,6 +99,9 @@ void createBufferObjects()
 
 void destroyBufferObjects()
 {
+	cubeMesh.createBufferObjects();
+	triangleMesh.createBufferObjects();
+	parallelogramMesh.createBufferObjects();
 	tableMesh.destroyBufferObjects();
 }
 
@@ -105,10 +109,7 @@ void destroyBufferObjects()
 
 void drawScene()
 {
-	//myMesh.draw(myShader, mainCamera);
-	//tableMesh.draw(tableShader, mainCamera);
-
-	sG.draw(mf.identityMatrix4x4());
+	sG.draw(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
 }
 
 /////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -156,7 +157,14 @@ void timer(int value)
 
 void keyboard_down(unsigned char key, int x, int y) {
 	switch (key) {
-	
+		case 'A':
+		case 'a':
+			g_x--;
+			break;
+		case 'D':
+		case 'd':
+			g_x++;
+			break;
 	}
 }
 
@@ -331,12 +339,14 @@ void myInit() {
 
 
 void createScene() {
-	sceneNode *tangramNode, 
-		*cubeNode, *STriNode, *MTriNode, *LTriNode, *parallelogramNode, 
+	sceneNode *tangramNode, *cubeNode, *STriNode, *MTriNode, *LTriNode, *parallelogramNode, 
 		*tableNode;
+	vector3 vM(1.5f, 1.5f, 1.5f);
+	matrix4x4 mM = mf.scalingMatrix4x4(vM); // smal to medium
+	vector3 vL(2.0f, 2.0f, 2.0f);
+	matrix4x4 mL = mf.scalingMatrix4x4(vL); // smal to large
 
 	sG.setCamera(&mainCamera);
-	//sG.setShader(&myShader);
 	
 	rootNode = new sceneNode();
 	rootNode->setModelMatrix(mf.identityMatrix4x4());
@@ -353,29 +363,33 @@ void createScene() {
 	rootNode->addNode(cubeNode);
 
 	STriNode = new sceneNode();
-	vector3 v1(0.5, 0, 0);
-	STriNode->setModelMatrix(mf.translationMatrix4x4(v1) * mf.identityMatrix4x4());
+	STriNode->setModelMatrix(mf.translationMatrix4x4(vector3 (0.5, 0, 0)) * mf.identityMatrix4x4());
 	STriNode->setMesh(&triangleMesh);
 	STriNode->setShader(&triangleShader);
 	rootNode->addNode(STriNode);
 
 	MTriNode = new sceneNode();
-	vector3 v3(1, 0, 0);
-	MTriNode->setModelMatrix(mf.translationMatrix4x4(v3) * mf.identityMatrix4x4());
+	MTriNode->setModelMatrix(mf.translationMatrix4x4(vector3 (1, 0, 0)) * mM);
 	MTriNode->setMesh(&triangleMesh);
 	MTriNode->setShader(&triangleShader);
 	rootNode->addNode(MTriNode);
 
 	LTriNode = new sceneNode();
-	vector3 v2(1.5, 0, 0);
-	LTriNode->setModelMatrix(mf.translationMatrix4x4(v2) * mf.identityMatrix4x4());
+	LTriNode->setModelMatrix(mf.translationMatrix4x4(vector3 (-1.5, 0, 0)) * 
+		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) * mL);
 	LTriNode->setMesh(&triangleMesh);
 	LTriNode->setShader(&triangleShader);
 	rootNode->addNode(LTriNode);
 
+	LTriNode = new sceneNode();
+	LTriNode->setModelMatrix(mf.translationMatrix4x4(vector3(0.2, 0, 0)) *
+		mf.rotationMatrix4x4(vector3(0, 1, 0), (M_PI)) * mL);
+	LTriNode->setMesh(&triangleMesh);
+	LTriNode->setShader(&triangleShader);
+	rootNode->addNode(LTriNode);
 
 	parallelogramNode = new sceneNode();
-	parallelogramNode->setModelMatrix(mf.identityMatrix4x4());
+	parallelogramNode->setModelMatrix(mf.translationMatrix4x4(vector3(0, 0, 1)) * mf.identityMatrix4x4());
 	parallelogramNode->setMesh(&parallelogramMesh);
 	parallelogramNode->setShader(&parallelogramShader);
 	rootNode->addNode(parallelogramNode);

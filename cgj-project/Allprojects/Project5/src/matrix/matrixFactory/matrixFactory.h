@@ -9,21 +9,22 @@
 struct matrixFactory {
 
 	// matrix3xx3
-	static matrix3x3 identityMatrix3x3();
-	static matrix3x3 dualMatrix(vector3&);
+	static const matrix3x3 identityMatrix3x3();
+	static const matrix3x3 dualMatrix(const vector3&);
 	
-	static matrix3x3 scalingMatrix3x3(vector3& vc);
+	static const matrix3x3 scalingMatrix3x3(const vector3& vc);
 	static const matrix4x4 translationMatrix3x3(const vector3& vc);
-	static matrix3x3 rodriguez(vector3&, double);
+	static const matrix3x3 rodriguez(const vector3&,const double);
 
 	// matrix4x4
 	static const matrix4x4 identityMatrix4x4();
 
-	static matrix4x4 translationMatrix4x4(vector3& vc);
-	static matrix4x4 scalingMatrix4x4(vector3& vc);
-	static matrix4x4 rotationMatrix4x4(vector3&, double);
+	static const matrix4x4 translationMatrix4x4(const vector3& vc);
+	static const matrix4x4 scalingMatrix4x4(const vector3& vc);
+	static const matrix4x4 rotationMatrix4x4(const vector3&, const  double);
 
-	const static matrix4x4 viewMatrix(const vector3&, const vector3&, const vector3&);
-	static matrix4x4 orthMatrix(float, float, float, float, float, float);
-	static matrix4x4 prespMatrix(const float, const float, const float, const float);
+	static const matrix4x4 viewMatrix(const vector3&, const vector3&, const vector3&);
+	static const matrix4x4 orthMatrix(const float, const  float, const  float, const  float, 
+		const  float, const float);
+	static const matrix4x4 prespMatrix(const float, const float, const float, const float);
 };

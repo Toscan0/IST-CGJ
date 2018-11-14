@@ -2,7 +2,7 @@
 
 // Identity Matrix
 // Matrix 3x3
-matrix3x3 matrixFactory::identityMatrix3x3() {
+const matrix3x3 matrixFactory::identityMatrix3x3() {
 	
 	matrix3x3 ind(1, 0, 0, 
 				0, 1, 0, 
@@ -24,7 +24,7 @@ const matrix4x4 matrixFactory::identityMatrix4x4() {
 
 // Dual Matrix
 // Matrix 3x3
-matrix3x3 matrixFactory::dualMatrix(vector3& vc) {
+const matrix3x3 matrixFactory::dualMatrix(const vector3& vc) {
 
 	matrix3x3 dual (0, -vc._c, vc._b, vc._c, 0, -vc._a, -vc._b, vc._a, 0);
 
@@ -33,14 +33,14 @@ matrix3x3 matrixFactory::dualMatrix(vector3& vc) {
 
 // Scaling matrix
 // Matrix 3x3
-matrix3x3 matrixFactory::scalingMatrix3x3(vector3& vc) {
+const matrix3x3 matrixFactory::scalingMatrix3x3(const vector3& vc) {
 
 	matrix3x3 s (vc._a, 0, 0, 0, vc._b, 0, 0, 0, vc._c);
 	
 	return s;
 }
 
-matrix4x4 matrixFactory::scalingMatrix4x4(vector3& vc) {
+const matrix4x4 matrixFactory::scalingMatrix4x4(const vector3& vc) {
 
 	matrix4x4 mS (vc._a, 0, 0, 0,
 				  0,vc._b, 0, 0, 
@@ -61,7 +61,7 @@ const matrix4x4 matrixFactory::translationMatrix3x3(const vector3& vc) {
 	return mTr;
 }
 
-matrix4x4 matrixFactory::translationMatrix4x4(vector3& vc) {
+const matrix4x4 matrixFactory::translationMatrix4x4(const vector3& vc) {
 	matrix4x4 m(1, 0, 0, vc._a,
 				0, 1, 0, vc._b,
 				0, 0, 1, vc._c,
@@ -72,7 +72,7 @@ matrix4x4 matrixFactory::translationMatrix4x4(vector3& vc) {
 
 
 // Translação matrix
-matrix4x4 matrixFactory::rotationMatrix4x4(vector3& v, double x) {
+const matrix4x4 matrixFactory::rotationMatrix4x4(const vector3& v, const  double x) {
 	matrix3x3 r = rodriguez(v, x);
 
 	matrix4x4 mR (r._a, r._b, r._c, 0,
@@ -84,10 +84,11 @@ matrix4x4 matrixFactory::rotationMatrix4x4(vector3& v, double x) {
 }
 
 // Rodriguez Formula ( R(x) = I + sen(x)A + (1 - cos(x))A^2 )
-matrix3x3 matrixFactory::rodriguez(vector3& v, double x) {
-	vector3 vNormalizado = v.normalizado();
+const matrix3x3 matrixFactory::rodriguez(const vector3& v, const  double x) {
+	vector3 vCopy = v;
+	vector3 vNormalizado = vCopy.normalizado();
 	matrix3x3 i = identityMatrix3x3();
-	matrix3x3 dual = dualMatrix(v);
+	matrix3x3 dual = dualMatrix(vCopy);
 	matrix3x3 dualQ = dual * dual;
 
 	matrix3x3 r = (i + (dual * sin(x)) + (dualQ * (1 - cos(x))));
@@ -124,7 +125,7 @@ const matrix4x4 matrixFactory::viewMatrix(const vector3& eye, const vector3& cen
 	return viewMatrix;
 }
 
-matrix4x4 matrixFactory::orthMatrix(float l, float r, float t, float b, float n, float f) {
+const matrix4x4 matrixFactory::orthMatrix(float l, float r, float t, float b, float n, float f) {
 	matrix4x4 mOrth((2 / (r - l)), 0, 0, -((r + l) / (r - l)),
 					0, (2 / (t - b)), 0, -((t + b) / (t - b)),
 					0, 0, -(2 / (f - n)), -((f + n) / (f - n)),
@@ -133,7 +134,7 @@ matrix4x4 matrixFactory::orthMatrix(float l, float r, float t, float b, float n,
 	return mOrth;
 }
 
-matrix4x4 matrixFactory::prespMatrix(const float fovy, const float aspect, 
+const matrix4x4 matrixFactory::prespMatrix(const float fovy, const float aspect,
 	const float n, const float f) {
 	float teta = (fovy / 2.0f);
 	float d = (1.0f / (tan(teta)));

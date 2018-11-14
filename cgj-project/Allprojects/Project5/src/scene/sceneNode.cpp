@@ -36,14 +36,21 @@ const std::vector<sceneNode*> sceneNode::getNodes() {
 
 void sceneNode::draw(const matrix4x4& modelMatrix, camera& cam) {
 	if (_mesh != nullptr) {
-		_mesh->draw(modelMatrix, *_shader, cam);
+		_mesh->draw(modelMatrix * modelMatrix, *_shader, cam);
 	}
 	for (int i = 0; i < _nodes.size(); i++) {
 		sceneNode* nextNode = _nodes[i];
 		mesh nextNodeMesh = *(nextNode->getMesh());
 		matrix4x4 nextNodeModelMatrix = nextNode->getModelMatrix();
 		shader nextNodeShader = *(nextNode->getShader());
-		nextNodeMesh.draw(nextNodeModelMatrix, nextNodeShader, cam);
+		nextNodeMesh.draw(modelMatrix * nextNodeModelMatrix, nextNodeShader, cam);
+		/*if (nextNode->getNodes().size > 0) {
+			sceneNode* nextNextNode = _nodes[i];
+			mesh nextNextNodeMesh = *(nextNextNode->getMesh());
+			matrix4x4 nextNextNodeModelMatrix = nextNextNode->getModelMatrix();
+			shader nextNextNodeShader = *(nextNextNode->getShader());
+			nextNextNodeMesh.draw(nextNextNodeModelMatrix, nextNextNodeShader, cam);
+		}*/
 	}
 	
 }
