@@ -331,7 +331,9 @@ void myInit() {
 
 
 void createScene() {
-	sceneNode *tangramNode, *cubePieceNode, *trianglePieceNode, *parallelogramPieceNode, *tableNode;
+	sceneNode *tangramNode, 
+		*cubeNode, *STriNode, *MTriNode, *LTriNode, *parallelogramNode, 
+		*tableNode;
 
 	sG.setCamera(&mainCamera);
 	//sG.setShader(&myShader);
@@ -344,24 +346,39 @@ void createScene() {
 	tangramNode->setModelMatrix(mf.identityMatrix4x4());
 	rootNode->addNode(tangramNode);*/
 
-	cubePieceNode = new sceneNode();
-	cubePieceNode->setModelMatrix(mf.identityMatrix4x4());
-	cubePieceNode->setMesh(&cubeMesh);
-	cubePieceNode->setShader(&cubeShader);
-	rootNode->addNode(cubePieceNode);
+	cubeNode = new sceneNode();
+	cubeNode->setModelMatrix(mf.identityMatrix4x4());
+	cubeNode->setMesh(&cubeMesh);
+	cubeNode->setShader(&cubeShader);
+	rootNode->addNode(cubeNode);
 
-	trianglePieceNode = new sceneNode();
-	vector3 v(1, 0, 0);
-	trianglePieceNode->setModelMatrix(mf.translationMatrix4x4(v) * mf.identityMatrix4x4());
-	trianglePieceNode->setMesh(&triangleMesh);
-	trianglePieceNode->setShader(&triangleShader);
-	rootNode->addNode(trianglePieceNode);
+	STriNode = new sceneNode();
+	vector3 v1(0.5, 0, 0);
+	STriNode->setModelMatrix(mf.translationMatrix4x4(v1) * mf.identityMatrix4x4());
+	STriNode->setMesh(&triangleMesh);
+	STriNode->setShader(&triangleShader);
+	rootNode->addNode(STriNode);
 
-	parallelogramPieceNode = new sceneNode();
-	parallelogramPieceNode->setModelMatrix(mf.identityMatrix4x4());
-	parallelogramPieceNode->setMesh(&parallelogramMesh);
-	parallelogramPieceNode->setShader(&parallelogramShader);
-	rootNode->addNode(parallelogramPieceNode);
+	MTriNode = new sceneNode();
+	vector3 v3(1, 0, 0);
+	MTriNode->setModelMatrix(mf.translationMatrix4x4(v3) * mf.identityMatrix4x4());
+	MTriNode->setMesh(&triangleMesh);
+	MTriNode->setShader(&triangleShader);
+	rootNode->addNode(MTriNode);
+
+	LTriNode = new sceneNode();
+	vector3 v2(1.5, 0, 0);
+	LTriNode->setModelMatrix(mf.translationMatrix4x4(v2) * mf.identityMatrix4x4());
+	LTriNode->setMesh(&triangleMesh);
+	LTriNode->setShader(&triangleShader);
+	rootNode->addNode(LTriNode);
+
+
+	parallelogramNode = new sceneNode();
+	parallelogramNode->setModelMatrix(mf.identityMatrix4x4());
+	parallelogramNode->setMesh(&parallelogramMesh);
+	parallelogramNode->setShader(&parallelogramShader);
+	rootNode->addNode(parallelogramNode);
 
 	tableNode = new sceneNode();
 	tableNode->setModelMatrix(mf.identityMatrix4x4());
@@ -386,14 +403,6 @@ void init(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
 	init(argc, argv);
-	matrix4x4 m1(1, 0, 0, -2,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1);
-	matrix4x4 m2 = mf.identityMatrix4x4();
-
-	m1 = m1 * m2;
-	m1.matrixPrint();
 	glutMainLoop();
 	exit(EXIT_SUCCESS);
 }
