@@ -90,15 +90,15 @@ class mesh{
 	public:
 		mesh();
 
-		const void createMesh(const std::string& filename, shader& myShader);
+		const void createMesh(const std::string& filename);
 
 		void parseVertex(std::stringstream& sin);
 		void parseTexcoord(std::stringstream& sin);
 		void parseNormal(std::stringstream& sin);
 		void parseFace(std::stringstream& sin);
 		void parseLine(std::stringstream& sin);
-		void loadMeshData(const std::string& filename, shader& myShader);
-		void processMeshData(shader& myShader);
+		void loadMeshData(const std::string& filename);
+		void processMeshData();
 		void freeMeshData();
 		
 		void draw(shader shader, camera camera);

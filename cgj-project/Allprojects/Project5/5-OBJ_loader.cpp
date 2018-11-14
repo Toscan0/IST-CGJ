@@ -82,11 +82,12 @@ sceneNode * rootNode;
 void createBufferObjects()
 {
 	myMesh.createBufferObjects();
+	tableMesh.createBufferObjects();
 }
 
 void destroyBufferObjects()
 {
-	myMesh.destroyBufferObjects();
+	tableMesh.destroyBufferObjects();
 }
 
 /////////////////////////////////////////////////////////////////////// SCENE
@@ -94,6 +95,7 @@ void destroyBufferObjects()
 void drawScene()
 {
 	myMesh.draw(myShader, mainCamera);
+	tableMesh.draw(tableShader, mainCamera);
 }
 
 /////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -281,17 +283,24 @@ void myInit() {
 	//myMesh.createMesh(std::string("../../assets/models/cube.obj"), myShader); // cube
 	//myMesh.createMesh(std::string("../../assets/models/duck.obj"), myShader); // duck
 	// tangram
-	myMesh.createMesh(std::string("../../assets/models/tangram/square.obj"), myShader); // cube
-	myMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj"), myShader); // parallelogram
-	myMesh.createMesh(std::string("../../assets/models/tangram/triangle.obj"), myShader); // triangle
+	myMesh.createMesh(std::string("../../assets/models/tangram/square.obj")); // cube
+	myMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj")); // parallelogram
+	myMesh.createMesh(std::string("../../assets/models/tangram/triangle.obj")); // triangle
 	//table
-	myMesh.createMesh(std::string("../../assets/models/table/table.obj"), myShader); // triangle
+	tableMesh.createMesh(std::string("../../assets/models/table/table.obj")); // table
 	
 	// Shaders load
-	myShader.createShaderProgram(std::string("../../assets/shaders/tangramShader/tangram_vs.glsl"),
+	myShader.createShaderProgram(
+		std::string("../../assets/shaders/tangramShader/tangram_vs.glsl"),
 		std::string("../../assets/shaders/tangramShader/tangram_fs.glsl"),
 		myMesh.getTexcoordsLoaded(),
 		myMesh.getNormalsLoaded());
+
+	tableShader.createShaderProgram(
+		std::string("../../assets/shaders/tableShader/table_vs.glsl"),
+		std::string("../../assets/shaders/tableShader/table_fs.glsl"),
+		tableMesh.getTexcoordsLoaded(),
+		tableMesh.getNormalsLoaded());
 
 	createBufferObjects();
 }

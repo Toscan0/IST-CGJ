@@ -26,4 +26,6 @@ public:
 
 	void setRoot(sceneNode *r);
 	sceneNode *getRoot();
+
+	void draw(matrix4x4& modelMatrix);
 };

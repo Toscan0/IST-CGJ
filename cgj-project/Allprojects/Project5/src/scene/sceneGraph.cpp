@@ -29,3 +29,7 @@ void sceneGraph::setRoot(sceneNode *r) {
 sceneNode* sceneGraph::getRoot() {
 	return _root;
 }
+
+void sceneGraph::draw(matrix4x4& modelMatrix) {
+	_root->draw(modelMatrix);
+}

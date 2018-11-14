@@ -2,10 +2,10 @@
 
 mesh::mesh() {}
 
-const void mesh::createMesh(const std::string& filename, shader& myShader)
+const void mesh::createMesh(const std::string& filename)
 {
-	loadMeshData(filename, myShader);
-	processMeshData(myShader);
+	loadMeshData(filename);
+	processMeshData();
 	freeMeshData();
 }
 
@@ -53,7 +53,7 @@ void mesh::parseLine(std::stringstream& sin)
 	else if (s.compare("f") == 0) parseFace(sin);
 }
 
-void mesh::loadMeshData(const std::string& filename, shader& myShader)
+void mesh::loadMeshData(const std::string& filename)
 {
 	std::ifstream ifile(filename);
 	std::string line;
@@ -61,13 +61,11 @@ void mesh::loadMeshData(const std::string& filename, shader& myShader)
 		std::stringstream sin = std::stringstream(line);
 		parseLine(sin);
 	}
-	//myShader.setTexcoordsLoaded((_texcoordIdx.size() > 0));
-	//myShader.setNormalsLoaded((_normalIdx.size() > 0));
 	_TexcoordsLoaded = (_texcoordIdx.size() > 0);
 	_NormalsLoaded = (_normalIdx.size() > 0);
 }
 
-void mesh::processMeshData(shader& myShader)
+void mesh::processMeshData()
 {
 	for (unsigned int i = 0; i < _vertexIdx.size(); i++) {
 		unsigned int vi = _vertexIdx[i];

@@ -33,3 +33,9 @@ void sceneNode::addNode(sceneNode* node) {
 const std::vector<sceneNode*> sceneNode::getNodes() {
 	return _nodes;
 }
+
+void sceneNode::draw(matrix4x4& modelMatrix) {
+	if (_mesh != nullptr) {
+		//_mesh->draw();
+	}
+}
