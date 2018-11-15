@@ -85,7 +85,11 @@ shader parallelogramShader;
 shader tableShader;
 
 sceneGraph sG;
-sceneNode * rootNode;
+sceneNode *rootNode;
+//sceneNode *STriNode, *MTriNode, *LTriNode, *parallelogramNode;
+sceneNode *cTangramNode, *cubeNode; // closed tangram and his pieces
+sceneNode *oTangramNode, *LTriNode, *parallelogramNode; // open tangram and his pieces
+sceneNode *tableNode;
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -109,7 +113,7 @@ void destroyBufferObjects()
 
 void drawScene()
 {
-	sG.draw(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
+	sG.draw();
 }
 
 /////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -165,7 +169,12 @@ void keyboard_down(unsigned char key, int x, int y) {
 		case 'd':
 			g_x++;
 			break;
+		case 'L':
+		case 'l':
+			break;
 	}
+	//tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * tableNode->getModelMatrix());
+	tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
 }
 
 void mouseWheel(int wheel, int direction, int x, int y) {
@@ -339,66 +348,69 @@ void myInit() {
 
 
 void createScene() {
-	sceneNode *tangramNode, *cubeNode, *STriNode, *MTriNode, *LTriNode, *parallelogramNode, 
-		*tableNode;
-	vector3 vM(1.5f, 1.5f, 1.5f);
+	vector3 vM(1.5f, 1.0f, 1.5f);
 	matrix4x4 mM = mf.scalingMatrix4x4(vM); // smal to medium
-	vector3 vL(2.0f, 2.0f, 2.0f);
+	vector3 vL(2.0f, 1.0f, 2.0f);
 	matrix4x4 mL = mf.scalingMatrix4x4(vL); // smal to large
 
 	sG.setCamera(&mainCamera);
 	
-	rootNode = new sceneNode();
+	rootNode = new sceneNode(); //root node (empty object)
+	rootNode->setName("root");
 	rootNode->setModelMatrix(mf.identityMatrix4x4());
-
-	
-	/*tangramNode = new sceneNode();
-	tangramNode->setModelMatrix(mf.identityMatrix4x4());
-	rootNode->addNode(tangramNode);*/
-
-	cubeNode = new sceneNode();
-	cubeNode->setModelMatrix(mf.identityMatrix4x4());
-	cubeNode->setMesh(&cubeMesh);
-	cubeNode->setShader(&cubeShader);
-	rootNode->addNode(cubeNode);
-
-	STriNode = new sceneNode();
-	STriNode->setModelMatrix(mf.translationMatrix4x4(vector3 (0.5, 0, 0)) * mf.identityMatrix4x4());
-	STriNode->setMesh(&triangleMesh);
-	STriNode->setShader(&triangleShader);
-	rootNode->addNode(STriNode);
-
-	MTriNode = new sceneNode();
-	MTriNode->setModelMatrix(mf.translationMatrix4x4(vector3 (1, 0, 0)) * mM);
-	MTriNode->setMesh(&triangleMesh);
-	MTriNode->setShader(&triangleShader);
-	rootNode->addNode(MTriNode);
-
-	LTriNode = new sceneNode();
-	LTriNode->setModelMatrix(mf.translationMatrix4x4(vector3 (-1.5, 0, 0)) * 
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) * mL);
-	LTriNode->setMesh(&triangleMesh);
-	LTriNode->setShader(&triangleShader);
-	rootNode->addNode(LTriNode);
-
-	LTriNode = new sceneNode();
-	LTriNode->setModelMatrix(mf.translationMatrix4x4(vector3(0.2, 0, 0)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), (M_PI)) * mL);
-	LTriNode->setMesh(&triangleMesh);
-	LTriNode->setShader(&triangleShader);
-	rootNode->addNode(LTriNode);
-
-	parallelogramNode = new sceneNode();
-	parallelogramNode->setModelMatrix(mf.translationMatrix4x4(vector3(0, 0, 1)) * mf.identityMatrix4x4());
-	parallelogramNode->setMesh(&parallelogramMesh);
-	parallelogramNode->setShader(&parallelogramShader);
-	rootNode->addNode(parallelogramNode);
+	rootNode->setModelMatrixAux(mf.identityMatrix4x4());
 
 	tableNode = new sceneNode();
+	tableNode->setName("table");
 	tableNode->setModelMatrix(mf.identityMatrix4x4());
+	tableNode->setModelMatrixAux(mf.identityMatrix4x4());
 	tableNode->setMesh(&tableMesh);
 	tableNode->setShader(&tableShader);
 	rootNode->addNode(tableNode);
+	
+	cTangramNode = new sceneNode(); // empty object
+	cTangramNode->setName("closed tangram");
+	cTangramNode->setModelMatrix(mf.identityMatrix4x4());
+	cTangramNode->setModelMatrixAux(mf.identityMatrix4x4());
+	tableNode->addNode(cTangramNode);
+
+	cubeNode = new sceneNode();
+	cubeNode->setName("cube");
+	cubeNode->setModelMatrix(mf.identityMatrix4x4());
+	cubeNode->setModelMatrixAux(mf.identityMatrix4x4());
+	cubeNode->setMesh(&cubeMesh);
+	cubeNode->setShader(&cubeShader);
+	cTangramNode->addNode(cubeNode);
+
+	oTangramNode = new sceneNode(); // empty object
+	oTangramNode->setName("open tangram");
+	oTangramNode->setModelMatrix(
+		mf.translationMatrix4x4(vector3(-1.5, 0, 0)) * mf.identityMatrix4x4()
+	);
+	oTangramNode->setModelMatrixAux(
+		mf.translationMatrix4x4(vector3(-1.5, 0, 0)) * mf.identityMatrix4x4()
+	);
+	tableNode->addNode(oTangramNode);
+
+	LTriNode = new sceneNode();
+	LTriNode->setName("large triangle");
+	LTriNode->setModelMatrix(
+		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) * mL
+	);
+	LTriNode->setModelMatrixAux(
+		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) * mL
+	);
+	LTriNode->setMesh(&triangleMesh);
+	LTriNode->setShader(&triangleShader);
+	oTangramNode->addNode(LTriNode);
+
+	parallelogramNode = new sceneNode();
+	parallelogramNode->setName("parallelogram");
+	parallelogramNode->setModelMatrix(mf.identityMatrix4x4());
+	parallelogramNode->setModelMatrixAux(mf.identityMatrix4x4());
+	parallelogramNode->setMesh(&parallelogramMesh);
+	parallelogramNode->setShader(&parallelogramShader);
+	oTangramNode->addNode(parallelogramNode);
 
 	sG.setRoot(rootNode);
 }

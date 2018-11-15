@@ -30,6 +30,6 @@ sceneNode* sceneGraph::getRoot() {
 	return _root;
 }
 
-void sceneGraph::draw(const matrix4x4& modelMatrix) {
-	_root->draw(modelMatrix, *_camera);
+void sceneGraph::draw() {
+	_root->draw(*_camera);
 }
