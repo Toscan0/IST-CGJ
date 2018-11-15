@@ -58,7 +58,6 @@ const std::vector<sceneNode*> sceneNode::getNodes() {
 }
 
 void sceneNode::draw(camera& cam) {
-	std::cout << _name << "\n";
 	if (_mesh != nullptr) {
 		_mesh->draw(_modelMatrix, *_shader, cam);
 	}

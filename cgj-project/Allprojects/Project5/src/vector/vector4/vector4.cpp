@@ -102,11 +102,11 @@ const bool vEqual(const vector4& v0, const vector4& v1){
 }
 
 // Overloading operator +
-vector4 vector4::operator+(const vector4& vc4) {
-	float a = _a + vc4._a;
-	float b = _b + vc4._b;
-	float c = _c + vc4._c;
-	float d = _d + vc4._d;
+const vector4 operator+(const vector4& vc1, const vector4& vc2) {
+	float a = vc1._a + vc2._a;
+	float b = vc1._b + vc2._b;
+	float c = vc1._c + vc2._c;
+	float d = vc1._d + vc2._d;
 
 	vector4 auxVc(a, b, c, d);
 	return auxVc;
@@ -114,11 +114,11 @@ vector4 vector4::operator+(const vector4& vc4) {
 
 
 // Overloading operator -
-vector4 vector4::operator-(const vector4& vc4) {
-	float a = _a - vc4._a;
-	float b = _b - vc4._b;
-	float c = _c - vc4._c;
-	float d = _d - vc4._d;
+const vector4 operator-(const vector4& vc1, const vector4& vc2) {
+	float a = vc1._a - vc2._a;
+	float b = vc1._b - vc2._b;
+	float c = vc1._c - vc2._c;
+	float d = vc1._d - vc2._d;
 
 	vector4 auxVc(a, b, c, d);
 	return auxVc;
@@ -126,12 +126,27 @@ vector4 vector4::operator-(const vector4& vc4) {
 
 
 // Overloading operator *
-vector4 vector4::operator*(const float x) {
-	float a = _a * x;
-	float b = _b * x;
-	float c = _c * x;
-	float d = _d * x;
+const vector4 operator* (const vector4& vc, const float k){
+	float a = vc._a * k;
+	float b = vc._b * k;
+	float c = vc._c * k;
+	float d = vc._d * k;
 
 	vector4 auxVc(a, b, c, d);
 	return auxVc;
+}
+
+const vector4 operator* (const float k, const vector4& vc) {
+	return vc * k;
+}
+
+// learp
+const vector4 learp(const vector4 p0, const vector4 p1, const float k) {
+	if (0 <= k && k <= 1) {
+		// (1-a)p0 + ap1
+		return vector4(((1 - k) * p0) + ((k)* p1));
+	} 
+	else {
+		std::cout << "Invalide k, k should be between 0 and 1.\n You use: " << k << "\n";
+	}
 }
