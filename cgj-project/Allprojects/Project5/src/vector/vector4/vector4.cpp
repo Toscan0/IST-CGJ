@@ -141,7 +141,7 @@ const vector4 operator* (const float k, const vector4& vc) {
 }
 
 // learp
-const vector4 learp(const vector4 p0, const vector4 p1, const float k) {
+/*const vector4 learp(const vector4& p0, const vector4& p1, const float k) {
 	if (0 <= k && k <= 1) {
 		// (1-a)p0 + ap1
 		return vector4(((1 - k) * p0) + ((k)* p1));
@@ -149,4 +149,4 @@ const vector4 learp(const vector4 p0, const vector4 p1, const float k) {
 	else {
 		std::cout << "Invalide k, k should be between 0 and 1.\n You use: " << k << "\n";
 	}
-}
+}*/

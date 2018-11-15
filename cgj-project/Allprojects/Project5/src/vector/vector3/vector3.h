@@ -24,11 +24,15 @@ struct vector3 {
 	const bool operator== (const vector3&);
 	//const vector3 operator+ (const vector3&);
 	//const vector3 operator- (const vector3&);
-	const vector3 operator* (const float);
+	//const vector3 operator* (const float);
 
 	friend float dot(const vector3&, const vector3&);
 	friend  vector3 cross(const vector3&, const vector3&);
 
+	friend const vector3 operator* (const vector3&, const float);
+	friend const vector3 operator* (const float, const vector3&);
 	friend const vector3 operator- (const vector3&, const vector3&);
 	friend const vector3 operator+ (const vector3&, const vector3&);
+	
+	friend const vector3 learp(const vector3& p0, const vector3& p1, const float k);
 };

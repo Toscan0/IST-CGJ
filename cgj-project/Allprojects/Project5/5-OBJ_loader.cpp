@@ -40,7 +40,6 @@
 #include "src/matrix/matrix3x3/matrix3x3.h"
 #include "src/matrix/matrix4x4/matrix4x4.h"
 #include "src/qtrn/qtrn.h"
-
 #include "src/scene/sceneGraph.h"
 #include "src/scene/sceneNode.h"
 
@@ -54,17 +53,17 @@
 int WinX = 640, WinY = 480;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
-
-bool g_rot = false; // quarterion rotation
 int g_oldX = 0; // last coord x of mouse in window
 int g_oldY = 0;	// last coord y of mouse in window
-int g_x = 0; // value to translate the scene graph
+
 
 vector3 eye(0.0f, 0.0f, 5.0f);
 vector3 center(0.0f, 0.0f, 0.0f);
 vector3 up(0.0f, 1.0f, 0.0f);
 
 //Quarterion rotation
+qtrn qAux;
+bool g_rot = false;
 vector4 XX_4(1, 0, 0, 1);
 vector4 YY_4(0, 1, 0, 1);
 qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
@@ -84,12 +83,21 @@ shader triangleShader;
 shader parallelogramShader;
 shader tableShader;
 
+// SceneGraph
+int g_x = 0; // value to translate the scene graph
 sceneGraph sG;
+
+// SceneNode
 sceneNode *rootNode;
 //sceneNode *STriNode, *MTriNode, *LTriNode, *parallelogramNode;
 sceneNode *cTangramNode, *cubeNode; // closed tangram and his pieces
 sceneNode *oTangramNode, *LTriNode, *parallelogramNode; // open tangram and his pieces
 sceneNode *tableNode;
+
+// Animation
+//closed tangram starts in the middle of the table
+// and change with open tangram (is in the left side of the table)
+bool g_origin = true;
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -164,17 +172,41 @@ void keyboard_down(unsigned char key, int x, int y) {
 		case 'A':
 		case 'a':
 			g_x--;
+			tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
 			break;
 		case 'D':
 		case 'd':
 			g_x++;
+			tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
 			break;
 		case 'L':
 		case 'l':
+			if (g_origin == true) {
+				vector3 vT1 = learp(vector3(0, 0, 0), vector3(-1.5, 0, 0), 1);
+				cTangramNode->setModelMatrix(mf.translationMatrix4x4(vT1));
+				vector3 vT2 = learp(vector3(-1.5, 0, 0), vector3(0, 0, 0), 1);
+				//oTangramNode->setModelMatrix(mf.translationMatrix4x4(vT2));
+				
+				vector4 axis = { 0.0f, 0.0f, 1.0f, 1.0f };
+				qtrn q0 = qAux.qFromAngleAxis(0.0f, axis);
+				qtrn q1 = qAux.qFromAngleAxis(90.0f, axis);
+				qtrn qSlerp0 = qAux.qSlerp(q0, q1, 1.0f);
+				matrix4x4 mAux;
+				matrix4x4 mR = qGLMatrix(qSlerp0, mAux);
+				oTangramNode->setModelMatrix(mR * mf.translationMatrix4x4(vT2));
+
+				g_origin = false;
+			}
+			else{
+				vector3 vT1 = learp(vector3(0, 0, 0), vector3(-1.5, 0, 0), 1);
+				oTangramNode->setModelMatrix(mf.translationMatrix4x4(vT1));
+				vector3 vT2 = learp(vector3(-1.5, 0, 0), vector3(0, 0, 0), 1);
+				cTangramNode->setModelMatrix(mf.translationMatrix4x4(vT2));
+				g_origin = true;
+			}
 			break;
 	}
 	//tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * tableNode->getModelMatrix());
-	tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
 }
 
 void mouseWheel(int wheel, int direction, int x, int y) {
@@ -208,8 +240,6 @@ void OnMouseMove(int x, int y) {
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 		
-		qtrn qAux;
-
 		//Recive the angle in deg
 		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
 		q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
@@ -348,6 +378,20 @@ void myInit() {
 
 
 void createScene() {
+	/*							Scene Graph
+	*					root <----|----> camera 
+	*						|				|- viewMatrix
+	*			 		table				|- prespMatrix
+	*						|
+	*	closed tangram <----|----> open tangram	
+	*		 |- cube					|- large triangle
+	*									|- parallelogram
+	* (because of low time, i didn't implemente the tangram and the object,
+	* the cube represent the closed tangram, and large triangle and parallelogram
+	* represents my figure. I used rotation and scalles in the large triangle and parallelogram 
+	* to represent the work that is missing)
+	*
+	*/
 	vector3 vM(1.5f, 1.0f, 1.5f);
 	matrix4x4 mM = mf.scalingMatrix4x4(vM); // smal to medium
 	vector3 vL(2.0f, 1.0f, 2.0f);

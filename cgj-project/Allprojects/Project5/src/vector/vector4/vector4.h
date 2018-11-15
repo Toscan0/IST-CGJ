@@ -35,5 +35,5 @@ struct vector4 {
 	friend const vector4 operator* (const vector4&, const float);
 	friend const vector4 operator* (const float, const vector4&);
 
-	friend const vector4 learp(const vector4 p0, const vector4 p1,const float k);
+	//friend const vector4 learp(const vector4& p0, const vector4& p1,const float k);
 };

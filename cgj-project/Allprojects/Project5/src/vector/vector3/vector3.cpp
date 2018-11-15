@@ -126,15 +126,18 @@ const vector3 operator-(const vector3& v1, const vector3& v2) {
 
 
 // Overloading operator *
-const vector3 vector3::operator*(const float x) {
-	float a = _a * x;
-	float b = _b * x;
-	float c = _c * x;
+const vector3 operator*(const vector3& v, const float x) {
+	float a = v._a * x;
+	float b = v._b * x;
+	float c = v._c * x;
 
 	vector3 auxVc(a, b, c);
 	return auxVc;
 }
 
+const vector3 operator*(const float x,const vector3& v) {
+	return v * x;
+}
 
 // -- Dot Product (Intern Product) --
 float dot(const vector3& v1, const vector3& v2) {
@@ -154,4 +157,19 @@ vector3 cross(const vector3& v1, const vector3& v2) {
 
 	vector3 auxVc(a, b, c);
 	return auxVc;
+}
+
+// learp
+const vector3 learp(const vector3& p0, const vector3& p1, const float k) {
+	if (0 <= k && k <= 1) {
+		// (1-a)p0 + ap1
+		float aux = 1 - k;
+		vector3 v1 = aux * p0;
+		vector3 v2 = k * p1;
+		vector3 v3 = v1 + v2;
+		return v3;
+	}
+	else {
+		std::cout << "Invalide k, k should be between 0 and 1.\n You use: " << k << "\n";
+	}
 }
