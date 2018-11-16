@@ -58,6 +58,15 @@ const std::vector<sceneNode*> sceneNode::getNodes() {
 }
 
 void sceneNode::draw(camera& cam) {
+	if (_shader != nullptr) {
+		glUseProgram(_shader->getProgramId());
+		matrix4x4 mM = _modelMatrix;
+		glUniformMatrix4fv(_shader->getModelMatrix_UId(), 1, GL_TRUE, mM.data()); // need to be trasposed
+		matrix4x4 vM = cam.getViewMatrix();
+		glUniformMatrix4fv(_shader->getViewMatrix_UId(), 1, GL_FALSE, vM.data());
+		matrix4x4 mP = cam.getPrespMatrix();
+		glUniformMatrix4fv(_shader->getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
+	}
 	if (_mesh != nullptr) {
 		_mesh->draw(_modelMatrix, *_shader, cam);
 	}

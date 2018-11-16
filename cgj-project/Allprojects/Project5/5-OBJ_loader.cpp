@@ -94,10 +94,12 @@ sceneNode *cTangramNode, *cubeNode; // closed tangram and his pieces
 sceneNode *oTangramNode, *LTriNode, *parallelogramNode; // open tangram and his pieces
 sceneNode *tableNode;
 
-// Animation
+// Animation (key -> L/l)
 //closed tangram starts in the middle of the table
 // and change with open tangram (is in the left side of the table)
+bool g_anim = false;
 bool g_origin = true;
+float k = 0.001f;
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -119,6 +121,39 @@ void destroyBufferObjects()
 
 /////////////////////////////////////////////////////////////////////// SCENE
 
+void animate() {
+	if (g_anim == true) {
+		k += 0.001f;
+		if (k > 1 || k < 0) {
+			k = 0.001f;
+			g_anim = false;
+			g_origin = !g_origin;
+		}
+	}
+	if (g_anim == true && g_origin == true) {
+		vector3 vT1 = learp(vector3(0, 0, 0), vector3(-1.5, 0, 0), k);
+		cTangramNode->setModelMatrix(mf.translationMatrix4x4(vT1));
+		vector3 vT2 = learp(vector3(-1.5, 0, 0), vector3(0, 0, 0), k);
+		oTangramNode->setModelMatrix(mf.translationMatrix4x4(vT2));
+		if (k == 1) {
+			g_origin = false;
+			g_anim = false;
+			k = 0.001f;
+		}
+	}
+	if(g_anim == true && g_origin == false){
+		vector3 vT1 = learp(vector3(-1.5, 0, 0), vector3(0, 0, 0), k);
+		cTangramNode->setModelMatrix(mf.translationMatrix4x4(vT1));
+		vector3 vT2 = learp(vector3(0, 0, 0), vector3(-1.5, 0, 0), k);
+		oTangramNode->setModelMatrix(mf.translationMatrix4x4(vT2));
+		if (k == 1) {
+			g_origin = true;
+			g_anim = false;
+			k = 0.001f;
+		}
+	}
+}
+
 void drawScene()
 {
 	sG.draw();
@@ -139,6 +174,7 @@ void display()
 	++FrameCount;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	drawScene();
+	animate();
 	glutSwapBuffers();
 }
 
@@ -181,32 +217,9 @@ void keyboard_down(unsigned char key, int x, int y) {
 			break;
 		case 'L':
 		case 'l':
-			if (g_origin == true) {
-				vector3 vT1 = learp(vector3(0, 0, 0), vector3(-1.5, 0, 0), 1);
-				cTangramNode->setModelMatrix(mf.translationMatrix4x4(vT1));
-				vector3 vT2 = learp(vector3(-1.5, 0, 0), vector3(0, 0, 0), 1);
-				//oTangramNode->setModelMatrix(mf.translationMatrix4x4(vT2));
-				
-				vector4 axis = { 0.0f, 0.0f, 1.0f, 1.0f };
-				qtrn q0 = qAux.qFromAngleAxis(0.0f, axis);
-				qtrn q1 = qAux.qFromAngleAxis(90.0f, axis);
-				qtrn qSlerp0 = qAux.qSlerp(q0, q1, 1.0f);
-				matrix4x4 mAux;
-				matrix4x4 mR = qGLMatrix(qSlerp0, mAux);
-				oTangramNode->setModelMatrix(mR * mf.translationMatrix4x4(vT2));
-
-				g_origin = false;
-			}
-			else{
-				vector3 vT1 = learp(vector3(0, 0, 0), vector3(-1.5, 0, 0), 1);
-				oTangramNode->setModelMatrix(mf.translationMatrix4x4(vT1));
-				vector3 vT2 = learp(vector3(-1.5, 0, 0), vector3(0, 0, 0), 1);
-				cTangramNode->setModelMatrix(mf.translationMatrix4x4(vT2));
-				g_origin = true;
-			}
+			g_anim = !g_anim;
 			break;
 	}
-	//tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * tableNode->getModelMatrix());
 }
 
 void mouseWheel(int wheel, int direction, int x, int y) {
