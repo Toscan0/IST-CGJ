@@ -352,7 +352,7 @@ void myInit() {
 
 
 void createScene() {
-	/*							Scene Graph
+	/*						Scene Graph
 	*					root <----|----> camera
 	*						|				|- viewMatrix
 	*			 		table				|- prespMatrix
@@ -366,8 +366,6 @@ void createScene() {
 	*		 |- big triangle 2
 	*		 |- parallelogram
 	*									
-	*
-	*
 	*/
 	vector3 vM(1.5f, 1.0f, 1.5f);
 	matrix4x4 mM = mf.scalingMatrix4x4(vM); // smal to medium
@@ -382,7 +380,7 @@ void createScene() {
 	rootNode->setModelMatrixAux(mf.identityMatrix4x4());
 
 	tableNode = new sceneNode();
-	tableNode->setName("table");
+	tableNode->setName("table"); 
 	tableNode->setModelMatrix(mf.identityMatrix4x4());
 	tableNode->setModelMatrixAux(mf.identityMatrix4x4());
 	tableNode->setMesh(&tableMesh);
@@ -403,7 +401,6 @@ void createScene() {
 	cubeNode->setShader(&cubeShader);
 	cTangramNode->addNode(cubeNode);
 	
-
 	sG.setRoot(rootNode);
 }
 
