@@ -439,6 +439,10 @@ void readJSONFile() {
 
 	// Pretty print
 	std::cout << "(1)\n" << pretty_print(j) << "\n\n";
+
+	// Write to stream
+	std::ofstream os("../../assets/json/savedScene.json");
+	os << j;
 }
 
 void init(int argc, char* argv[])
