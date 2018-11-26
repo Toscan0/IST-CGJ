@@ -98,6 +98,7 @@
   <ItemGroup>
     <None Include="..\..\assets\json\books.json" />
     <None Include="..\..\assets\json\defaultLoad.json" />
+    <None Include="..\..\assets\json\savedScene.json" />
     <None Include="..\..\assets\shaders\tableShader\table_fs.glsl" />
     <None Include="..\..\assets\shaders\tableShader\table_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\tangram_fs.glsl" />

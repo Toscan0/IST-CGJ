@@ -95,9 +95,7 @@ sceneGraph sG;
 
 // SceneNode
 sceneNode *rootNode;
-//sceneNode *STriNode, *MTriNode, *LTriNode, *parallelogramNode;
-sceneNode *cTangramNode, *cubeNode; // closed tangram and his pieces
-sceneNode *oTangramNode, *LTriNode, *parallelogramNode; // open tangram and his pieces
+sceneNode *cTangramNode, *cubeNode, *sTri1Node, *sTri2Node, *lTri1Node, *lTri2Node, *mtriNode, *parallNode; // closed tangram and his pieces
 sceneNode *tableNode;
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
@@ -359,9 +357,15 @@ void createScene() {
 	*						|				|- viewMatrix
 	*			 		table				|- prespMatrix
 	*						|
-	*	closed tangram <----|----> open tangram
-	*		 |- cube					|- large triangle
-	*									|- parallelogram
+	*	closed tangram <----|
+	*		 |- cube
+	*		 |- small triangle 1
+	*		 |- small triangle 2
+	*		 |- medium triangle
+	*		 |- big triangle 1
+	*		 |- big triangle 2
+	*		 |- parallelogram
+	*									
 	*
 	*
 	*/
@@ -398,36 +402,7 @@ void createScene() {
 	cubeNode->setMesh(&cubeMesh);
 	cubeNode->setShader(&cubeShader);
 	cTangramNode->addNode(cubeNode);
-
-	oTangramNode = new sceneNode(); // empty object
-	oTangramNode->setName("open tangram");
-	oTangramNode->setModelMatrix(
-		mf.translationMatrix4x4(vector3(-1.5, 0, 0)) * mf.identityMatrix4x4()
-	);
-	oTangramNode->setModelMatrixAux(
-		mf.translationMatrix4x4(vector3(-1.5, 0, 0)) * mf.identityMatrix4x4()
-	);
-	tableNode->addNode(oTangramNode);
-
-	LTriNode = new sceneNode();
-	LTriNode->setName("large triangle");
-	LTriNode->setModelMatrix(
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) * mL
-	);
-	LTriNode->setModelMatrixAux(
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) * mL
-	);
-	LTriNode->setMesh(&triangleMesh);
-	LTriNode->setShader(&triangleShader);
-	oTangramNode->addNode(LTriNode);
-
-	parallelogramNode = new sceneNode();
-	parallelogramNode->setName("parallelogram");
-	parallelogramNode->setModelMatrix(mf.identityMatrix4x4());
-	parallelogramNode->setModelMatrixAux(mf.identityMatrix4x4());
-	parallelogramNode->setMesh(&parallelogramMesh);
-	parallelogramNode->setShader(&parallelogramShader);
-	oTangramNode->addNode(parallelogramNode);
+	
 
 	sG.setRoot(rootNode);
 }
