@@ -1,0 +1,46 @@
+{
+  "tangram": {
+    "small_triangle_1": {
+      "mesh": "...",
+      "shader": "...",
+      "modelMatrix": "...",
+      "name":  "..."
+    },
+    "small_triangle_2": {
+      "mesh": "...",
+      "shader": "...",
+      "modelMatrix": "...",
+      "name": "..."
+    },
+    "medium_triangle": {
+      "mesh": "...",
+      "shader": "...",
+      "modelMatrix": "...",
+      "name": "..."
+    },
+    "large_triangle_1": {
+      "mesh": "...",
+      "shader": "...",
+      "modelMatrix": "...",
+      "name": "..."
+    },
+    "large_triangle_2": {
+      "mesh": "...",
+      "shader": "[..., ...]",
+      "modelMatrix": "...",
+      "name": "..."
+    },
+    "cube": {
+      "mesh": "...",
+      "shader": "[..., ...]",
+      "modelMatrix": "...",
+      "name": "..."
+    },
+    "parallelogram": {
+      "mesh": "...",
+      "shader": "[..., ...]",
+      "modelMatrix": "...",
+      "name": "..."
+    }
+  }
+}

@@ -82,6 +82,18 @@
     <Filter Include="Source Files\src\scene\sceneGraph">
       <UniqueIdentifier>{bd3207f1-2b3c-4fb7-adea-92bb891bc8c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\json">
+      <UniqueIdentifier>{90e08d88-e0f6-452c-a58a-8d83fdd27d75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\jsoncons">
+      <UniqueIdentifier>{d2a01e1b-22e0-4b1f-9184-61f27612901a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\jsoncons\config">
+      <UniqueIdentifier>{85d639c2-14be-4242-815d-24a245504687}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\jsoncons\detail">
+      <UniqueIdentifier>{c5a88c6c-146f-4e5a-bbd2-c3495657b5ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp">
@@ -194,6 +206,117 @@
     <ClInclude Include="src\scene\sceneGraph.h">
       <Filter>Source Files\src\scene\sceneGraph</Filter>
     </ClInclude>
+    <ClInclude Include="jsoncons\config\binary_utilities.hpp">
+      <Filter>Source Files\jsoncons\config</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\config\jsoncons_config.hpp">
+      <Filter>Source Files\jsoncons\config</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\config\version.hpp">
+      <Filter>Source Files\jsoncons\config</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\detail\heap_only_string.hpp">
+      <Filter>Source Files\jsoncons\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\detail\parse_number.hpp">
+      <Filter>Source Files\jsoncons\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\detail\print_number.hpp">
+      <Filter>Source Files\jsoncons\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\detail\type_traits_helper.hpp">
+      <Filter>Source Files\jsoncons\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\detail\unicode_traits.hpp">
+      <Filter>Source Files\jsoncons\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\detail\writer.hpp">
+      <Filter>Source Files\jsoncons\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\basic_json.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\bignum.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\byte_string.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\conversion_traits.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_content_handler.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_conversion.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_decoder.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_error_category.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_exception.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_filter.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_fwd.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_parser.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_reader.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_serializer.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_serializing_options.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_staj_reader.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_stream_reader.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_structures.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\json_type_traits.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\jsoncons_utilities.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\key_value.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\parse_error_handler.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\pretty_print.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\serializing_context.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\staj_iterator.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\staj_reader.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncons\stream_reader.hpp">
+      <Filter>Source Files\jsoncons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\tableShader\table_fs.glsl">
@@ -207,6 +330,12 @@
     </None>
     <None Include="..\..\assets\shaders\tangramShader\tangram_vs.glsl">
       <Filter>Resource Files\shaders\tangramShader</Filter>
+    </None>
+    <None Include="..\..\assets\json\defaultLoad.json">
+      <Filter>Resource Files\json</Filter>
+    </None>
+    <None Include="..\..\assets\json\books.json">
+      <Filter>Resource Files\json</Filter>
     </None>
   </ItemGroup>
 </Project>

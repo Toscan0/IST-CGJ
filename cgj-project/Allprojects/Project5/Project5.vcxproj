@@ -41,6 +41,43 @@
     <ClCompile Include="src\vector\vector4\vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="jsoncons\basic_json.hpp" />
+    <ClInclude Include="jsoncons\bignum.hpp" />
+    <ClInclude Include="jsoncons\byte_string.hpp" />
+    <ClInclude Include="jsoncons\config\binary_utilities.hpp" />
+    <ClInclude Include="jsoncons\config\jsoncons_config.hpp" />
+    <ClInclude Include="jsoncons\config\version.hpp" />
+    <ClInclude Include="jsoncons\conversion_traits.hpp" />
+    <ClInclude Include="jsoncons\detail\heap_only_string.hpp" />
+    <ClInclude Include="jsoncons\detail\parse_number.hpp" />
+    <ClInclude Include="jsoncons\detail\print_number.hpp" />
+    <ClInclude Include="jsoncons\detail\type_traits_helper.hpp" />
+    <ClInclude Include="jsoncons\detail\unicode_traits.hpp" />
+    <ClInclude Include="jsoncons\detail\writer.hpp" />
+    <ClInclude Include="jsoncons\json.hpp" />
+    <ClInclude Include="jsoncons\jsoncons_utilities.hpp" />
+    <ClInclude Include="jsoncons\json_content_handler.hpp" />
+    <ClInclude Include="jsoncons\json_conversion.hpp" />
+    <ClInclude Include="jsoncons\json_decoder.hpp" />
+    <ClInclude Include="jsoncons\json_error_category.hpp" />
+    <ClInclude Include="jsoncons\json_exception.hpp" />
+    <ClInclude Include="jsoncons\json_filter.hpp" />
+    <ClInclude Include="jsoncons\json_fwd.hpp" />
+    <ClInclude Include="jsoncons\json_parser.hpp" />
+    <ClInclude Include="jsoncons\json_reader.hpp" />
+    <ClInclude Include="jsoncons\json_serializer.hpp" />
+    <ClInclude Include="jsoncons\json_serializing_options.hpp" />
+    <ClInclude Include="jsoncons\json_staj_reader.hpp" />
+    <ClInclude Include="jsoncons\json_stream_reader.hpp" />
+    <ClInclude Include="jsoncons\json_structures.hpp" />
+    <ClInclude Include="jsoncons\json_type_traits.hpp" />
+    <ClInclude Include="jsoncons\key_value.hpp" />
+    <ClInclude Include="jsoncons\parse_error_handler.hpp" />
+    <ClInclude Include="jsoncons\pretty_print.hpp" />
+    <ClInclude Include="jsoncons\serializing_context.hpp" />
+    <ClInclude Include="jsoncons\staj_iterator.hpp" />
+    <ClInclude Include="jsoncons\staj_reader.hpp" />
+    <ClInclude Include="jsoncons\stream_reader.hpp" />
     <ClInclude Include="src\camera\camera.h" />
     <ClInclude Include="src\error\error.h" />
     <ClInclude Include="src\eventListener\eventListener.h" />
@@ -59,6 +96,8 @@
     <ClInclude Include="src\vector\vector4\vector4.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\assets\json\books.json" />
+    <None Include="..\..\assets\json\defaultLoad.json" />
     <None Include="..\..\assets\shaders\tableShader\table_fs.glsl" />
     <None Include="..\..\assets\shaders\tableShader\table_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\tangram_fs.glsl" />
@@ -180,4 +219,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

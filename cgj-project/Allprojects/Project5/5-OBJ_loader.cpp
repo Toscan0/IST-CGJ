@@ -43,6 +43,12 @@
 #include "src/scene/sceneGraph.h"
 #include "src/scene/sceneNode.h"
 
+#include "jsoncons/json.hpp"
+
+// For convenience
+using jsoncons::json;
+
+
 #define CAPTION "Loading World"
 #define VERTICES 0
 #define TEXCOORDS 1
@@ -94,12 +100,6 @@ sceneNode *cTangramNode, *cubeNode; // closed tangram and his pieces
 sceneNode *oTangramNode, *LTriNode, *parallelogramNode; // open tangram and his pieces
 sceneNode *tableNode;
 
-// Animation (key -> L/l)
-//closed tangram starts in the middle of the table
-// and change with open tangram (is in the left side of the table)
-bool g_anim = false;
-bool g_origin = true;
-float k = 0.001f;
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -121,38 +121,6 @@ void destroyBufferObjects()
 
 /////////////////////////////////////////////////////////////////////// SCENE
 
-void animate() {
-	if (g_anim == true) {
-		k += 0.001f;
-		if (k > 1 || k < 0) {
-			k = 0.001f;
-			g_anim = false;
-			g_origin = !g_origin;
-		}
-	}
-	if (g_anim == true && g_origin == true) {
-		vector3 vT1 = learp(vector3(0, 0, 0), vector3(-1.5, 0, 0), k);
-		cTangramNode->setModelMatrix(mf.translationMatrix4x4(vT1));
-		vector3 vT2 = learp(vector3(-1.5, 0, 0), vector3(0, 0, 0), k);
-		oTangramNode->setModelMatrix(mf.translationMatrix4x4(vT2));
-		if (k == 1) {
-			g_origin = false;
-			g_anim = false;
-			k = 0.001f;
-		}
-	}
-	if(g_anim == true && g_origin == false){
-		vector3 vT1 = learp(vector3(-1.5, 0, 0), vector3(0, 0, 0), k);
-		cTangramNode->setModelMatrix(mf.translationMatrix4x4(vT1));
-		vector3 vT2 = learp(vector3(0, 0, 0), vector3(-1.5, 0, 0), k);
-		oTangramNode->setModelMatrix(mf.translationMatrix4x4(vT2));
-		if (k == 1) {
-			g_origin = true;
-			g_anim = false;
-			k = 0.001f;
-		}
-	}
-}
 
 void drawScene()
 {
@@ -174,7 +142,6 @@ void display()
 	++FrameCount;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	drawScene();
-	animate();
 	glutSwapBuffers();
 }
 
@@ -205,20 +172,16 @@ void timer(int value)
 
 void keyboard_down(unsigned char key, int x, int y) {
 	switch (key) {
-		case 'A':
-		case 'a':
-			g_x--;
-			tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
-			break;
-		case 'D':
-		case 'd':
-			g_x++;
-			tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
-			break;
-		case 'L':
-		case 'l':
-			g_anim = !g_anim;
-			break;
+	case 'A':
+	case 'a':
+		g_x--;
+		tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
+		break;
+	case 'D':
+	case 'd':
+		g_x++;
+		tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
+		break;
 	}
 }
 
@@ -242,7 +205,7 @@ void OnMouseDown(int button, int state, int x, int y) {
 		g_rot = true;
 		g_oldX = x;
 		g_oldY = y;
-	}	
+	}
 }
 
 
@@ -252,7 +215,7 @@ void OnMouseMove(int x, int y) {
 		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
 		g_oldX = (float)x;
 		g_oldY = (float)y;
-		
+
 		//Recive the angle in deg
 		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
 		q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
@@ -353,7 +316,7 @@ void myInit() {
 	mainCamera.makeViewMatrix(mainCamera.getEye(), mainCamera.getCenter(), mainCamera.getUp());
 	// projection Matrix Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
 	mainCamera.makePrespMatrix((M_PI / 6), (640.0f / 480.0f), 1, 10);
-	
+
 	// Mesh load
 	//myMesh.createMesh(std::string("../../assets/models/cube.obj"), myShader); // cube
 	//myMesh.createMesh(std::string("../../assets/models/duck.obj"), myShader); // duck
@@ -363,7 +326,7 @@ void myInit() {
 	parallelogramMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj")); // parallelogram
 	//table
 	tableMesh.createMesh(std::string("../../assets/models/table/table.obj")); // table
-	
+
 	// Shaders load
 	cubeShader.createShaderProgram(
 		std::string("../../assets/shaders/tangramShader/tangram_vs.glsl"),
@@ -392,17 +355,14 @@ void myInit() {
 
 void createScene() {
 	/*							Scene Graph
-	*					root <----|----> camera 
+	*					root <----|----> camera
 	*						|				|- viewMatrix
 	*			 		table				|- prespMatrix
 	*						|
-	*	closed tangram <----|----> open tangram	
+	*	closed tangram <----|----> open tangram
 	*		 |- cube					|- large triangle
 	*									|- parallelogram
-	* (because of low time, i didn't implemente the tangram and the object,
-	* the cube represent the closed tangram, and large triangle and parallelogram
-	* represents my figure. I used rotation and scalles in the large triangle and parallelogram 
-	* to represent the work that is missing)
+	*
 	*
 	*/
 	vector3 vM(1.5f, 1.0f, 1.5f);
@@ -411,7 +371,7 @@ void createScene() {
 	matrix4x4 mL = mf.scalingMatrix4x4(vL); // smal to large
 
 	sG.setCamera(&mainCamera);
-	
+
 	rootNode = new sceneNode(); //root node (empty object)
 	rootNode->setName("root");
 	rootNode->setModelMatrix(mf.identityMatrix4x4());
@@ -424,7 +384,7 @@ void createScene() {
 	tableNode->setMesh(&tableMesh);
 	tableNode->setShader(&tableShader);
 	rootNode->addNode(tableNode);
-	
+
 	cTangramNode = new sceneNode(); // empty object
 	cTangramNode->setName("closed tangram");
 	cTangramNode->setModelMatrix(mf.identityMatrix4x4());
@@ -472,12 +432,23 @@ void createScene() {
 	sG.setRoot(rootNode);
 }
 
+void readJSONFile() {
+	// Read from stream
+	std::ifstream is("../../assets/json/defaultLoad.json");
+	json j = json::parse(is);
+
+	// Pretty print
+	std::cout << "(1)\n" << pretty_print(j) << "\n\n";
+}
+
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
 	setupGLEW();
 	setupOpenGL();
 	setupCallbacks();
+	
+	readJSONFile();
 
 	myInit();
 	createScene();
