@@ -440,6 +440,18 @@ void readJSONFile() {
 	// Pretty print
 	std::cout << "(1)\n" << pretty_print(j) << "\n\n";
 
+	if (j.contains("tangram"))
+	{
+		std::string price = j["tangram"]["small_triangle_1"]["name"].as<std::string>();
+		std::cout << price;
+	}
+	else
+	{
+		std::cout << "n/a";
+	}
+
+	j["tangram"]["small_triangle_1"]["name"] = "mudeiDeNome";
+
 	// Write to stream
 	std::ofstream os("../../assets/json/savedScene.json");
 	os << j;

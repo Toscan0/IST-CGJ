@@ -4,7 +4,7 @@
       "mesh": "...",
       "shader": "...",
       "modelMatrix": "...",
-      "name":  "..."
+      "name":  "name->____small_triangle_1"
     },
     "small_triangle_2": {
       "mesh": "...",
