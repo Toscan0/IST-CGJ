@@ -44,10 +44,8 @@
 #include "src/scene/sceneNode.h"
 
 #include "jsoncons/json.hpp"
-
 // For convenience
 using jsoncons::json;
-
 
 #define CAPTION "Loading World"
 #define VERTICES 0
@@ -61,7 +59,6 @@ int WindowHandle = 0;
 unsigned int FrameCount = 0;
 int g_oldX = 0; // last coord x of mouse in window
 int g_oldY = 0;	// last coord y of mouse in window
-
 
 vector3 eye(0.0f, 0.0f, 5.0f);
 vector3 center(0.0f, 0.0f, 0.0f);
@@ -80,13 +77,13 @@ matrixFactory mf;
 //mesh myMesh;
 mesh cubeMesh;
 mesh triangleMesh;
-mesh parallelogramMesh;
+mesh parallMesh;
 mesh tableMesh;
 
 //shader myShader;
 shader cubeShader;
 shader triangleShader;
-shader parallelogramShader;
+shader parallShader;
 shader tableShader;
 
 // SceneGraph
@@ -95,7 +92,7 @@ sceneGraph sG;
 
 // SceneNode
 sceneNode *rootNode;
-sceneNode *cTangramNode, *cubeNode, *sTri1Node, *sTri2Node, *lTri1Node, *lTri2Node, *mtriNode, *parallNode; // closed tangram and his pieces
+sceneNode *cTangramNode, *cubeNode, *sTri1Node, *sTri2Node, *lTri1Node, *lTri2Node, *mTriNode, *parallNode; // closed tangram and his pieces
 sceneNode *tableNode;
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
@@ -104,7 +101,7 @@ void createBufferObjects()
 {
 	cubeMesh.createBufferObjects();
 	triangleMesh.createBufferObjects();
-	parallelogramMesh.createBufferObjects();
+	parallMesh.createBufferObjects();
 
 	tableMesh.createBufferObjects();
 }
@@ -113,7 +110,7 @@ void destroyBufferObjects()
 {
 	cubeMesh.createBufferObjects();
 	triangleMesh.createBufferObjects();
-	parallelogramMesh.createBufferObjects();
+	parallMesh.createBufferObjects();
 	tableMesh.destroyBufferObjects();
 }
 
@@ -131,7 +128,7 @@ void cleanup()
 {
 	cubeShader.destroyShaderProgram();
 	triangleShader.destroyShaderProgram();
-	parallelogramShader.destroyShaderProgram();
+	parallShader.destroyShaderProgram();
 	destroyBufferObjects();
 }
 
@@ -170,16 +167,16 @@ void timer(int value)
 
 void keyboard_down(unsigned char key, int x, int y) {
 	switch (key) {
-	case 'A':
-	case 'a':
-		g_x--;
-		tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
-		break;
-	case 'D':
-	case 'd':
-		g_x++;
-		tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
-		break;
+		case 'A':
+		case 'a':
+			g_x--;
+			tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
+			break;
+		case 'D':
+		case 'd':
+			g_x++;
+			tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
+			break;
 	}
 }
 
@@ -321,7 +318,7 @@ void myInit() {
 	// tangram
 	cubeMesh.createMesh(std::string("../../assets/models/tangram/square.obj")); // cube
 	triangleMesh.createMesh(std::string("../../assets/models/tangram/triangle.obj")); // triangle
-	parallelogramMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj")); // parallelogram
+	parallMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj")); // parallelogram
 	//table
 	tableMesh.createMesh(std::string("../../assets/models/table/table.obj")); // table
 
@@ -336,11 +333,11 @@ void myInit() {
 		std::string("../../assets/shaders/tangramShader/tangram_fs.glsl"),
 		triangleMesh.getTexcoordsLoaded(),
 		triangleMesh.getNormalsLoaded());
-	parallelogramShader.createShaderProgram(
+	parallShader.createShaderProgram(
 		std::string("../../assets/shaders/tangramShader/tangram_vs.glsl"),
 		std::string("../../assets/shaders/tangramShader/tangram_fs.glsl"),
-		parallelogramMesh.getTexcoordsLoaded(),
-		parallelogramMesh.getNormalsLoaded());
+		parallMesh.getTexcoordsLoaded(),
+		parallMesh.getNormalsLoaded());
 	tableShader.createShaderProgram(
 		std::string("../../assets/shaders/tableShader/table_vs.glsl"),
 		std::string("../../assets/shaders/tableShader/table_fs.glsl"),
@@ -400,6 +397,14 @@ void createScene() {
 	cubeNode->setMesh(&cubeMesh);
 	cubeNode->setShader(&cubeShader);
 	cTangramNode->addNode(cubeNode);
+
+	parallNode = new sceneNode();
+	parallNode->setName("parallelogram");
+	parallNode->setModelMatrix(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
+	parallNode->setModelMatrixAux(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
+	parallNode->setMesh(&cubeMesh);
+	parallNode->setShader(&parallShader);
+	cTangramNode->addNode(parallNode);
 	
 	sG.setRoot(rootNode);
 }

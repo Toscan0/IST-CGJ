@@ -337,5 +337,8 @@
     <None Include="..\..\assets\json\books.json">
       <Filter>Resource Files\json</Filter>
     </None>
+    <None Include="..\..\assets\json\savedScene.json">
+      <Filter>Resource Files\json</Filter>
+    </None>
   </ItemGroup>
 </Project>
