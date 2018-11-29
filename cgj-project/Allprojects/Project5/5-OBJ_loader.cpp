@@ -347,7 +347,7 @@ void myInit() {
 		std::string("../../assets/shaders/tangramShader/mTri/mTri_fs.glsl"),
 		triangleMesh.getTexcoordsLoaded(),
 		triangleMesh.getNormalsLoaded());
-	/*lTri1Shader.createShaderProgram(
+	lTri1Shader.createShaderProgram(
 		std::string("../../assets/shaders/tangramShader/lTri1/lTri1_vs.glsl"),
 		std::string("../../assets/shaders/tangramShader/lTri1/lTri1_fs.glsl"),
 		triangleMesh.getTexcoordsLoaded(),
@@ -356,7 +356,7 @@ void myInit() {
 		std::string("../../assets/shaders/tangramShader/lTri2/lTri2_vs.glsl"),
 		std::string("../../assets/shaders/tangramShader/lTri2/lTri2_fs.glsl"),
 		triangleMesh.getTexcoordsLoaded(),
-		triangleMesh.getNormalsLoaded());*/
+		triangleMesh.getNormalsLoaded());
 	parallShader.createShaderProgram(
 		std::string("../../assets/shaders/tangramShader/parall/parall_vs.glsl"),
 		std::string("../../assets/shaders/tangramShader/parall/parall_fs.glsl"),
@@ -418,7 +418,7 @@ void createScene() {
 	cubeNode = new sceneNode();
 	cubeNode->setName("cube");
 	cubeNode->setModelMatrix(mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4());
-	//cubeNode->setModelMatrixAux(mf.identityMatrix4x4());
+	cubeNode->setModelMatrixAux(mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4());
 	cubeNode->setMesh(&cubeMesh);
 	cubeNode->setShader(&cubeShader);
 	tangramNode->addNode(cubeNode);
@@ -426,7 +426,7 @@ void createScene() {
 	sTri1Node = new sceneNode();
 	sTri1Node->setName("small triangle 1");
 	sTri1Node->setModelMatrix(mf.translationMatrix4x4(vector3(-0.2f, 0.0f, 0.2f)) * mf.identityMatrix4x4());
-	//cubeNode->setModelMatrixAux(mf.identityMatrix4x4());
+	sTri1Node->setModelMatrixAux(mf.translationMatrix4x4(vector3(-0.2f, 0.0f, 0.2f)) * mf.identityMatrix4x4());
 	sTri1Node->setMesh(&triangleMesh);
 	sTri1Node->setShader(&sTri1Shader);
 	tangramNode->addNode(sTri1Node);
@@ -438,7 +438,11 @@ void createScene() {
 		mf.rotationMatrix4x4(vector3(0, 1, 0), (M_PI/2)) * 
 		mf.identityMatrix4x4()
 	);
-	//cubeNode->setModelMatrixAux(mf.identityMatrix4x4());
+	sTri2Node->setModelMatrixAux(
+		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.0f)) *
+		mf.rotationMatrix4x4(vector3(0, 1, 0), (M_PI / 2)) *
+		mf.identityMatrix4x4()
+	);
 	sTri2Node->setMesh(&triangleMesh);
 	sTri2Node->setShader(&sTri2Shader);
 	tangramNode->addNode(sTri2Node);
@@ -446,41 +450,61 @@ void createScene() {
 	mTriNode = new sceneNode();
 	mTriNode->setName("medium triangle");
 	mTriNode->setModelMatrix(
-		mf.translationMatrix4x4(vector3(0.28f, 0.0f, 0.0f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(3 * M_PI / 4)) //*
-		//mf.scalingMatrix4x4(vector3(0, 0, 1))
+		mf.translationMatrix4x4(vector3(0.40, 0.0f, 0.0f)) *
+		mf.rotationMatrix4x4(vector3(0, 1, 0), -(3 * M_PI / 4)) *
+		mf.scalingMatrix4x4(vector3(1.4f, 1.0f, 1.4f))
 	);
-	//cubeNode->setModelMatrixAux(mf.identityMatrix4x4());
+	mTriNode->setModelMatrixAux(
+		mf.translationMatrix4x4(vector3(0.40, 0.0f, 0.0f)) *
+		mf.rotationMatrix4x4(vector3(0, 1, 0), -(3 * M_PI / 4)) *
+		mf.scalingMatrix4x4(vector3(1.4f, 1.0f, 1.4f))
+	);
 	mTriNode->setMesh(&triangleMesh);
 	mTriNode->setShader(&mTriShader);
 	tangramNode->addNode(mTriNode);
 
+	lTri1Node = new sceneNode();
+	lTri1Node->setName("large triangle 1");
+	lTri1Node->setModelMatrix(
+		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.4f)) *
+		mf.rotationMatrix4x4(vector3(0, 1, 0), M_PI) *
+		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
+	);
+	lTri1Node->setModelMatrixAux(
+		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.4f)) *
+		mf.rotationMatrix4x4(vector3(0, 1, 0), M_PI) *
+		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
+	);
+	lTri1Node->setMesh(&triangleMesh);
+	lTri1Node->setShader(&lTri1Shader);
+	tangramNode->addNode(lTri1Node);
+
+	lTri2Node = new sceneNode();
+	lTri2Node->setName("large triangle 2");
+	lTri2Node->setModelMatrix(
+		mf.translationMatrix4x4(vector3(-0.4f, 0.0f, -0.4f)) *
+		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) *
+		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
+	);
+	lTri2Node->setModelMatrixAux(
+		mf.translationMatrix4x4(vector3(-0.4f, 0.0f, -0.4f)) *
+		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) *
+		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
+	);
+	lTri2Node->setMesh(&triangleMesh);
+	lTri2Node->setShader(&lTri2Shader);
+	tangramNode->addNode(lTri2Node);
+
 	parallNode = new sceneNode();
 	parallNode->setName("parallelogram");
 	parallNode->setModelMatrix(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
-	//parallNode->setModelMatrixAux(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
+	parallNode->setModelMatrixAux(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
 	parallNode->setMesh(&parallMesh);
 	parallNode->setShader(&parallShader);
 	tangramNode->addNode(parallNode);
 	
 	sG.setRoot(rootNode);
 }
-
-/*
-b1_triangle = (vec3(0.2f, 0.0f, -0.2f), R180y, 0.0f)
-
-SceneNode* b2_triangle = vec3(-0.2f, 0.0f, -0.2f), R_90y, 0.0f)
-
-////SceneNode* s1_triangle = vec3(-0.2f, 0.0f, 0.2f), qtrn(), 0.0f)
-
-////SceneNode* s2_triangle = vec3(0.4f, 0.0f, -0.0f), R90y, 0.0f)
-
-//SceneNode* m_triangle = vec3(0.28f, 0.0f, 0.0f), R_135y, 0.0f)
-
-////SceneNode* square = vec3(0.2f, 0.0f, 0.0f), qtrn(), 0.0f)
-
-////SceneNode* parallelogram = vec3(-0.4f, 0.0f, 0.4f), qtrn(), 0.0f);
-*/
 
 void readJSONFile() {
 	// Read from stream

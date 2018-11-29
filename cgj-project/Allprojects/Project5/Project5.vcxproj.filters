@@ -385,5 +385,17 @@
     <None Include="..\..\assets\shaders\tangramShader\mTri\mTri_vs.glsl">
       <Filter>Resource Files\shaders\tangramShader\mTri</Filter>
     </None>
+    <None Include="..\..\assets\shaders\tangramShader\lTri1\lTri1_fs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\lTri1</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\lTri1\lTri1_vs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\lTri1</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\lTri2\lTri2_fs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\lTri2</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\lTri2\lTri2_vs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\lTri2</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -103,6 +103,10 @@
     <None Include="..\..\assets\shaders\tableShader\table_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\cube\cube_fs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\cube\cube_vs.glsl" />
+    <None Include="..\..\assets\shaders\tangramShader\lTri1\lTri1_fs.glsl" />
+    <None Include="..\..\assets\shaders\tangramShader\lTri1\lTri1_vs.glsl" />
+    <None Include="..\..\assets\shaders\tangramShader\lTri2\lTri2_fs.glsl" />
+    <None Include="..\..\assets\shaders\tangramShader\lTri2\lTri2_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\mTri\mTri_fs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\mTri\mTri_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\parall\parall_fs.glsl" />
