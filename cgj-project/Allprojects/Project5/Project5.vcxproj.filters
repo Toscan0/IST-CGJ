@@ -94,6 +94,27 @@
     <Filter Include="Source Files\jsoncons\detail">
       <UniqueIdentifier>{c5a88c6c-146f-4e5a-bbd2-c3495657b5ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaders\tangramShader\cube">
+      <UniqueIdentifier>{3fa0606e-3245-4b5d-a232-f2855aae28ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\tangramShader\sTri1">
+      <UniqueIdentifier>{a1ee837b-28d9-4ecc-b9d5-a4c13cc08dc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\tangramShader\stri2">
+      <UniqueIdentifier>{2024ede8-804d-4094-97c9-37e0ee148155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\tangramShader\mTri">
+      <UniqueIdentifier>{a18a8372-75e7-4fa2-95b6-1e99eb8563d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\tangramShader\lTri1">
+      <UniqueIdentifier>{62e16ed4-2335-4f35-a41c-8cb5248116f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\tangramShader\lTri2">
+      <UniqueIdentifier>{9c2ee48d-fa50-4b95-b794-ece3a0852a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders\tangramShader\parall">
+      <UniqueIdentifier>{ee065848-de25-443c-9138-3534dacdc731}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp">
@@ -325,12 +346,6 @@
     <None Include="..\..\assets\shaders\tableShader\table_vs.glsl">
       <Filter>Resource Files\shaders\tableShader</Filter>
     </None>
-    <None Include="..\..\assets\shaders\tangramShader\tangram_fs.glsl">
-      <Filter>Resource Files\shaders\tangramShader</Filter>
-    </None>
-    <None Include="..\..\assets\shaders\tangramShader\tangram_vs.glsl">
-      <Filter>Resource Files\shaders\tangramShader</Filter>
-    </None>
     <None Include="..\..\assets\json\defaultLoad.json">
       <Filter>Resource Files\json</Filter>
     </None>
@@ -339,6 +354,36 @@
     </None>
     <None Include="..\..\assets\json\savedScene.json">
       <Filter>Resource Files\json</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\cube\cube_fs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\cube</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\cube\cube_vs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\cube</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\parall\parall_fs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\parall</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\parall\parall_vs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\parall</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\sTri1\sTri1_fs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\sTri1</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\sTri1\sTri1_vs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\sTri1</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\sTri2\sTri2_fs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\stri2</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\sTri2\stri2_vs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\stri2</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\mTri\mTri_fs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\mTri</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\mTri\mTri_vs.glsl">
+      <Filter>Resource Files\shaders\tangramShader\mTri</Filter>
     </None>
   </ItemGroup>
 </Project>
