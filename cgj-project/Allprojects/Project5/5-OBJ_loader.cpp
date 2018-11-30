@@ -205,6 +205,9 @@ void OnMouseDown(int button, int state, int x, int y) {
 		g_oldX = x;
 		g_oldY = y;
 	}
+	else {
+		g_rot = false;
+	}
 }
 
 
@@ -228,6 +231,11 @@ void OnMouseMove(int x, int y) {
 		matrix4x4 vM = T * mR; // view matrix
 		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
 		mainCamera.setViewMatrix(vMT);
+	}
+	else {
+		GLuint index;
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+		std::cout << "index: " << index << "\n";
 	}
 }
 
@@ -524,7 +532,7 @@ void readJSONFile() {
 		std::cout << "n/a";
 	}
 
-	j["tangram"]["small_triangle_1"]["name"] = "mudeiDeNome";
+	j["tangram"]["small_triangle_1"]["name"] = "lllllll";
 
 	// Write to stream
 	std::ofstream os("../../assets/json/savedScene.json");
