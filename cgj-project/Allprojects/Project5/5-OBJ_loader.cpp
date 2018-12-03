@@ -95,6 +95,8 @@ sceneNode *rootNode;
 sceneNode *tableNode;
 sceneNode *tangramNode, *cubeNode, *sTri1Node, *sTri2Node, *lTri1Node, *lTri2Node, *mTriNode, *parallNode; // tangram and his pieces
 
+//stencil buffer
+unsigned char stencilData[8];
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -119,6 +121,8 @@ void destroyBufferObjects()
 
 void drawScene()
 {
+	//glEnable(GL_STENCIL_TEST);
+	//glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
 	sG.draw();
 }
 
@@ -208,6 +212,13 @@ void OnMouseDown(int button, int state, int x, int y) {
 	else {
 		g_rot = false;
 	}
+
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		GLuint index;
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+		std::cout << "index: " << index << "\n";
+
+	}
 }
 
 
@@ -233,9 +244,7 @@ void OnMouseMove(int x, int y) {
 		mainCamera.setViewMatrix(vMT);
 	}
 	else {
-		GLuint index;
-		glReadPixels(x, WinY - y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
-		std::cout << "index: " << index << "\n";
+		
 	}
 }
 
