@@ -68,6 +68,16 @@ void sceneNode::draw(camera& cam) {
 		glUniformMatrix4fv(_shader->getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
 	}
 	if (_mesh != nullptr) {
+		if (_name == "table") {
+			glStencilMask(0x00);
+		}
+		else if (_name == "cube") {
+			glStencilMask(0xCC);
+		}
+		else {
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilMask(0xFF);
+		}
 		_mesh->draw(_modelMatrix, *_shader, cam);
 	}
 	for (int i = 0; i < _nodes.size(); i++) {

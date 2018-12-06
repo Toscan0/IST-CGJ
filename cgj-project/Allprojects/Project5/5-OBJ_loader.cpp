@@ -1,29 +1,3 @@
-///////////////////////////////////////////////////////////////////////
-//
-//  Loading OBJ mesh from external file
-//
-//	Final individual assignment:
-//	1.	Create classes: Scene, Camera and Mesh (that loads a mesh from
-//		a Wavefront OBJ file to an indexed format) and build a small
-//		scenegraph of your tangram scene (you may create more 
-//		classes if needed).
-//	2.	Create a ground object and couple the tangram figure to the
-//		ground. Press keys to move the ground about: the tangram
-//		figure must follow the ground.
-//	3.	Animate between closed puzzle (initial square) and tangram
-//		figure by pressing a key.
-//	4.	Spherical camera interaction through mouse. It should be
-//		possible to interact while animation is playing.
-//
-//	Team assignment:
-//	Pick your team (2 elements from one same lab) for the team
-//	assignment you will be working until the end of the semester,
-//	and register it online.
-//
-// (c) 2013-18 by Carlos Martinho
-//
-///////////////////////////////////////////////////////////////////////
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -121,8 +95,7 @@ void destroyBufferObjects()
 
 void drawScene()
 {
-	//glEnable(GL_STENCIL_TEST);
-	//glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	sG.draw();
 }
 
@@ -217,7 +190,14 @@ void OnMouseDown(int button, int state, int x, int y) {
 		GLuint index;
 		glReadPixels(x, WinY - y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
 		std::cout << "index: " << index << "\n";
-
+		
+		GLfloat red;
+		GLfloat green;
+		GLfloat blue;
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_RED, GL_FLOAT, &red);
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_GREEN, GL_FLOAT, &green);
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_BLUE, GL_FLOAT, &blue);
+		std::cout << "color(RGB): " << "(" << red << ", " << green << ", " << blue << ")" << "\n";
 	}
 }
 
@@ -291,6 +271,11 @@ void setupOpenGL()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 }
 
 void setupGLEW()
@@ -334,8 +319,6 @@ void myInit() {
 	mainCamera.makePrespMatrix((M_PI / 6), (640.0f / 480.0f), 1, 10);
 
 	// Mesh load
-	//myMesh.createMesh(std::string("../../assets/models/cube.obj"), myShader); // cube
-	//myMesh.createMesh(std::string("../../assets/models/duck.obj"), myShader); // duck
 	// tangram
 	cubeMesh.createMesh(std::string("../../assets/models/tangram/square.obj")); // cube
 	triangleMesh.createMesh(std::string("../../assets/models/tangram/triangle.obj")); // triangle
@@ -406,6 +389,7 @@ void createScene() {
 	*
 	* For transformation the order is :  T * R * S
 	*/
+
 	vector3 vM(1.5f, 1.0f, 1.5f);
 	matrix4x4 mM = mf.scalingMatrix4x4(vM); // smal to medium
 	vector3 vL(2.0f, 1.0f, 2.0f);
@@ -463,7 +447,7 @@ void createScene() {
 	sTri2Node->setMesh(&triangleMesh);
 	sTri2Node->setShader(&sTri2Shader);
 	tangramNode->addNode(sTri2Node);
-	
+
 	mTriNode = new sceneNode();
 	mTriNode->setName("medium triangle");
 	mTriNode->setModelMatrix(

@@ -120,15 +120,6 @@
     <ClCompile Include="5-OBJ_loader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="6-classicgl-teapot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="7-MatrixStack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="8-SceneManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\camera\camera.cpp">
       <Filter>Source Files\src\camera</Filter>
     </ClCompile>
