@@ -16,6 +16,7 @@ class sceneNode {
 		shader* _shader;
 		std::string _name;
 		int _index = -1;
+		qtrn _q = { 1.0f, 0.0f, 0.0f, 0.0f }; //quarterion resposible for piece rotation
 		std::vector<sceneNode*> _nodes;
 	
 	public:
@@ -38,7 +39,10 @@ class sceneNode {
 		
 		void setIndex(int index);
 		const int getIndex();
-		
+
+		const qtrn getRotQtrn();
+		void setRotQtrn(const qtrn&);
+
 		void addNode(sceneNode *node);
 		const std::vector<sceneNode*> getNodes();
 	

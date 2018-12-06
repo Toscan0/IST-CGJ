@@ -87,3 +87,12 @@ const vector3 camera::getEye() {
 void camera::setEye(vector3& eye) {
 	_eye = eye;
 }
+
+
+const qtrn camera::getRotQtrn() {
+	return _q;
+}
+
+void camera::setRotQtrn(const qtrn& q){
+	_q = q;
+}

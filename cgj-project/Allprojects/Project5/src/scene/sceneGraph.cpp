@@ -2,9 +2,8 @@
 
 sceneGraph::sceneGraph() {}
 
-sceneGraph::sceneGraph(camera* camera, shader* shader) {
+sceneGraph::sceneGraph(camera* camera) {
 	this->setCamera(camera);
-	this->setShader(shader);
 }
 
 void sceneGraph::setCamera(camera* c) {
@@ -15,12 +14,12 @@ camera* sceneGraph::getCamera() {
 	return _camera;
 }
 
-void sceneGraph::setShader(shader* s) {
+/*void sceneGraph::setShader(shader* s) {
 	_shader = s;
 }
 shader* sceneGraph::getShader() {
 	return _shader;
-}
+}*/
 
 void sceneGraph::setRoot(sceneNode *r) {
 	_root = r;

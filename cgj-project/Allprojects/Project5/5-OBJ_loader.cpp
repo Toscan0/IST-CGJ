@@ -31,22 +31,21 @@ using jsoncons::json;
 int WinX = 640, WinY = 480;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
+
+vector4 XX_4(1, 0, 0, 1);
+vector4 YY_4(0, 1, 0, 1);
+matrixFactory mf;
+qtrn qAux;
+
+// mouse click
 int g_oldX = 0; // last coord x of mouse in window
 int g_oldY = 0;	// last coord y of mouse in window
 
+//Camera
+camera mainCamera;
 vector3 eye(0.0f, 0.0f, 5.0f);
 vector3 center(0.0f, 0.0f, 0.0f);
 vector3 up(0.0f, 1.0f, 0.0f);
-
-//Quarterion rotation
-qtrn qAux;
-bool g_rot = false;
-vector4 XX_4(1, 0, 0, 1);
-vector4 YY_4(0, 1, 0, 1);
-qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
-
-camera mainCamera;
-matrixFactory mf;
 
 //mesh myMesh;
 mesh cubeMesh;
@@ -54,14 +53,14 @@ mesh triangleMesh;
 mesh parallMesh;
 mesh tableMesh;
 
-//shader myShader;
+// Shader
 shader cubeShader;
 shader sTri1Shader, sTri2Shader, mTriShader, lTri1Shader, lTri2Shader;
 shader parallShader;
 shader tableShader;
 
 // SceneGraph
-int g_x = 0; // value to translate the scene graph
+int g_x = 0; // value to translate the table
 sceneGraph sG;
 
 // SceneNode
@@ -69,8 +68,17 @@ sceneNode *rootNode;
 sceneNode *tableNode;
 sceneNode *tangramNode, *cubeNode, *sTri1Node, *sTri2Node, *lTri1Node, *lTri2Node, *mTriNode, *parallNode; // tangram and his pieces
 
+//Camera Quarterion rotation
+// only rotates when true
+bool g_rot = false;
+
+// rotate the cam or rotate the pieces
+//true -> rotate the camera, false -> rotate the pieces
+bool g_camMode = true; 
+
+GLuint index; //index of the piece selected
 //stencil buffer
-unsigned char stencilData[8];
+//unsigned char stencilData[8];
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -178,19 +186,28 @@ void mouseWheel(int wheel, int direction, int x, int y) {
 
 void OnMouseDown(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-		g_rot = true;
 		g_oldX = x;
 		g_oldY = y;
-	}
-	else {
-		g_rot = false;
+		if (g_camMode) {
+			g_rot = true;
+		}
+		else {
+			g_rot = false;
+		}
 	}
 
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
-		GLuint index;
 		glReadPixels(x, WinY - y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
 		std::cout << "index: " << index << "\n";
 		
+		//selected one of the pieces
+		if(index >= 1 && index <=7) {
+			g_camMode = false;
+		}
+		else {
+			g_camMode = true;
+		}
+
 		GLfloat red;
 		GLfloat green;
 		GLfloat blue;
@@ -203,16 +220,18 @@ void OnMouseDown(int button, int state, int x, int y) {
 
 
 void OnMouseMove(int x, int y) {
-	if (g_rot == true) { 	// Gimbal lock false
+	if (g_rot == true && g_camMode == true) { 	// cam rotation with no Gimbal lock 
 		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
 		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 
+		qtrn q = mainCamera.getRotQtrn();
 		//Recive the angle in deg
 		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
 		q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
-
+		mainCamera.setRotQtrn(q);
+		
 		matrix4x4 mAux;
 		matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
 
@@ -223,8 +242,30 @@ void OnMouseMove(int x, int y) {
 		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
 		mainCamera.setViewMatrix(vMT);
 	}
-	else {
+	else if(g_rot == false && g_camMode == false){ // piece rotation
+		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
+		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
+		g_oldX = (float)x;
+		g_oldY = (float)y;
+
+		//getNode by index
+		qtrn q = cubeNode->getRotQtrn();
+		//Recive the angle in deg
+		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
+		q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
+		cubeNode->setRotQtrn(q);
+
+		matrix4x4 mAux;
+		matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
+
+		vector3 vT(0, 0, 0);
+		matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação 
+
+		matrix4x4 vM = T * mR; // view matrix
+		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
 		
+		//mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4()
+		cubeNode->setModelMatrix(vMT);
 	}
 }
 

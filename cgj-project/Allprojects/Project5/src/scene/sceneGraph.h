@@ -12,17 +12,17 @@
 class sceneGraph {
 public:
 	camera* _camera;
-	shader* _shader;
+	//shader* _shader;
 	sceneNode* _root;
 
 	sceneGraph();
-	sceneGraph(camera* camera, shader* shader);
+	sceneGraph(camera* camera);
 
 	void setCamera(camera *c);
 	camera* getCamera();
 
-	void setShader(shader *s);
-	shader* getShader();
+	/*void setShader(shader *s);
+	shader* getShader();*/
 
 	void setRoot(sceneNode *r);
 	sceneNode *getRoot();

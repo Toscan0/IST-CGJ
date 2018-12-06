@@ -47,11 +47,21 @@ const std::string sceneNode::getName() {
 	return _name;
 }
 
+const int sceneNode::getIndex() {
+	return _index;
+}
+
 void sceneNode::setIndex(int index) {
 	_index = index;
 }
-const int sceneNode::getIndex() {
-	return _index;
+
+
+const qtrn sceneNode::getRotQtrn() {
+	return _q;
+}
+
+void sceneNode::setRotQtrn(const qtrn& q) {
+	 _q = q;
 }
 
 void sceneNode::addNode(sceneNode* node) {
@@ -74,18 +84,6 @@ void sceneNode::draw(camera& cam) {
 		glUniformMatrix4fv(_shader->getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
 	}
 	if (_mesh != nullptr) {
-		/*if (_name == "table") {
-			glStencilFunc(GL_ALWAYS, 0, 0xFF);
-			glStencilMask(0xFF);
-		}
-		else if (_name == "cube") {
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glStencilMask(0xFF);
-		}
-		else {
-			glStencilFunc(GL_ALWAYS, 2, 0xFF);
-			glStencilMask(0xFF);
-		}*/
 		if (_index == 0) { //table
 			glStencilFunc(GL_ALWAYS, _index, 0x00);
 			glStencilMask(0x00);
