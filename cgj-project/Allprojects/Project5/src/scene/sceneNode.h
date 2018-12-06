@@ -15,6 +15,7 @@ class sceneNode {
 		//vector3 _color;
 		shader* _shader;
 		std::string _name;
+		int _index = -1;
 		std::vector<sceneNode*> _nodes;
 	
 	public:
@@ -35,6 +36,8 @@ class sceneNode {
 		void setName(std::string name);
 		const std::string getName();
 		
+		void setIndex(int index);
+		const int getIndex();
 		
 		void addNode(sceneNode *node);
 		const std::vector<sceneNode*> getNodes();

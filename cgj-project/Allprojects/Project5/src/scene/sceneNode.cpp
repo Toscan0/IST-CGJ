@@ -47,6 +47,12 @@ const std::string sceneNode::getName() {
 	return _name;
 }
 
+void sceneNode::setIndex(int index) {
+	_index = index;
+}
+const int sceneNode::getIndex() {
+	return _index;
+}
 
 void sceneNode::addNode(sceneNode* node) {
 	node->setModelMatrix(_modelMatrix * node->getModelMatrix());
@@ -68,15 +74,28 @@ void sceneNode::draw(camera& cam) {
 		glUniformMatrix4fv(_shader->getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
 	}
 	if (_mesh != nullptr) {
-		if (_name == "table") {
-			glStencilMask(0x00);
+		/*if (_name == "table") {
+			glStencilFunc(GL_ALWAYS, 0, 0xFF);
+			glStencilMask(0xFF);
 		}
 		else if (_name == "cube") {
-			glStencilMask(0xCC);
-		}
-		else {
 			glStencilFunc(GL_ALWAYS, 1, 0xFF);
 			glStencilMask(0xFF);
+		}
+		else {
+			glStencilFunc(GL_ALWAYS, 2, 0xFF);
+			glStencilMask(0xFF);
+		}*/
+		if (_index == 0) { //table
+			glStencilFunc(GL_ALWAYS, _index, 0x00);
+			glStencilMask(0x00);
+		}
+		else if (_index > 0) {
+			glStencilFunc(GL_ALWAYS, _index, 0xFF);
+			glStencilMask(0xFF);
+		}
+		else {
+			std::cout << "Error: Mesh with no index, name: " + _name << "\n";
 		}
 		_mesh->draw(_modelMatrix, *_shader, cam);
 	}

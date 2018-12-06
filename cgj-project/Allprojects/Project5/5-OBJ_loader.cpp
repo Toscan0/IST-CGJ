@@ -376,16 +376,16 @@ void createScene() {
 	/*						Scene Graph
 	*					root <----|----> camera
 	*						|				|- viewMatrix
-	*			 		table				|- prespMatrix
+	*			 		table, index: 0				|- prespMatrix
 	*						|
 	*	closed tangram <----|
-	*		 |- cube
-	*		 |- small triangle 1
-	*		 |- small triangle 2
-	*		 |- medium triangle
-	*		 |- big triangle 1
-	*		 |- big triangle 2
-	*		 |- parallelogram
+	*		 |- cube, index: 1
+	*		 |- small triangle 1, index: 2
+	*		 |- small triangle 2, index: 3
+	*		 |- medium triangle, index: 4
+	*		 |- big triangle 1, index: 5
+	*		 |- big triangle 2, index: 6
+	*		 |- parallelogram, index: 7
 	*
 	* For transformation the order is :  T * R * S
 	*/
@@ -404,6 +404,7 @@ void createScene() {
 
 	tableNode = new sceneNode();
 	tableNode->setName("table"); 
+	tableNode->setIndex(0);
 	tableNode->setModelMatrix(mf.identityMatrix4x4());
 	tableNode->setModelMatrixAux(mf.identityMatrix4x4());
 	tableNode->setMesh(&tableMesh);
@@ -418,6 +419,7 @@ void createScene() {
 
 	cubeNode = new sceneNode();
 	cubeNode->setName("cube");
+	cubeNode->setIndex(1);
 	cubeNode->setModelMatrix(mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4());
 	cubeNode->setModelMatrixAux(mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4());
 	cubeNode->setMesh(&cubeMesh);
@@ -426,6 +428,7 @@ void createScene() {
 
 	sTri1Node = new sceneNode();
 	sTri1Node->setName("small triangle 1");
+	sTri1Node->setIndex(2);
 	sTri1Node->setModelMatrix(mf.translationMatrix4x4(vector3(-0.2f, 0.0f, 0.2f)) * mf.identityMatrix4x4());
 	sTri1Node->setModelMatrixAux(mf.translationMatrix4x4(vector3(-0.2f, 0.0f, 0.2f)) * mf.identityMatrix4x4());
 	sTri1Node->setMesh(&triangleMesh);
@@ -434,6 +437,7 @@ void createScene() {
 
 	sTri2Node = new sceneNode();
 	sTri2Node->setName("small triangle 2");
+	sTri2Node->setIndex(3);
 	sTri2Node->setModelMatrix(
 		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.0f)) * 
 		mf.rotationMatrix4x4(vector3(0, 1, 0), (M_PI/2)) * 
@@ -450,6 +454,7 @@ void createScene() {
 
 	mTriNode = new sceneNode();
 	mTriNode->setName("medium triangle");
+	mTriNode->setIndex(4);
 	mTriNode->setModelMatrix(
 		mf.translationMatrix4x4(vector3(0.40, 0.0f, 0.0f)) *
 		mf.rotationMatrix4x4(vector3(0, 1, 0), -(3 * M_PI / 4)) *
@@ -466,6 +471,7 @@ void createScene() {
 
 	lTri1Node = new sceneNode();
 	lTri1Node->setName("large triangle 1");
+	lTri1Node->setIndex(5);
 	lTri1Node->setModelMatrix(
 		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.4f)) *
 		mf.rotationMatrix4x4(vector3(0, 1, 0), M_PI) *
@@ -482,6 +488,7 @@ void createScene() {
 
 	lTri2Node = new sceneNode();
 	lTri2Node->setName("large triangle 2");
+	lTri2Node->setIndex(6);
 	lTri2Node->setModelMatrix(
 		mf.translationMatrix4x4(vector3(-0.4f, 0.0f, -0.4f)) *
 		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) *
@@ -498,6 +505,7 @@ void createScene() {
 
 	parallNode = new sceneNode();
 	parallNode->setName("parallelogram");
+	parallNode->setIndex(7);
 	parallNode->setModelMatrix(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
 	parallNode->setModelMatrixAux(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
 	parallNode->setMesh(&parallMesh);
