@@ -36,7 +36,7 @@ class sceneNode {
 		
 		void setName(std::string name);
 		const std::string getName();
-		
+
 		void setIndex(int index);
 		const int getIndex();
 

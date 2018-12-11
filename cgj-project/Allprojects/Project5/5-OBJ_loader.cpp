@@ -77,8 +77,6 @@ bool g_rot = false;
 bool g_camMode = true; 
 
 GLuint index; //index of the piece selected
-//stencil buffer
-//unsigned char stencilData[8];
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -249,11 +247,24 @@ void OnMouseMove(int x, int y) {
 		g_oldY = (float)y;
 
 		//getNode by index
-		qtrn q = cubeNode->getRotQtrn();
+		//not eficient but works
+		sceneNode *nodeSelected = nullptr;
+		std::vector<sceneNode*> nodes = tangramNode->getNodes();
+		for (unsigned i = 0; i < nodes.size(); i++) {
+			if (index == nodes[i]->getIndex()) {
+				nodeSelected = nodes[i];
+				std::cout << "node name" << nodeSelected->getName() << "\n";
+				break;
+			}
+		}
+		if (nodeSelected == nullptr) {
+			std::cout << "Error: nodeSelected index not found" << "\n";
+		}
+		qtrn q = nodeSelected->getRotQtrn();
 		//Recive the angle in deg
 		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
 		q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
-		cubeNode->setRotQtrn(q);
+		nodeSelected->setRotQtrn(q);
 
 		matrix4x4 mAux;
 		matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
@@ -265,7 +276,7 @@ void OnMouseMove(int x, int y) {
 		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
 		
 		//mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4()
-		cubeNode->setModelMatrix(vMT);
+		nodeSelected->setModelMatrix(vMT);
 	}
 }
 
@@ -412,7 +423,6 @@ void myInit() {
 	createBufferObjects();
 }
 
-
 void createScene() {
 	/*						Scene Graph
 	*					root <----|----> camera
@@ -424,8 +434,8 @@ void createScene() {
 	*		 |- small triangle 1, index: 2
 	*		 |- small triangle 2, index: 3
 	*		 |- medium triangle, index: 4
-	*		 |- big triangle 1, index: 5
-	*		 |- big triangle 2, index: 6
+	*		 |- large triangle 1, index: 5
+	*		 |- large triangle 2, index: 6
 	*		 |- parallelogram, index: 7
 	*
 	* For transformation the order is :  T * R * S
