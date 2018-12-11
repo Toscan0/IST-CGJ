@@ -76,7 +76,9 @@ bool g_rot = false;
 //true -> rotate the camera, false -> rotate the pieces
 bool g_camMode = true; 
 
+// piece selected
 GLuint index; //index of the piece selected
+sceneNode *nodeSelected = nullptr; // node of the piece
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -201,6 +203,18 @@ void OnMouseDown(int button, int state, int x, int y) {
 		//selected one of the pieces
 		if(index >= 1 && index <=7) {
 			g_camMode = false;
+			
+			std::vector<sceneNode*> nodes = tangramNode->getNodes();
+			for (unsigned i = 0; i < nodes.size(); i++) {
+				if (index == nodes[i]->getIndex()) {
+					nodeSelected = nodes[i];
+					std::cout << "node name" << nodeSelected->getName() << "\n";
+					break;
+				}
+			}
+			if (nodeSelected == nullptr) {
+				std::cout << "Error: nodeSelected with index: " << index << " not found" << "\n";
+			}
 		}
 		else {
 			g_camMode = true;
@@ -247,36 +261,26 @@ void OnMouseMove(int x, int y) {
 		g_oldY = (float)y;
 
 		//getNode by index
-		//not eficient but works
-		sceneNode *nodeSelected = nullptr;
-		std::vector<sceneNode*> nodes = tangramNode->getNodes();
-		for (unsigned i = 0; i < nodes.size(); i++) {
-			if (index == nodes[i]->getIndex()) {
-				nodeSelected = nodes[i];
-				std::cout << "node name" << nodeSelected->getName() << "\n";
-				break;
-			}
-		}
-		if (nodeSelected == nullptr) {
-			std::cout << "Error: nodeSelected index not found" << "\n";
-		}
 		qtrn q = nodeSelected->getRotQtrn();
 		//Recive the angle in deg
 		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
-		q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
+		//q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
 		nodeSelected->setRotQtrn(q);
 
 		matrix4x4 mAux;
 		matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
 
-		vector3 vT(0, 0, 0);
+		vector3 vT = nodeSelected->getTranslationVector();
 		matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação 
 
-		matrix4x4 vM = T * mR; // view matrix
-		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
+		vector3 vS = nodeSelected->getScalingVector();
+		matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
+
+		matrix4x4 vM = T * mR * S; // view matrix
+		//matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
 		
 		//mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4()
-		nodeSelected->setModelMatrix(vMT);
+		nodeSelected->setModelMatrix(vM);
 	}
 }
 
@@ -440,39 +444,30 @@ void createScene() {
 	*
 	* For transformation the order is :  T * R * S
 	*/
-
-	vector3 vM(1.5f, 1.0f, 1.5f);
-	matrix4x4 mM = mf.scalingMatrix4x4(vM); // smal to medium
-	vector3 vL(2.0f, 1.0f, 2.0f);
-	matrix4x4 mL = mf.scalingMatrix4x4(vL); // smal to large
-
 	sG.setCamera(&mainCamera);
 
 	rootNode = new sceneNode(); //root node (empty object)
 	rootNode->setName("root");
-	rootNode->setModelMatrix(mf.identityMatrix4x4());
-	rootNode->setModelMatrixAux(mf.identityMatrix4x4());
+	rootNode->makeInitialModelMatrix();
 
 	tableNode = new sceneNode();
 	tableNode->setName("table"); 
 	tableNode->setIndex(0);
-	tableNode->setModelMatrix(mf.identityMatrix4x4());
-	tableNode->setModelMatrixAux(mf.identityMatrix4x4());
+	tableNode->makeInitialModelMatrix();
 	tableNode->setMesh(&tableMesh);
 	tableNode->setShader(&tableShader);
 	rootNode->addNode(tableNode);
 
 	tangramNode = new sceneNode(); // empty object
 	tangramNode->setName("tangram");
-	tangramNode->setModelMatrix(mf.identityMatrix4x4());
-	tangramNode->setModelMatrixAux(mf.identityMatrix4x4());
+	tangramNode->makeInitialModelMatrix();
 	tableNode->addNode(tangramNode);
 
 	cubeNode = new sceneNode();
 	cubeNode->setName("cube");
 	cubeNode->setIndex(1);
-	cubeNode->setModelMatrix(mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4());
-	cubeNode->setModelMatrixAux(mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4());
+	cubeNode->setTranslationVector(vector3(0.2f, 0.0f, 0.0f));
+	cubeNode->makeInitialModelMatrix();
 	cubeNode->setMesh(&cubeMesh);
 	cubeNode->setShader(&cubeShader);
 	tangramNode->addNode(cubeNode);
@@ -480,8 +475,8 @@ void createScene() {
 	sTri1Node = new sceneNode();
 	sTri1Node->setName("small triangle 1");
 	sTri1Node->setIndex(2);
-	sTri1Node->setModelMatrix(mf.translationMatrix4x4(vector3(-0.2f, 0.0f, 0.2f)) * mf.identityMatrix4x4());
-	sTri1Node->setModelMatrixAux(mf.translationMatrix4x4(vector3(-0.2f, 0.0f, 0.2f)) * mf.identityMatrix4x4());
+	sTri1Node->setTranslationVector(vector3(-0.2f, 0.0f, 0.2f));
+	sTri1Node->makeInitialModelMatrix();
 	sTri1Node->setMesh(&triangleMesh);
 	sTri1Node->setShader(&sTri1Shader);
 	tangramNode->addNode(sTri1Node);
@@ -489,16 +484,10 @@ void createScene() {
 	sTri2Node = new sceneNode();
 	sTri2Node->setName("small triangle 2");
 	sTri2Node->setIndex(3);
-	sTri2Node->setModelMatrix(
-		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.0f)) * 
-		mf.rotationMatrix4x4(vector3(0, 1, 0), (M_PI/2)) * 
-		mf.identityMatrix4x4()
-	);
-	sTri2Node->setModelMatrixAux(
-		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.0f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), (M_PI / 2)) *
-		mf.identityMatrix4x4()
-	);
+	sTri2Node->setTranslationVector(vector3(0.4f, 0.0f, 0.0f));
+	sTri2Node->setRotationVector(vector3(0, 1, 0));
+	sTri2Node->setAngle((M_PI / 2));
+	sTri2Node->makeInitialModelMatrix();
 	sTri2Node->setMesh(&triangleMesh);
 	sTri2Node->setShader(&sTri2Shader);
 	tangramNode->addNode(sTri2Node);
@@ -506,16 +495,11 @@ void createScene() {
 	mTriNode = new sceneNode();
 	mTriNode->setName("medium triangle");
 	mTriNode->setIndex(4);
-	mTriNode->setModelMatrix(
-		mf.translationMatrix4x4(vector3(0.40, 0.0f, 0.0f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(3 * M_PI / 4)) *
-		mf.scalingMatrix4x4(vector3(1.4f, 1.0f, 1.4f))
-	);
-	mTriNode->setModelMatrixAux(
-		mf.translationMatrix4x4(vector3(0.40, 0.0f, 0.0f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(3 * M_PI / 4)) *
-		mf.scalingMatrix4x4(vector3(1.4f, 1.0f, 1.4f))
-	);
+	mTriNode->setTranslationVector(vector3(0.40, 0.0f, 0.0f));
+	mTriNode->setRotationVector(vector3(0, 1, 0));
+	mTriNode->setAngle(-(3 * M_PI / 4));
+	mTriNode->setScalingVector(vector3(1.4f, 1.0f, 1.4f));
+	mTriNode->makeInitialModelMatrix();
 	mTriNode->setMesh(&triangleMesh);
 	mTriNode->setShader(&mTriShader);
 	tangramNode->addNode(mTriNode);
@@ -523,16 +507,11 @@ void createScene() {
 	lTri1Node = new sceneNode();
 	lTri1Node->setName("large triangle 1");
 	lTri1Node->setIndex(5);
-	lTri1Node->setModelMatrix(
-		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.4f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), M_PI) *
-		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
-	);
-	lTri1Node->setModelMatrixAux(
-		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.4f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), M_PI) *
-		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
-	);
+	lTri1Node->setTranslationVector(vector3(0.4f, 0.0f, -0.4f));
+	lTri1Node->setScalingVector(vector3(2.0f, 1.0f, 2.0f));
+	lTri1Node->setRotationVector(vector3(0, 1, 0));
+	lTri1Node->setAngle(M_PI);
+	lTri1Node->makeInitialModelMatrix();
 	lTri1Node->setMesh(&triangleMesh);
 	lTri1Node->setShader(&lTri1Shader);
 	tangramNode->addNode(lTri1Node);
@@ -540,16 +519,11 @@ void createScene() {
 	lTri2Node = new sceneNode();
 	lTri2Node->setName("large triangle 2");
 	lTri2Node->setIndex(6);
-	lTri2Node->setModelMatrix(
-		mf.translationMatrix4x4(vector3(-0.4f, 0.0f, -0.4f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) *
-		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
-	);
-	lTri2Node->setModelMatrixAux(
-		mf.translationMatrix4x4(vector3(-0.4f, 0.0f, -0.4f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) *
-		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
-	);
+	lTri2Node->setTranslationVector(vector3(-0.4f, 0.0f, -0.4f));
+	lTri2Node->setScalingVector(vector3(2.0f, 1.0f, 2.0f));
+	lTri2Node->setRotationVector(vector3(0, 1, 0));
+	lTri2Node->setAngle(-(M_PI / 2));
+	lTri2Node->makeInitialModelMatrix();
 	lTri2Node->setMesh(&triangleMesh);
 	lTri2Node->setShader(&lTri2Shader);
 	tangramNode->addNode(lTri2Node);
@@ -557,8 +531,8 @@ void createScene() {
 	parallNode = new sceneNode();
 	parallNode->setName("parallelogram");
 	parallNode->setIndex(7);
-	parallNode->setModelMatrix(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
-	parallNode->setModelMatrixAux(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
+	parallNode->setTranslationVector(vector3(-0.4f, 0.0f, 0.4f));
+	parallNode->makeInitialModelMatrix();
 	parallNode->setMesh(&parallMesh);
 	parallNode->setShader(&parallShader);
 	tangramNode->addNode(parallNode);

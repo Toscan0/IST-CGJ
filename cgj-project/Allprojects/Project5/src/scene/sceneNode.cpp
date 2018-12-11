@@ -2,12 +2,25 @@
 
 sceneNode::sceneNode() {}
 
-void sceneNode::setModelMatrixAux(const matrix4x4 &modelMatrixAux) {
-	_modelMatrixAux = modelMatrixAux;
+void sceneNode::makeInitialModelMatrix() {
+	matrixFactory mf;
+
+	//For transformation the order is : T * R * S
+	this->setInitialModelMatrix(
+		mf.translationMatrix4x4(_translationVector) *
+		mf.rotationMatrix4x4(_rotationVector, _angle) *
+		mf.scalingMatrix4x4(_scalingVector)
+	);
 }
 
-const matrix4x4 sceneNode::getModelMatrixAux() {
-	return _modelMatrixAux;
+void sceneNode::setInitialModelMatrix(const matrix4x4 &initialModelMatrix) {
+	_initialModelMatrix = initialModelMatrix;
+
+	this->setModelMatrix(initialModelMatrix);
+}
+
+const matrix4x4 sceneNode::getInitialModelMatrix() {
+	return _initialModelMatrix;
 }
 
 void sceneNode::setModelMatrix(const matrix4x4 &modelMatrix) {
@@ -15,12 +28,44 @@ void sceneNode::setModelMatrix(const matrix4x4 &modelMatrix) {
 	// if is a parent node you need to updated the model matrix of his sons
 	for (int i = 0; i < _nodes.size(); i++) {
 		sceneNode* nextNode = _nodes[i];
-		nextNode->setModelMatrix(modelMatrix *  nextNode->getModelMatrixAux());
+		nextNode->setModelMatrix(modelMatrix *  nextNode->getInitialModelMatrix());
 	}
 }
 
 const matrix4x4 sceneNode::getModelMatrix() {
 	return _modelMatrix;
+}
+
+const vector3 sceneNode::getTranslationVector() {
+	return _translationVector;
+}
+
+void sceneNode::setTranslationVector(const vector3& vt) {
+	_translationVector = vt;
+}
+
+const vector3 sceneNode::getScalingVector() {
+	return _scalingVector;
+}
+
+void sceneNode::setScalingVector(const vector3& vS) {
+	_scalingVector = vS;
+}
+
+const vector3 sceneNode::getRotationVector() {
+	return _rotationVector;
+}
+
+void sceneNode::setRotationVector(const vector3& vR) {
+	_rotationVector = vR;
+}
+
+const double sceneNode::getAngle() {
+	return _angle;
+}
+
+void sceneNode::setAngle(const double teta) {
+	_angle = teta;
 }
 
 void sceneNode::setMesh(mesh* m) {

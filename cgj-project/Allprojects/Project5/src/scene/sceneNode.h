@@ -9,11 +9,14 @@
 
 class sceneNode {
 	protected:
-		mesh* _mesh;
-		matrix4x4 _modelMatrixAux;
+		vector3 _translationVector = vector3(0, 0, 0);
+		vector3 _scalingVector = vector3(1, 1, 1);
+		vector3 _rotationVector = vector3(0, 0, 0);
+		double _angle = 0;
+		matrix4x4 _initialModelMatrix;
 		matrix4x4 _modelMatrix;
-		//vector3 _color;
 		shader* _shader;
+		mesh* _mesh;
 		std::string _name;
 		int _index = -1;
 		qtrn _q = { 1.0f, 0.0f, 0.0f, 0.0f }; //quarterion resposible for piece rotation
@@ -22,12 +25,25 @@ class sceneNode {
 	public:
 		sceneNode();
 		
-		void setModelMatrixAux(const matrix4x4 &modelMatrixAux);
-		const matrix4x4 getModelMatrixAux();
+		const matrix4x4 getInitialModelMatrix();
+		void setInitialModelMatrix(const matrix4x4& modelMatrix);
+		void makeInitialModelMatrix(); //creates a model matrix with scalling/translation and rotation of the node
 
-		void setModelMatrix(const matrix4x4 &modelMatrix);
+		void setModelMatrix(const matrix4x4& modelMatrix);
 		const matrix4x4 getModelMatrix();
 		
+		const vector3 getTranslationVector();
+		void setTranslationVector(const vector3&);
+
+		const vector3 getScalingVector();
+		void setScalingVector(const vector3&);
+
+		const vector3 getRotationVector();
+		void setRotationVector(const vector3&);
+
+		const double getAngle();
+		void setAngle(const double);
+
 		void setMesh(mesh* m);
 		const mesh* getMesh();
 
