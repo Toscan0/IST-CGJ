@@ -321,7 +321,6 @@ void OnMouseMove(int x, int y) {
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 
-		//getNode by index
 		qtrn q = nodeSelected->getRotQtrn();
 		//Recive the angle in deg
 		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
@@ -340,7 +339,6 @@ void OnMouseMove(int x, int y) {
 		matrix4x4 vM = T * mR * S; // view matrix
 		//matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
 		
-		//mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4()
 		nodeSelected->setModelMatrix(vM);
 	}
 }
