@@ -27,6 +27,9 @@ using jsoncons::json;
 #define NORMALS 2
 #define DEGTORAD 0.0174532925
 #define M_PI 3.14159265358979323846
+#define DEFAULT_QTRN { 1.0f, 0.0f, 0.0f, 0.0f };
+#define TRANSXX 0.1 //how much the piece translate, each time you press a key, in XX
+#define TRANSZZ 0.1 //how much the piece translate, each time you press a key, in ZZ
 
 int WinX = 640, WinY = 480;
 int WindowHandle = 0;
@@ -60,7 +63,6 @@ shader parallShader;
 shader tableShader;
 
 // SceneGraph
-int g_x = 0; // value to translate the table
 sceneGraph sG;
 
 // SceneNode
@@ -152,20 +154,79 @@ void timer(int value)
 	glutTimerFunc(1000, timer, 0);
 }
 
-//////////////////////////////////////////////////////////////////////// Mouse/Key Eventes
+////////////////////////////////////////////////////////////////////////
+// translate the piece with the values(translation, rotation and sclaing) the node have
+void translatePiece() {
+	vector3 vT = nodeSelected->getTranslationVector();
+	matrix4x4 T = mf.translationMatrix4x4(vT);
 
+	qtrn default_qtrn = { 1.0f, 0.0f, 0.0f, 0.0f }; //DEFAULT_QTRN	
+	qtrn q = nodeSelected->getRotQtrn();
+	matrix4x4 R;
+	if (q == default_qtrn) { //if are equal the user did not rotate the piece 
+		vector3 vR = nodeSelected->getRotationVector();
+		double angle = nodeSelected->getAngle();
+
+		R = mf.rotationMatrix4x4(vR, angle);
+	}
+	else {
+		matrix4x4 mAux;
+		R = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
+	}
+
+	vector3 vS = nodeSelected->getScalingVector();
+	matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
+
+	nodeSelected->setModelMatrix(T * R * S);
+}
+
+//////////////////////////////////////////////////////////////////////// Mouse/Key Eventes
 void keyboard_down(unsigned char key, int x, int y) {
 	switch (key) {
+		case 'W':
+		case 'w':
+		{
+			if (nodeSelected != nullptr) {
+				vector3 vT = nodeSelected->getTranslationVector();
+				vector3 newVT(vT._a, vT._b, vT._c + TRANSZZ);
+				nodeSelected->setTranslationVector(newVT);
+				translatePiece();
+			}
+			break;
+		}
+		case 'S':
+		case 's':
+		{
+			if (nodeSelected != nullptr) {
+				vector3 vT = nodeSelected->getTranslationVector();
+				vector3 newVT(vT._a, vT._b, vT._c - TRANSZZ);
+				nodeSelected->setTranslationVector(newVT);
+				translatePiece();
+			}
+			break;
+		}
 		case 'A':
 		case 'a':
-			g_x--;
-			tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
-			break;
+			{
+				if (nodeSelected != nullptr) {
+					vector3 vT = nodeSelected->getTranslationVector();
+					vector3 newVT(vT._a - TRANSXX, vT._b, vT._c);
+					nodeSelected->setTranslationVector(newVT);
+					translatePiece();
+				}
+				break;
+			}
 		case 'D':
 		case 'd':
-			g_x++;
-			tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
-			break;
+			{
+				if (nodeSelected != nullptr) {
+					vector3 vT = nodeSelected->getTranslationVector();
+					vector3 newVT(vT._a + TRANSXX, vT._b, vT._c);
+					nodeSelected->setTranslationVector(newVT);
+					translatePiece();
+				}
+				break;
+			}
 	}
 }
 
