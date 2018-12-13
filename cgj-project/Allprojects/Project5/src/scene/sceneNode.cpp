@@ -182,7 +182,8 @@ void sceneNode::draw(camera& cam, GLuint indexSelected) {
 
 			glUseProgram(_shader->getProgramId());
 
-			glProgramUniform4fv(_shader->getProgramId(), _shader->getColorId(), 1, _color);
+			float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+			glProgramUniform4fv(_shader->getProgramId(), _shader->getColorId(), 1, white);
 			
 			//glProgramUniform4fv(_shader->getProgramId(), _shader, 1, x);
 			matrix4x4 mM = (T * R * S);

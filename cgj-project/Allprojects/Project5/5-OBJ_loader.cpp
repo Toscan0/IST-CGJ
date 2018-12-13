@@ -82,12 +82,15 @@ bool g_camMode = true;
 float red[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 float green[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
 float blue[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+float blue2[4] = { 0.0f, 0.0f, 0.5f, 1.0f };
 float black[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 float yellow[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
+float orange[4] = { 1.0f, 0.5f, 0.1f, 1.0f };
 float purple[4] = { 0.8f, 0.0f, 0.2f, 1.0f };
 float pink[4] = { 1.0f, 0.5f, 0.5f, 1.0f };
 float brown[4] = { 0.6f, 0.3f, 0.1f, 1.0f };
+float brown2[4] = { 0.6f, 0.3f, 0.2f, 1.0f };
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
@@ -531,7 +534,7 @@ void createScene() {
 	tableNode->makeInitialModelMatrix();
 	tableNode->setMesh(&tableMesh);
 	tableNode->setShader(&tableShader);
-	tableNode->setColor(brown);
+	tableNode->setColor(pink);
 	rootNode->addNode(tableNode);
 
 	tangramNode = new sceneNode(); // empty object
@@ -556,7 +559,7 @@ void createScene() {
 	sTri1Node->makeInitialModelMatrix();
 	sTri1Node->setMesh(&triangleMesh);
 	sTri1Node->setShader(&sTri1Shader);
-	sTri1Node->setColor(pink);
+	sTri1Node->setColor(blue);
 	tangramNode->addNode(sTri1Node);
 
 	sTri2Node = new sceneNode();
@@ -568,7 +571,7 @@ void createScene() {
 	sTri2Node->makeInitialModelMatrix();
 	sTri2Node->setMesh(&triangleMesh);
 	sTri2Node->setShader(&sTri2Shader);
-	sTri2Node->setColor(purple);
+	sTri2Node->setColor(brown2);
 	tangramNode->addNode(sTri2Node);
 
 	mTriNode = new sceneNode();
@@ -581,7 +584,7 @@ void createScene() {
 	mTriNode->makeInitialModelMatrix();
 	mTriNode->setMesh(&triangleMesh);
 	mTriNode->setShader(&mTriShader);
-	mTriNode->setColor(red);
+	mTriNode->setColor(orange);
 	tangramNode->addNode(mTriNode);
 
 	lTri1Node = new sceneNode();
@@ -607,7 +610,7 @@ void createScene() {
 	lTri2Node->makeInitialModelMatrix();
 	lTri2Node->setMesh(&triangleMesh);
 	lTri2Node->setShader(&lTri2Shader);
-	lTri2Node->setColor(white);
+	lTri2Node->setColor(red);
 	tangramNode->addNode(lTri2Node);
 
 	parallNode = new sceneNode();
@@ -617,7 +620,7 @@ void createScene() {
 	parallNode->makeInitialModelMatrix();
 	parallNode->setMesh(&parallMesh);
 	parallNode->setShader(&parallShader);
-	parallNode->setColor(blue);
+	parallNode->setColor(blue2);
 	tangramNode->addNode(parallNode);
 	
 	sG.setRoot(rootNode);
