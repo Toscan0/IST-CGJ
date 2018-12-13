@@ -177,7 +177,7 @@ void sceneNode::draw(camera& cam, GLuint indexSelected) {
 			vector3 vT = _translationVector;
 			matrix4x4 T = mf.translationMatrix4x4(vT);
 
-			vector3 vS = _scalingVector * 1.1;
+			vector3 vS = _scalingVector * 1.1f;
 			matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
 
 			glUseProgram(_shader->getProgramId());
