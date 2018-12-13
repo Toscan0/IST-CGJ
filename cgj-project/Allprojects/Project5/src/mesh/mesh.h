@@ -102,7 +102,7 @@ class mesh{
 		void processMeshData();
 		void freeMeshData();
 		
-		void draw(const matrix4x4& modelMatrix, shader& shader, camera& camera);
+		void draw();
 		
 		void createBufferObjects();
 		void destroyBufferObjects();

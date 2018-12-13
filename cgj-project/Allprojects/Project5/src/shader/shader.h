@@ -10,13 +10,13 @@
 #define VERTICES 0
 #define TEXCOORDS 1
 #define NORMALS 2
-
+#define COLORS 3
 class shader {
 	protected:
 		//bool _TexcoordsLoaded, _NormalsLoaded;
-		GLuint _ProgramId;
+		GLuint _ProgramId, _colorId;
 		GLint _ModelMatrix_UId, _ViewMatrix_UId, _ProjectionMatrix_UId;
-	
+
 	public:	
 		shader();
 		
@@ -38,4 +38,7 @@ class shader {
 		const GLint getModelMatrix_UId();
 		const GLint getViewMatrix_UId();
 		const GLint getProjectionMatrix_UId();
+
+		const GLuint getColorId();
+		//void setColorId(const GLuint);
 };

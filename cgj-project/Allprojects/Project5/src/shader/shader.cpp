@@ -64,6 +64,8 @@ void shader::createShaderProgram(const std::string& vs_file, const std::string& 
 		glBindAttribLocation(_ProgramId, TEXCOORDS, "inTexcoord");
 	if (mormalsLoaded)
 		glBindAttribLocation(_ProgramId, NORMALS, "inNormal");
+	// Color bynd
+	glBindAttribLocation(_ProgramId, COLORS, "in_Color");
 
 	glLinkProgram(_ProgramId);
 	checkLinkage(_ProgramId);
@@ -76,6 +78,8 @@ void shader::createShaderProgram(const std::string& vs_file, const std::string& 
 	_ModelMatrix_UId = glGetUniformLocation(_ProgramId, "ModelMatrix");
 	_ViewMatrix_UId = glGetUniformLocation(_ProgramId, "ViewMatrix");
 	_ProjectionMatrix_UId = glGetUniformLocation(_ProgramId, "ProjectionMatrix");
+
+	_colorId = glGetUniformLocation(_ProgramId, "color");
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 }
@@ -119,4 +123,8 @@ const GLint shader::getViewMatrix_UId() {
 
 const GLint shader::getProjectionMatrix_UId() {
 	return _ProjectionMatrix_UId;
+}
+
+const GLuint shader::getColorId() {
+	return _colorId;
 }

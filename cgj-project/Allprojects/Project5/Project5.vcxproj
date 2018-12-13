@@ -96,6 +96,8 @@
     <None Include="..\..\assets\json\books.json" />
     <None Include="..\..\assets\json\defaultLoad.json" />
     <None Include="..\..\assets\json\savedScene.json" />
+    <None Include="..\..\assets\shaders\default\default_fs.glsl" />
+    <None Include="..\..\assets\shaders\default\default_vs.glsl" />
     <None Include="..\..\assets\shaders\tableShader\table_fs.glsl" />
     <None Include="..\..\assets\shaders\tableShader\table_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\cube\cube_fs.glsl" />
@@ -108,6 +110,8 @@
     <None Include="..\..\assets\shaders\tangramShader\mTri\mTri_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\parall\parall_fs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\parall\parall_vs.glsl" />
+    <None Include="..\..\assets\shaders\tangramShader\picked_fs.glsl" />
+    <None Include="..\..\assets\shaders\tangramShader\picked_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\sTri1\sTri1_fs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\sTri1\sTri1_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\sTri2\sTri2_fs.glsl" />

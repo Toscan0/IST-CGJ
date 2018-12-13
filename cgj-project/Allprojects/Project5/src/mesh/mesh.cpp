@@ -94,7 +94,7 @@ void mesh::freeMeshData()
 	_normalIdx.clear();
 }
 
-void mesh::draw(const matrix4x4& modelMatrix,shader& shader,camera& camera) {
+void mesh::draw() {
 	glBindVertexArray(_VaoId);	
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)_Vertices.size());
 	glUseProgram(0);

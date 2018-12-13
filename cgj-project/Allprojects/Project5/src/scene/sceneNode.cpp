@@ -92,6 +92,17 @@ const std::string sceneNode::getName() {
 	return _name;
 }
 
+float* sceneNode::getColor() {
+	return _color;
+}
+
+void sceneNode::setColor(float* color) {
+	_color[0] = color[0];
+	_color[1] = color[1];
+	_color[2] = color[2];
+	_color[3] = color[3];
+}
+
 const int sceneNode::getIndex() {
 	return _index;
 }
@@ -118,9 +129,12 @@ const std::vector<sceneNode*> sceneNode::getNodes() {
 	return _nodes;
 }
 
-void sceneNode::draw(camera& cam) {
+void sceneNode::draw(camera& cam, GLuint indexSelected) {
 	if (_shader != nullptr) {
 		glUseProgram(_shader->getProgramId());
+
+		glProgramUniform4fv(_shader->getProgramId(), _shader->getColorId(), 1, _color);
+		
 		matrix4x4 mM = _modelMatrix;
 		glUniformMatrix4fv(_shader->getModelMatrix_UId(), 1, GL_TRUE, mM.data()); // need to be trasposed
 		matrix4x4 vM = cam.getViewMatrix();
@@ -140,12 +154,54 @@ void sceneNode::draw(camera& cam) {
 		else {
 			std::cout << "Error: Mesh with no index, name: " + _name << "\n";
 		}
-		_mesh->draw(_modelMatrix, *_shader, cam);
+		_mesh->draw();
+		if (_index == indexSelected && indexSelected >= 1 && indexSelected <= 7) { // that node was selected
+			matrixFactory mf;
+			glStencilFunc(GL_NOTEQUAL, _index, 0xFF);
+			glStencilMask(0x00);
+			glDisable(GL_DEPTH_TEST);
+			
+			qtrn default_qtrn = { 1.0f, 0.0f, 0.0f, 0.0f }; //DEFAULT_QTRN
+			matrix4x4 R;
+			if (_q == default_qtrn) { //if are equal the user did not rotate the piece 
+				vector3 vR = _rotationVector;
+				double angle = _angle;
+
+				R = mf.rotationMatrix4x4(vR, angle);
+			}
+			else {
+				matrix4x4 mAux;
+				R = qGLMatrix(_q, mAux);  // matrix rotação devolve em row major
+			}
+
+			vector3 vT = _translationVector;
+			matrix4x4 T = mf.translationMatrix4x4(vT);
+
+			vector3 vS = _scalingVector * 1.1;
+			matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
+
+			glUseProgram(_shader->getProgramId());
+
+			glProgramUniform4fv(_shader->getProgramId(), _shader->getColorId(), 1, _color);
+			
+			//glProgramUniform4fv(_shader->getProgramId(), _shader, 1, x);
+			matrix4x4 mM = (T * R * S);
+			glUniformMatrix4fv(_shader->getModelMatrix_UId(), 1, GL_TRUE, mM.data()); // need to be trasposed
+			matrix4x4 vM = cam.getViewMatrix();
+			glUniformMatrix4fv(_shader->getViewMatrix_UId(), 1, GL_FALSE, vM.data());
+			matrix4x4 mP = cam.getPrespMatrix();
+			glUniformMatrix4fv(_shader->getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
+
+			_mesh->draw();
+			
+			glStencilMask(0xFF);
+			glEnable(GL_DEPTH_TEST);
+		}
 	}
 	for (int i = 0; i < _nodes.size(); i++) {
 		sceneNode* nextNode = _nodes[i];
 		matrix4x4 nextNodeModelMatrix = nextNode->getModelMatrix();
-		nextNode->draw(cam);
+		nextNode->draw(cam, indexSelected);
 	}
 	
 }

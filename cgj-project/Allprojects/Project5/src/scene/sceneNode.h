@@ -6,6 +6,8 @@
 #include "../matrix/matrix4x4/matrix4x4.h"
 #include "../mesh/mesh.h"
 #include "../shader/shader.h"
+#include "../qtrn/qtrn.h"
+#include "../../src/matrix/matrixFactory/matrixFactory.h"
 
 class sceneNode {
 	protected:
@@ -18,6 +20,7 @@ class sceneNode {
 		shader* _shader;
 		mesh* _mesh;
 		std::string _name;
+		float _color[4];
 		int _index = -1;
 		qtrn _q = { 1.0f, 0.0f, 0.0f, 0.0f }; //quarterion resposible for piece rotation
 		std::vector<sceneNode*> _nodes;
@@ -53,6 +56,9 @@ class sceneNode {
 		void setName(std::string name);
 		const std::string getName();
 
+		float* getColor();
+		void setColor(float* color);
+		
 		void setIndex(int index);
 		const int getIndex();
 
@@ -62,5 +68,5 @@ class sceneNode {
 		void addNode(sceneNode *node);
 		const std::vector<sceneNode*> getNodes();
 	
-		void draw(camera& cam);
+		void draw(camera& cam, GLuint indexSelected);
 };

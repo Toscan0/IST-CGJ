@@ -115,6 +115,9 @@
     <Filter Include="Resource Files\shaders\tangramShader\parall">
       <UniqueIdentifier>{ee065848-de25-443c-9138-3534dacdc731}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaders\default">
+      <UniqueIdentifier>{c722f542-b9be-40a2-a2ad-21bf51cf5e96}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp">
@@ -387,6 +390,18 @@
     </None>
     <None Include="..\..\assets\shaders\tangramShader\lTri2\lTri2_vs.glsl">
       <Filter>Resource Files\shaders\tangramShader\lTri2</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\default\default_fs.glsl">
+      <Filter>Resource Files\shaders\default</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\default\default_vs.glsl">
+      <Filter>Resource Files\shaders\default</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\picked_fs.glsl">
+      <Filter>Resource Files\shaders\tangramShader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\picked_vs.glsl">
+      <Filter>Resource Files\shaders\tangramShader</Filter>
     </None>
   </ItemGroup>
 </Project>

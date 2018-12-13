@@ -78,9 +78,17 @@ bool g_rot = false;
 //true -> rotate the camera, false -> rotate the pieces
 bool g_camMode = true; 
 
-// piece selected
-GLuint index; //index of the piece selected
-sceneNode *nodeSelected = nullptr; // node of the piece
+//Colors
+float red[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+float green[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
+float blue[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+float black[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float yellow[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
+float purple[4] = { 0.8f, 0.0f, 0.2f, 1.0f };
+float pink[4] = { 1.0f, 0.5f, 0.5f, 1.0f };
+float brown[4] = { 0.6f, 0.3f, 0.1f, 1.0f };
+
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -156,7 +164,8 @@ void timer(int value)
 
 ////////////////////////////////////////////////////////////////////////
 // translate the piece with the values(translation, rotation and sclaing) the node have
-void translatePiece() {
+void translatePiece(){ 
+	sceneNode * nodeSelected = sG.getNodeSelected();
 	vector3 vT = nodeSelected->getTranslationVector();
 	matrix4x4 T = mf.translationMatrix4x4(vT);
 
@@ -185,7 +194,8 @@ void keyboard_down(unsigned char key, int x, int y) {
 	switch (key) {
 		case 'W':
 		case 'w':
-		{
+		{	
+			sceneNode* nodeSelected = sG.getNodeSelected();
 			if (nodeSelected != nullptr) {
 				vector3 vT = nodeSelected->getTranslationVector();
 				vector3 newVT(vT._a, vT._b, vT._c + TRANSZZ);
@@ -197,6 +207,7 @@ void keyboard_down(unsigned char key, int x, int y) {
 		case 'S':
 		case 's':
 		{
+			sceneNode* nodeSelected = sG.getNodeSelected();
 			if (nodeSelected != nullptr) {
 				vector3 vT = nodeSelected->getTranslationVector();
 				vector3 newVT(vT._a, vT._b, vT._c - TRANSZZ);
@@ -208,6 +219,7 @@ void keyboard_down(unsigned char key, int x, int y) {
 		case 'A':
 		case 'a':
 			{
+				sceneNode* nodeSelected = sG.getNodeSelected();
 				if (nodeSelected != nullptr) {
 					vector3 vT = nodeSelected->getTranslationVector();
 					vector3 newVT(vT._a - TRANSXX, vT._b, vT._c);
@@ -219,6 +231,7 @@ void keyboard_down(unsigned char key, int x, int y) {
 		case 'D':
 		case 'd':
 			{
+				sceneNode* nodeSelected = sG.getNodeSelected();
 				if (nodeSelected != nullptr) {
 					vector3 vT = nodeSelected->getTranslationVector();
 					vector3 newVT(vT._a + TRANSXX, vT._b, vT._c);
@@ -258,9 +271,10 @@ void OnMouseDown(int button, int state, int x, int y) {
 	}
 
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		GLuint index;
 		glReadPixels(x, WinY - y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
 		std::cout << "index: " << index << "\n";
-		
+		sG.setIndex(index);
 		//selected one of the pieces
 		if(index >= 1 && index <=7) {
 			g_camMode = false;
@@ -268,12 +282,13 @@ void OnMouseDown(int button, int state, int x, int y) {
 			std::vector<sceneNode*> nodes = tangramNode->getNodes();
 			for (unsigned i = 0; i < nodes.size(); i++) {
 				if (index == nodes[i]->getIndex()) {
-					nodeSelected = nodes[i];
-					std::cout << "node name" << nodeSelected->getName() << "\n";
+					//nodeSelected = nodes[i];
+					sG.setNodeSelected(nodes[i]);
+					std::cout << "node name: " << nodes[i]->getName() << "\n";
 					break;
 				}
 			}
-			if (nodeSelected == nullptr) {
+			if (sG.getNodeSelected() == nullptr) {
 				std::cout << "Error: nodeSelected with index: " << index << " not found" << "\n";
 			}
 		}
@@ -321,6 +336,7 @@ void OnMouseMove(int x, int y) {
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 
+		sceneNode* nodeSelected = sG.getNodeSelected();
 		qtrn q = nodeSelected->getRotQtrn();
 		//Recive the angle in deg
 		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
@@ -515,6 +531,7 @@ void createScene() {
 	tableNode->makeInitialModelMatrix();
 	tableNode->setMesh(&tableMesh);
 	tableNode->setShader(&tableShader);
+	tableNode->setColor(brown);
 	rootNode->addNode(tableNode);
 
 	tangramNode = new sceneNode(); // empty object
@@ -529,6 +546,7 @@ void createScene() {
 	cubeNode->makeInitialModelMatrix();
 	cubeNode->setMesh(&cubeMesh);
 	cubeNode->setShader(&cubeShader);
+	cubeNode->setColor(yellow);
 	tangramNode->addNode(cubeNode);
 
 	sTri1Node = new sceneNode();
@@ -538,6 +556,7 @@ void createScene() {
 	sTri1Node->makeInitialModelMatrix();
 	sTri1Node->setMesh(&triangleMesh);
 	sTri1Node->setShader(&sTri1Shader);
+	sTri1Node->setColor(pink);
 	tangramNode->addNode(sTri1Node);
 
 	sTri2Node = new sceneNode();
@@ -549,6 +568,7 @@ void createScene() {
 	sTri2Node->makeInitialModelMatrix();
 	sTri2Node->setMesh(&triangleMesh);
 	sTri2Node->setShader(&sTri2Shader);
+	sTri2Node->setColor(purple);
 	tangramNode->addNode(sTri2Node);
 
 	mTriNode = new sceneNode();
@@ -561,6 +581,7 @@ void createScene() {
 	mTriNode->makeInitialModelMatrix();
 	mTriNode->setMesh(&triangleMesh);
 	mTriNode->setShader(&mTriShader);
+	mTriNode->setColor(red);
 	tangramNode->addNode(mTriNode);
 
 	lTri1Node = new sceneNode();
@@ -573,6 +594,7 @@ void createScene() {
 	lTri1Node->makeInitialModelMatrix();
 	lTri1Node->setMesh(&triangleMesh);
 	lTri1Node->setShader(&lTri1Shader);
+	lTri1Node->setColor(green);
 	tangramNode->addNode(lTri1Node);
 
 	lTri2Node = new sceneNode();
@@ -585,6 +607,7 @@ void createScene() {
 	lTri2Node->makeInitialModelMatrix();
 	lTri2Node->setMesh(&triangleMesh);
 	lTri2Node->setShader(&lTri2Shader);
+	lTri2Node->setColor(white);
 	tangramNode->addNode(lTri2Node);
 
 	parallNode = new sceneNode();
@@ -594,6 +617,7 @@ void createScene() {
 	parallNode->makeInitialModelMatrix();
 	parallNode->setMesh(&parallMesh);
 	parallNode->setShader(&parallShader);
+	parallNode->setColor(blue);
 	tangramNode->addNode(parallNode);
 	
 	sG.setRoot(rootNode);
@@ -605,16 +629,16 @@ void readJSONFile() {
 	json j = json::parse(is);
 
 	// Pretty print
-	std::cout << "(1)\n" << pretty_print(j) << "\n\n";
+	//std::cout << "(1)\n" << pretty_print(j) << "\n\n";
 
 	if (j.contains("tangram"))
 	{
 		std::string price = j["tangram"]["small_triangle_1"]["name"].as<std::string>();
-		std::cout << price;
+		//std::cout << price;
 	}
 	else
 	{
-		std::cout << "n/a";
+		//std::cout << "n/a";
 	}
 
 	j["tangram"]["small_triangle_1"]["name"] = "lllllll";
