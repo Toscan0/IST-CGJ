@@ -89,7 +89,7 @@ float yellow[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
 float orange[4] = { 1.0f, 0.5f, 0.1f, 1.0f };
 float purple[4] = { 0.8f, 0.0f, 0.2f, 1.0f };
 float pink[4] = { 1.0f, 0.5f, 0.5f, 1.0f };
-float brown[4] = { 0.6f, 0.3f, 0.1f, 1.0f };
+float brown[4] = { 0.164f, 0.074f, 0.015f, 1.0f };
 float brown2[4] = { 0.6f, 0.3f, 0.2f, 1.0f };
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
@@ -534,7 +534,7 @@ void createScene() {
 	tableNode->makeInitialModelMatrix();
 	tableNode->setMesh(&tableMesh);
 	tableNode->setShader(&tableShader);
-	tableNode->setColor(pink);
+	tableNode->setColor(brown);
 	rootNode->addNode(tableNode);
 
 	tangramNode = new sceneNode(); // empty object
@@ -545,6 +545,7 @@ void createScene() {
 	cubeNode = new sceneNode();
 	cubeNode->setName("cube");
 	cubeNode->setIndex(1);
+	cubeNode->setScalingVector(vector3(1.0f, 2.0f, 1.0f));
 	cubeNode->setTranslationVector(vector3(0.2f, 0.0f, 0.0f));
 	cubeNode->makeInitialModelMatrix();
 	cubeNode->setMesh(&cubeMesh);
@@ -555,6 +556,7 @@ void createScene() {
 	sTri1Node = new sceneNode();
 	sTri1Node->setName("small triangle 1");
 	sTri1Node->setIndex(2);
+	sTri1Node->setScalingVector(vector3(1.0f, 2.0f, 1.0f));
 	sTri1Node->setTranslationVector(vector3(-0.2f, 0.0f, 0.2f));
 	sTri1Node->makeInitialModelMatrix();
 	sTri1Node->setMesh(&triangleMesh);
@@ -565,6 +567,7 @@ void createScene() {
 	sTri2Node = new sceneNode();
 	sTri2Node->setName("small triangle 2");
 	sTri2Node->setIndex(3);
+	sTri2Node->setScalingVector(vector3(1.0f, 2.0f, 1.0f));
 	sTri2Node->setTranslationVector(vector3(0.4f, 0.0f, 0.0f));
 	sTri2Node->setRotationVector(vector3(0, 1, 0));
 	sTri2Node->setAngle((M_PI / 2));
@@ -580,7 +583,7 @@ void createScene() {
 	mTriNode->setTranslationVector(vector3(0.40, 0.0f, 0.0f));
 	mTriNode->setRotationVector(vector3(0, 1, 0));
 	mTriNode->setAngle(-(3 * M_PI / 4));
-	mTriNode->setScalingVector(vector3(1.4f, 1.0f, 1.4f));
+	mTriNode->setScalingVector(vector3(1.4f, 2.0f, 1.4f));
 	mTriNode->makeInitialModelMatrix();
 	mTriNode->setMesh(&triangleMesh);
 	mTriNode->setShader(&mTriShader);
@@ -591,7 +594,7 @@ void createScene() {
 	lTri1Node->setName("large triangle 1");
 	lTri1Node->setIndex(5);
 	lTri1Node->setTranslationVector(vector3(0.4f, 0.0f, -0.4f));
-	lTri1Node->setScalingVector(vector3(2.0f, 1.0f, 2.0f));
+	lTri1Node->setScalingVector(vector3(2.0f, 2.0f, 2.0f));
 	lTri1Node->setRotationVector(vector3(0, 1, 0));
 	lTri1Node->setAngle(M_PI);
 	lTri1Node->makeInitialModelMatrix();
@@ -604,7 +607,7 @@ void createScene() {
 	lTri2Node->setName("large triangle 2");
 	lTri2Node->setIndex(6);
 	lTri2Node->setTranslationVector(vector3(-0.4f, 0.0f, -0.4f));
-	lTri2Node->setScalingVector(vector3(2.0f, 1.0f, 2.0f));
+	lTri2Node->setScalingVector(vector3(2.0f, 2.0f, 2.0f));
 	lTri2Node->setRotationVector(vector3(0, 1, 0));
 	lTri2Node->setAngle(-(M_PI / 2));
 	lTri2Node->makeInitialModelMatrix();
@@ -617,6 +620,7 @@ void createScene() {
 	parallNode->setName("parallelogram");
 	parallNode->setIndex(7);
 	parallNode->setTranslationVector(vector3(-0.4f, 0.0f, 0.4f));
+	parallNode->setScalingVector(vector3(1.0f, 2.0f, 1.0f));
 	parallNode->makeInitialModelMatrix();
 	parallNode->setMesh(&parallMesh);
 	parallNode->setShader(&parallShader);

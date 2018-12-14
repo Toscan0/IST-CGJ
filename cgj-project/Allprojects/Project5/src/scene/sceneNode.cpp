@@ -158,7 +158,8 @@ void sceneNode::draw(camera& cam, GLuint indexSelected) {
 		if (_index == indexSelected && indexSelected >= 1 && indexSelected <= 7) { // that node was selected
 			matrixFactory mf;
 			glStencilFunc(GL_NOTEQUAL, _index, 0xFF);
-			glStencilMask(0x00);
+			//glStencilMask(0x00);
+			//glStencilOp();
 			glDisable(GL_DEPTH_TEST);
 			
 			qtrn default_qtrn = { 1.0f, 0.0f, 0.0f, 0.0f }; //DEFAULT_QTRN
@@ -176,17 +177,16 @@ void sceneNode::draw(camera& cam, GLuint indexSelected) {
 
 			vector3 vT = _translationVector;
 			matrix4x4 T = mf.translationMatrix4x4(vT);
-
-			vector3 vS = _scalingVector * 1.1f;
-			matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
-
-			glUseProgram(_shader->getProgramId());
-
-			float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-			glProgramUniform4fv(_shader->getProgramId(), _shader->getColorId(), 1, white);
 			
-			//glProgramUniform4fv(_shader->getProgramId(), _shader, 1, x);
+			vector3 aux(_scalingVector._a + 0.1f, _scalingVector._b + 0.0f, _scalingVector._c + 0.1f);
+			vector3 vS = aux;
+			matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
+			
+			glUseProgram(_shader->getProgramId());
+			float white[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+			glProgramUniform4fv(_shader->getProgramId(), _shader->getColorId(), 1, white);
 			matrix4x4 mM = (T * R * S);
+			//matrix4x4 mM = _modelMatrix;
 			glUniformMatrix4fv(_shader->getModelMatrix_UId(), 1, GL_TRUE, mM.data()); // need to be trasposed
 			matrix4x4 vM = cam.getViewMatrix();
 			glUniformMatrix4fv(_shader->getViewMatrix_UId(), 1, GL_FALSE, vM.data());
@@ -195,7 +195,7 @@ void sceneNode::draw(camera& cam, GLuint indexSelected) {
 
 			_mesh->draw();
 			
-			glStencilMask(0xFF);
+			//glStencilMask(0xFF);
 			glEnable(GL_DEPTH_TEST);
 		}
 	}
