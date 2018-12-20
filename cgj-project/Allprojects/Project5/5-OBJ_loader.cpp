@@ -5,6 +5,7 @@
 #include <vector>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
+#include "FreeImage.h"
 #include "src/mesh/mesh.h"
 #include "src/shader/shader.h"
 #include "src/error/error.h"
@@ -17,6 +18,8 @@
 #include "src/scene/sceneGraph.h"
 #include "src/scene/sceneNode.h"
 
+#include "src/image/image.h"
+
 #include "jsoncons/json.hpp"
 // For convenience
 using jsoncons::json;
@@ -27,7 +30,6 @@ using jsoncons::json;
 #define NORMALS 2
 #define DEGTORAD 0.0174532925
 #define M_PI 3.14159265358979323846
-#define DEFAULT_QTRN { 1.0f, 0.0f, 0.0f, 0.0f };
 #define TRANSXX 0.1 //how much the piece translate, each time you press a key, in XX
 #define TRANSZZ 0.1 //how much the piece translate, each time you press a key, in ZZ
 
@@ -46,9 +48,8 @@ int g_oldY = 0;	// last coord y of mouse in window
 
 //Camera
 camera mainCamera;
-vector3 eye(0.0f, 0.0f, 5.0f);
-vector3 center(0.0f, 0.0f, 0.0f);
-vector3 up(0.0f, 1.0f, 0.0f);
+vector3 eye(10.0f, 0.0f, 0.0f);
+vector3 light(1.0f, 2.0f, 1.0f);
 
 //mesh myMesh;
 mesh cubeMesh;
@@ -68,6 +69,7 @@ sceneGraph sG;
 // SceneNode
 sceneNode *rootNode;
 sceneNode *tableNode;
+sceneNode *lightNode;
 sceneNode *tangramNode, *cubeNode, *sTri1Node, *sTri2Node, *lTri1Node, *lTri2Node, *mTriNode, *parallNode; // tangram and his pieces
 
 //Camera Quarterion rotation
@@ -92,6 +94,10 @@ float pink[4] = { 1.0f, 0.5f, 0.5f, 1.0f };
 float brown[4] = { 0.164f, 0.074f, 0.015f, 1.0f };
 float brown2[4] = { 0.6f, 0.3f, 0.2f, 1.0f };
 
+
+//Texture
+GLuint DiffuseTextureID;
+GLuint NormalTextureID;
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -247,18 +253,21 @@ void keyboard_down(unsigned char key, int x, int y) {
 }
 
 void mouseWheel(int wheel, int direction, int x, int y) {
-	if (direction == -1) {
-		vector3 newEye(mainCamera.getEye()._a, mainCamera.getEye()._b, mainCamera.getEye()._c - 1);
-		mainCamera.setEye(newEye);
-		mainCamera.makeViewMatrix(newEye, mainCamera.getCenter(), mainCamera.getUp());
-	}
+	const float MaxSpeed = 0.5f;
+	vector3 vec(1, 0, 0);
+
 	if (direction == 1) {
-		vector3 newEye(mainCamera.getEye()._a, mainCamera.getEye()._b, mainCamera.getEye()._c + 1);
+		vector3 newEye = mainCamera.getEye() - vec * MaxSpeed;
 		mainCamera.setEye(newEye);
-		mainCamera.makeViewMatrix(newEye, mainCamera.getCenter(), mainCamera.getUp());
+		vector3 tran(0, 0, -(newEye.norma()));
+		mainCamera._T = mf.translationMatrix4x4(tran);
 	}
-
-
+	if (direction == -1) {
+		vector3 newEye = mainCamera.getEye() + vec * MaxSpeed;
+		mainCamera.setEye(newEye);
+		vector3 tran(0, 0, -(newEye.norma()));
+		mainCamera._T = mf.translationMatrix4x4(tran);
+	}
 }
 
 void OnMouseDown(int button, int state, int x, int y) {
@@ -312,7 +321,7 @@ void OnMouseDown(int button, int state, int x, int y) {
 
 void OnMouseMove(int x, int y) {
 	if (g_rot == true && g_camMode == true) { 	// cam rotation with no Gimbal lock 
-		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
+		/*float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
 		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
 		g_oldX = (float)x;
 		g_oldY = (float)y;
@@ -331,7 +340,19 @@ void OnMouseMove(int x, int y) {
 
 		matrix4x4 vM = T * mR; // view matrix
 		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
-		mainCamera.setViewMatrix(vMT);
+		mainCamera.setViewMatrix(vMT);*/
+		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
+		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
+		g_oldX = (float)x;
+		g_oldY = (float)y;
+
+		const float RotationSpeed = 0.3f;
+
+		//Recive the angle in deg
+		qtrn qyy = qAux.qFromAngleAxis(tetaX*RotationSpeed, YY_4);   // yy4 or YY_4
+		qtrn qxx = qAux.qFromAngleAxis(tetaY*RotationSpeed, XX_4);
+		qtrn q = qyy * qxx * mainCamera.getqView();
+		mainCamera.setqView(q);
 	}
 	else if(g_rot == false && g_camMode == false){ // piece rotation
 		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
@@ -444,13 +465,12 @@ void setupGLUT(int argc, char* argv[])
 
 void myInit() {
 	mainCamera.setEye(eye);
-	mainCamera.setCenter(center);
-	mainCamera.setUp(up);
+	mainCamera.setLight(light);
 
 	// View Matrix
-	mainCamera.makeViewMatrix(mainCamera.getEye(), mainCamera.getCenter(), mainCamera.getUp());
+	mainCamera.makeViewMatrix();
 	// projection Matrix Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-	mainCamera.makePrespMatrix((M_PI / 6), (640.0f / 480.0f), 1, 10);
+	mainCamera.makePrespMatrix((M_PI / 6), (640.0f / 480.0f), 1, 20);
 
 	// Mesh load
 	// tangram
@@ -508,7 +528,8 @@ void myInit() {
 void createScene() {
 	/*						Scene Graph
 	*					root <----|----> camera
-	*						|				|- viewMatrix
+	*						|	
+						light, index:0				|- viewMatrix
 	*			 		table, index: 0				|- prespMatrix
 	*						|
 	*	closed tangram <----|
@@ -528,12 +549,23 @@ void createScene() {
 	rootNode->setName("root");
 	rootNode->makeInitialModelMatrix();
 
+	lightNode = new sceneNode();
+	lightNode->setName("light");
+	lightNode->setIndex(0);
+	lightNode->setTranslationVector(light);
+	lightNode->makeInitialModelMatrix();
+	lightNode->setMesh(&cubeMesh);
+	lightNode->setShader(&cubeShader);
+	lightNode->setColor(pink);
+	rootNode->addNode(lightNode);
+
 	tableNode = new sceneNode();
 	tableNode->setName("table"); 
 	tableNode->setIndex(0);
 	tableNode->makeInitialModelMatrix();
 	tableNode->setMesh(&tableMesh);
 	tableNode->setShader(&tableShader);
+	tableNode->setTextures(DiffuseTextureID, NormalTextureID);  // add textures
 	tableNode->setColor(brown);
 	rootNode->addNode(tableNode);
 
@@ -630,6 +662,7 @@ void createScene() {
 	sG.setRoot(rootNode);
 }
 
+///////////////////////////////////////////////////////////////LOADS
 void readJSONFile() {
 	// Read from stream
 	std::ifstream is("../../assets/json/defaultLoad.json");
@@ -655,6 +688,16 @@ void readJSONFile() {
 	os << j;
 }
 
+void loadImage() {
+	FreeImage_Initialise(true);
+	
+	DiffuseTextureID = image::loadTexture("../../assets/images/wood.jpg");
+	NormalTextureID = image::loadTexture("../../assets/images/wood_nm1.jpg");
+
+	FreeImage_DeInitialise();
+}
+
+////////////////////////////////////////////////////////////////////////////////// INIT
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
@@ -663,6 +706,7 @@ void init(int argc, char* argv[])
 	setupCallbacks();
 	
 	readJSONFile();
+	loadImage();
 
 	myInit();
 	createScene();

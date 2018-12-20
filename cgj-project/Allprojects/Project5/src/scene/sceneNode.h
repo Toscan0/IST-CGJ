@@ -24,6 +24,8 @@ class sceneNode {
 		int _index = -1;
 		qtrn _q = { 1.0f, 0.0f, 0.0f, 0.0f }; //quarterion resposible for piece rotation
 		std::vector<sceneNode*> _nodes;
+		bool _texturesLoaded = false;
+		GLint _diffuseTexture, _normalTexture;
 	
 	public:
 		sceneNode();
@@ -64,6 +66,8 @@ class sceneNode {
 
 		const qtrn getRotQtrn();
 		void setRotQtrn(const qtrn&);
+
+		void setTextures(GLint diffTex, GLint normTex);
 
 		void addNode(sceneNode *node);
 		const std::vector<sceneNode*> getNodes();

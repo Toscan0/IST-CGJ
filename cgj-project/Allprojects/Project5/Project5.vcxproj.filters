@@ -118,13 +118,13 @@
     <Filter Include="Resource Files\shaders\default">
       <UniqueIdentifier>{c722f542-b9be-40a2-a2ad-21bf51cf5e96}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\image">
+      <UniqueIdentifier>{5b74be37-64fc-4db4-b1ea-3f58df1c6886}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\camera\camera.cpp">
-      <Filter>Source Files\src\camera</Filter>
     </ClCompile>
     <ClCompile Include="src\random\random.cpp">
       <Filter>Source Files\src\random</Filter>
@@ -153,9 +153,6 @@
     <ClCompile Include="src\vector\vector4\vector4.cpp">
       <Filter>Source Files\src\vector\vector4</Filter>
     </ClCompile>
-    <ClCompile Include="src\mesh\mesh.cpp">
-      <Filter>Source Files\src\mesh</Filter>
-    </ClCompile>
     <ClCompile Include="src\error\error.cpp">
       <Filter>Source Files\src\error</Filter>
     </ClCompile>
@@ -171,11 +168,17 @@
     <ClCompile Include="src\scene\sceneGraph.cpp">
       <Filter>Source Files\src\scene\sceneGraph</Filter>
     </ClCompile>
+    <ClCompile Include="src\image\image.cpp">
+      <Filter>Source Files\src\image</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera\camera.cpp">
+      <Filter>Source Files\src\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mesh\mesh.cpp">
+      <Filter>Source Files\src\mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\camera\camera.h">
-      <Filter>Source Files\src\camera</Filter>
-    </ClInclude>
     <ClInclude Include="src\random\random.h">
       <Filter>Source Files\src\random</Filter>
     </ClInclude>
@@ -202,9 +205,6 @@
     </ClInclude>
     <ClInclude Include="src\qtrn\qtrn.h">
       <Filter>Source Files\src\qtrn</Filter>
-    </ClInclude>
-    <ClInclude Include="src\mesh\mesh.h">
-      <Filter>Source Files\src\mesh</Filter>
     </ClInclude>
     <ClInclude Include="src\error\error.h">
       <Filter>Source Files\src\error</Filter>
@@ -332,14 +332,17 @@
     <ClInclude Include="jsoncons\stream_reader.hpp">
       <Filter>Source Files\jsoncons</Filter>
     </ClInclude>
+    <ClInclude Include="src\image\image.h">
+      <Filter>Source Files\src\image</Filter>
+    </ClInclude>
+    <ClInclude Include="src\camera\camera.h">
+      <Filter>Source Files\src\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mesh\mesh.h">
+      <Filter>Source Files\src\mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\assets\shaders\tableShader\table_fs.glsl">
-      <Filter>Resource Files\shaders\tableShader</Filter>
-    </None>
-    <None Include="..\..\assets\shaders\tableShader\table_vs.glsl">
-      <Filter>Resource Files\shaders\tableShader</Filter>
-    </None>
     <None Include="..\..\assets\json\defaultLoad.json">
       <Filter>Resource Files\json</Filter>
     </None>
@@ -402,6 +405,12 @@
     </None>
     <None Include="..\..\assets\shaders\tangramShader\picked_vs.glsl">
       <Filter>Resource Files\shaders\tangramShader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tableShader\table_vs.glsl">
+      <Filter>Resource Files\shaders\tableShader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tableShader\table_fs.glsl">
+      <Filter>Resource Files\shaders\tableShader</Filter>
     </None>
   </ItemGroup>
 </Project>

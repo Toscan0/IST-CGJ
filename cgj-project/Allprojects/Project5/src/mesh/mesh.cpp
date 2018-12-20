@@ -6,6 +6,8 @@ const void mesh::createMesh(const std::string& filename)
 {
 	loadMeshData(filename);
 	processMeshData();
+	if (_TexcoordsLoaded)
+		computeTangBitang();
 	freeMeshData();
 }
 
@@ -84,6 +86,45 @@ void mesh::processMeshData()
 	}
 }
 
+void mesh::computeTangBitang()
+{
+	for (unsigned int i = 0; i < _Vertices.size(); i += 3) {
+
+		// Shortcuts for vertices
+		Vertex & v0 = _Vertices[i + 0];
+		Vertex & v1 = _Vertices[i + 1];
+		Vertex & v2 = _Vertices[i + 2];
+
+		// Shortcuts for UVs
+		Texcoord & uv0 = _Texcoords[i + 0];
+		Texcoord & uv1 = _Texcoords[i + 1];
+		Texcoord & uv2 = _Texcoords[i + 2];
+
+		// Edges of the triangle : position delta
+		Vertex deltaPos1 = v1 - v0;
+		Vertex deltaPos2 = v2 - v0;
+
+		// UV delta
+		Texcoord deltaUV1 = uv1 - uv0;
+		Texcoord deltaUV2 = uv2 - uv0;
+
+		float r = 1.0f / (deltaUV1.u * deltaUV2.v - deltaUV1.v * deltaUV2.u);
+		Vertex tangent = (deltaPos1 * deltaUV2.v - deltaPos2 * deltaUV1.v)*r;
+		Vertex bitangent = (deltaPos2 * deltaUV1.u - deltaPos1 * deltaUV2.u)*r;
+
+		// Set the same tangent for all three vertices of the triangle.
+		// They will be merged later
+		_Tangents.push_back(tangent);
+		_Tangents.push_back(tangent);
+		_Tangents.push_back(tangent);
+
+		// Same thing for bitangents
+		_Bitangents.push_back(bitangent);
+		_Bitangents.push_back(bitangent);
+		_Bitangents.push_back(bitangent);
+	}
+}
+
 void mesh::freeMeshData()
 {
 	_vertexData.clear();
@@ -105,7 +146,7 @@ void mesh::draw() {
 
 void mesh::createBufferObjects()
 {
-	GLuint VboVertices, VboTexcoords, VboNormals;
+	GLuint VboVertices, VboTexcoords, VboNormals, VboTangent, VboBitangent;
 
 	glGenVertexArrays(1, &_VaoId);
 	glBindVertexArray(_VaoId);
@@ -123,6 +164,18 @@ void mesh::createBufferObjects()
 			glBufferData(GL_ARRAY_BUFFER, _Texcoords.size() * sizeof(Texcoord), &_Texcoords[0], GL_STATIC_DRAW);
 			glEnableVertexAttribArray(TEXCOORDS);
 			glVertexAttribPointer(TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(Texcoord), 0);
+
+			glGenBuffers(1, &VboTangent);
+			glBindBuffer(GL_ARRAY_BUFFER, VboTangent);
+			glBufferData(GL_ARRAY_BUFFER, _Tangents.size() * sizeof(Vertex), &_Tangents[0], GL_STATIC_DRAW);
+			glEnableVertexAttribArray(TANGENTS);
+			glVertexAttribPointer(TANGENTS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
+			glGenBuffers(1, &VboBitangent);
+			glBindBuffer(GL_ARRAY_BUFFER, VboBitangent);
+			glBufferData(GL_ARRAY_BUFFER, _Bitangents.size() * sizeof(Vertex), &_Bitangents[0], GL_STATIC_DRAW);
+			glEnableVertexAttribArray(BITANGENTS);
+			glVertexAttribPointer(BITANGENTS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 		}
 		if (_NormalsLoaded)
 		{
@@ -138,6 +191,8 @@ void mesh::createBufferObjects()
 	glDeleteBuffers(1, &VboVertices);
 	glDeleteBuffers(1, &VboTexcoords);
 	glDeleteBuffers(1, &VboNormals);
+	glDeleteBuffers(1, &VboTangent);
+	glDeleteBuffers(1, &VboBitangent);
 
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
@@ -147,6 +202,8 @@ void mesh::destroyBufferObjects(){
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(TEXCOORDS);
 	glDisableVertexAttribArray(NORMALS);
+	glDisableVertexAttribArray(TANGENTS);
+	glDisableVertexAttribArray(BITANGENTS);
 	glDeleteVertexArrays(1, &_VaoId);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

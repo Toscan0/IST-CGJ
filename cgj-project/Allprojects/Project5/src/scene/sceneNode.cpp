@@ -120,6 +120,14 @@ void sceneNode::setRotQtrn(const qtrn& q) {
 	 _q = q;
 }
 
+void sceneNode::setTextures(GLint diffTex, GLint normTex)
+{
+	_texturesLoaded = true;
+	_diffuseTexture = diffTex;
+	_normalTexture = normTex;
+
+}
+
 void sceneNode::addNode(sceneNode* node) {
 	node->setModelMatrix(_modelMatrix * node->getModelMatrix());
 	_nodes.push_back(node);
@@ -131,16 +139,30 @@ const std::vector<sceneNode*> sceneNode::getNodes() {
 
 void sceneNode::draw(camera& cam, GLuint indexSelected) {
 	if (_shader != nullptr) {
-		glUseProgram(_shader->getProgramId());
-
+		//glUseProgram(_shader->getProgramId());
+		_shader->Bind();
 		glProgramUniform4fv(_shader->getProgramId(), _shader->getColorId(), 1, _color);
-		
 		matrix4x4 mM = _modelMatrix;
-		glUniformMatrix4fv(_shader->getModelMatrix_UId(), 1, GL_TRUE, mM.data()); // need to be trasposed
+		//glUniformMatrix4fv(_shader->getModelMatrix_UId(), 1, GL_TRUE, mM.data()); // need to be trasposed
+		glUniformMatrix4fv(_shader->getUniform("ModelMatrix"), 1, GL_TRUE, mM.data()); // need to be trasposed
 		matrix4x4 vM = cam.getViewMatrix();
-		glUniformMatrix4fv(_shader->getViewMatrix_UId(), 1, GL_FALSE, vM.data());
+		//glUniformMatrix4fv(_shader->getViewMatrix_UId(), 1, GL_FALSE, vM.data());
+		glUniformMatrix4fv(_shader->getUniform("ViewMatrix"), 1, GL_FALSE, vM.data());
 		matrix4x4 mP = cam.getPrespMatrix();
-		glUniformMatrix4fv(_shader->getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
+		//glUniformMatrix4fv(_shader->getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
+		glUniformMatrix4fv(_shader->getUniform("ProjectionMatrix"), 1, GL_FALSE, mP.data());
+		vector3 lP = cam.getLight();
+		glUniform3fv(_shader->getUniform("lightPosition"), 1, lP.data());
+		// textures
+		if (_texturesLoaded)
+		{
+			glUniform1i(_shader->getUniform("diffuseTexture"), 0);
+			glUniform1i(_shader->getUniform("normalTexture"), 1);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, _diffuseTexture);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, _normalTexture);
+		}
 	}
 	if (_mesh != nullptr) {
 		if (_index == 0) { //table
@@ -187,11 +209,26 @@ void sceneNode::draw(camera& cam, GLuint indexSelected) {
 			glProgramUniform4fv(_shader->getProgramId(), _shader->getColorId(), 1, white);
 			matrix4x4 mM = (T * R * S);
 			//matrix4x4 mM = _modelMatrix;
-			glUniformMatrix4fv(_shader->getModelMatrix_UId(), 1, GL_TRUE, mM.data()); // need to be trasposed
+			//glUniformMatrix4fv(_shader->getModelMatrix_UId(), 1, GL_TRUE, mM.data()); // need to be trasposed
+			glUniformMatrix4fv(_shader->getUniform("ModelMatrix"), 1, GL_TRUE, mM.data()); // need to be trasposed
 			matrix4x4 vM = cam.getViewMatrix();
-			glUniformMatrix4fv(_shader->getViewMatrix_UId(), 1, GL_FALSE, vM.data());
+			//glUniformMatrix4fv(_shader->getViewMatrix_UId(), 1, GL_FALSE, vM.data());
+			glUniformMatrix4fv(_shader->getUniform("ViewMatrix"), 1, GL_FALSE, vM.data());
 			matrix4x4 mP = cam.getPrespMatrix();
-			glUniformMatrix4fv(_shader->getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
+			//glUniformMatrix4fv(_shader->getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
+			glUniformMatrix4fv(_shader->getUniform("ProjectionMatrix"), 1, GL_FALSE, mP.data());
+			vector3 lP = cam.getLight();
+			glUniform3fv(_shader->getUniform("lightPosition"), 1, lP.data());
+			// textures
+			if (_texturesLoaded)
+			{
+				glUniform1i(_shader->getUniform("diffuseTexture"), 0);
+				glUniform1i(_shader->getUniform("normalTexture"), 1);
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, _diffuseTexture);
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, _normalTexture);
+			}
 
 			_mesh->draw();
 			

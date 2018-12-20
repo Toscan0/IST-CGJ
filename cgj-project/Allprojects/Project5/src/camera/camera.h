@@ -12,37 +12,36 @@
 class camera {
 	protected:
 		matrix4x4 _viewMatrix, _prespMatrix, _orthMatrix;
-		vector3 _center, _eye, _view, _up;
-		qtrn _q = { 1.0f, 0.0f, 0.0f, 0.0f }; //quarterion resposible for viewMatrix rotation
-
+		vector3 _light, _eye; // , _view, _center, _up;
+		qtrn _qview;
+	
 	public:
 		camera();
-		
-		const matrix4x4 makeViewMatrix(const vector3&, const vector3&, const vector3&);
+		matrix4x4 _T;
+		void makeViewMatrix();
 		const matrix4x4 makePrespMatrix(const float fovy, const float aspect, const float n, const float f);
-		
 		// get & set
 		const matrix4x4 getViewMatrix();
-		void setViewMatrix(matrix4x4&);
-
 		const matrix4x4 getPrespMatrix();
-		void setPrespMatrix(matrix4x4&);
-
 		const matrix4x4 getOrthMatrix();
+
+		void setViewMatrix(matrix4x4&);
+		void setPrespMatrix(matrix4x4&);
 		void setOrthMatrix(matrix4x4&);
 
-		const vector3 getCenter();
-		void setCenter(vector3&);
+		
 
-		const vector3 getView();
-		void setView(vector3&);
-
-		const vector3 getUp();
-		void setUp(vector3&);
-
+		//const vector3 getCenter();
+		const qtrn getqView();
+		//const vector3 getView();
+		//const vector3 getUp();
 		const vector3 getEye();
-		void setEye(vector3&);	
+		const vector3 getLight();
 
-		const qtrn getRotQtrn();
-		void setRotQtrn(const qtrn&);
+		//void setCenter(vector3&);
+		void setqView(qtrn&);
+		//void setView(vector3&);
+		//void setUp(vector3&);
+		void setEye(vector3&);
+		void setLight(vector3&);
 };
