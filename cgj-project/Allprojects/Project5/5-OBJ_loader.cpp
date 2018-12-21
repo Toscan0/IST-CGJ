@@ -285,8 +285,17 @@ void OnMouseDown(int button, int state, int x, int y) {
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
 		GLuint index;
 		glReadPixels(x, WinY - y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
-		std::cout << "index: " << index << "\n";
+		//std::cout << "index: " << index << "\n";
 		sG.setIndex(index);
+
+		GLfloat red;
+		GLfloat green;
+		GLfloat blue;
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_RED, GL_FLOAT, &red);
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_GREEN, GL_FLOAT, &green);
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_BLUE, GL_FLOAT, &blue);
+		//std::cout << "color(RGB): " << "(" << red << ", " << green << ", " << blue << ")" << "\n";
+
 		//selected one of the pieces
 		if(index >= 1 && index <=7) {
 			g_camMode = false;
@@ -296,7 +305,9 @@ void OnMouseDown(int button, int state, int x, int y) {
 				if (index == nodes[i]->getIndex()) {
 					//nodeSelected = nodes[i];
 					sG.setNodeSelected(nodes[i]);
-					std::cout << "node name: " << nodes[i]->getName() << "\n";
+					std::cout << "Selected: " << nodes[i]->getName() << 
+						" with index: " << index << 
+						" and color(RGB): " << "(" << red << ", " << green << ", " << blue << ")" << "\n";
 					break;
 				}
 			}
@@ -307,40 +318,12 @@ void OnMouseDown(int button, int state, int x, int y) {
 		else {
 			g_camMode = true;
 		}
-
-		GLfloat red;
-		GLfloat green;
-		GLfloat blue;
-		glReadPixels(x, WinY - y - 1, 1, 1, GL_RED, GL_FLOAT, &red);
-		glReadPixels(x, WinY - y - 1, 1, 1, GL_GREEN, GL_FLOAT, &green);
-		glReadPixels(x, WinY - y - 1, 1, 1, GL_BLUE, GL_FLOAT, &blue);
-		std::cout << "color(RGB): " << "(" << red << ", " << green << ", " << blue << ")" << "\n";
 	}
 }
 
 
 void OnMouseMove(int x, int y) {
 	if (g_rot == true && g_camMode == true) { 	// cam rotation with no Gimbal lock 
-		/*float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
-		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
-		g_oldX = (float)x;
-		g_oldY = (float)y;
-
-		qtrn q = mainCamera.getRotQtrn();
-		//Recive the angle in deg
-		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
-		q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
-		mainCamera.setRotQtrn(q);
-		
-		matrix4x4 mAux;
-		matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
-
-		vector3 vT(0, 0, -(mainCamera.getEye()._c));
-		matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação 
-
-		matrix4x4 vM = T * mR; // view matrix
-		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
-		mainCamera.setViewMatrix(vMT);*/
 		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
 		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
 		g_oldX = (float)x;
@@ -376,8 +359,7 @@ void OnMouseMove(int x, int y) {
 		vector3 vS = nodeSelected->getScalingVector();
 		matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
 
-		matrix4x4 vM = T * mR * S; // view matrix
-		//matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
+		matrix4x4 vM = T * mR * S; // view matrix -> row major
 		
 		nodeSelected->setModelMatrix(vM);
 	}
@@ -527,10 +509,10 @@ void myInit() {
 
 void createScene() {
 	/*						Scene Graph
-	*					root <----|----> camera
+	*					root <----|------->      camera
 	*						|	
-						light, index:0				|- viewMatrix
-	*			 		table, index: 0				|- prespMatrix
+						light, index: -1			
+	*			 		table, index: 0				
 	*						|
 	*	closed tangram <----|
 	*		 |- cube, index: 1
