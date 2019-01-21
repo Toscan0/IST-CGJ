@@ -15,7 +15,6 @@ using std::cout;
 using std::endl;
 
 class image {
-<<<<<<< HEAD
 	private:
 		int snapCounter = 0;
 	
@@ -23,10 +22,4 @@ class image {
 		image();
 		static GLuint loadTexture(string filenameString);	/* , GLenum minificationFilter = GL_LINEAR, GLenum magnificationFilter = GL_LINEAR);*/
 		void snapShot(int width, int height);
-=======
-	
-	public:	
-		image();
-		static GLuint loadTexture(string filenameString);	// , GLenum minificationFilter = GL_LINEAR, GLenum magnificationFilter = GL_LINEAR);
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 };

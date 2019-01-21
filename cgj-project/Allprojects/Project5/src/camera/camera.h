@@ -12,11 +12,7 @@
 class camera {
 	protected:
 		matrix4x4 _viewMatrix, _prespMatrix, _orthMatrix;
-<<<<<<< HEAD
 		vector3 _light, _eye; 
-=======
-		vector3 _light, _eye; // , _view, _center, _up;
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 		qtrn _qview;
 	
 	public:
@@ -35,25 +31,11 @@ class camera {
 
 		
 
-<<<<<<< HEAD
 		const qtrn getqView();
 		const vector3 getEye();
 		const vector3 getLight();
 
 		void setqView(qtrn&);
-=======
-		//const vector3 getCenter();
-		const qtrn getqView();
-		//const vector3 getView();
-		//const vector3 getUp();
-		const vector3 getEye();
-		const vector3 getLight();
-
-		//void setCenter(vector3&);
-		void setqView(qtrn&);
-		//void setView(vector3&);
-		//void setUp(vector3&);
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 		void setEye(vector3&);
 		void setLight(vector3&);
 };

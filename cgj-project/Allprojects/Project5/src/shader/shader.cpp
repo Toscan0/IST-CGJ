@@ -60,17 +60,9 @@ void shader::createShaderProgram(const std::string& vs_file, const std::string& 
 {
 	addShader(GL_VERTEX_SHADER, vs_file);
 	addShader(GL_FRAGMENT_SHADER, fs_file);
-<<<<<<< HEAD
 
 	_ProgramId = glCreateProgram();
 	;
-=======
-
-	_ProgramId = glCreateProgram();
-
-	//GLuint VertexShaderId = addShader(_ProgramId, GL_VERTEX_SHADER, vs_file);
-	//GLuint FragmentShaderId = addShader(_ProgramId, GL_FRAGMENT_SHADER, fs_file);
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	for (int i = 0; i < _shaders.size(); i++) {
 		glAttachShader(_ProgramId, _shaders[i]);
 	}
@@ -86,26 +78,10 @@ void shader::createShaderProgram(const std::string& vs_file, const std::string& 
 	glLinkProgram(_ProgramId);
 	checkLinkage(_ProgramId);
 
-<<<<<<< HEAD
-=======
-	//glDetachShader(_ProgramId, VertexShaderId);
-	//glDetachShader(_ProgramId, FragmentShaderId);
-	//glDeleteShader(VertexShaderId);
-	//glDeleteShader(FragmentShaderId);
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	for (int i = 0; i < _shaders.size(); i++) {
 		glDetachShader(_ProgramId, _shaders[i]);
 		glDeleteShader(_shaders[i]);
 	}
-<<<<<<< HEAD
-=======
-
-	//_ModelMatrix_UId = glGetUniformLocation(_ProgramId, "ModelMatrix");
-	//_ViewMatrix_UId = glGetUniformLocation(_ProgramId, "ViewMatrix");
-	//_ProjectionMatrix_UId = glGetUniformLocation(_ProgramId, "ProjectionMatrix");
-
-	_colorId = glGetUniformLocation(_ProgramId, "color");
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 }
@@ -138,24 +114,4 @@ void shader::UnBind() const {
 
 const GLuint shader::getProgramId() {
 	return _ProgramId;
-<<<<<<< HEAD
 }
-=======
-}
-
-/*const GLint shader::getModelMatrix_UId() {
-	return _ModelMatrix_UId;
-}
-
-const GLint shader::getViewMatrix_UId() {
-	return _ViewMatrix_UId;
-}
-
-const GLint shader::getProjectionMatrix_UId() {
-	return _ProjectionMatrix_UId;
-}*/
-
-const GLuint shader::getColorId() {
-	return _colorId;
-}
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7

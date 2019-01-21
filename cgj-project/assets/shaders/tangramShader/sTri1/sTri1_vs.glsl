@@ -13,19 +13,12 @@ out vec2 exTexcoord;
 out vec3 exLight;
 out vec3 exCamera;
 
-<<<<<<< HEAD
 // matrices
-=======
-in vec4 in_Color;
-out vec4 ex_Color;
-
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 uniform mat4 ModelMatrix;
 uniform	mat4 ViewMatrix;
 uniform	mat4 ProjectionMatrix;
 //uniform mat3 NormalMatrix;
 
-<<<<<<< HEAD
 // position of light and camera
 uniform vec3 lightPosition;
 
@@ -60,10 +53,4 @@ void main(void)
 	
 	// screen space coordinates of the vertex
 	gl_Position = ProjectionMatrix * vPosition;
-=======
-void main(void){
-	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(inPosition, 1.0f);
-	exNormal = inNormal;
-	ex_Color = in_Color; 
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 }

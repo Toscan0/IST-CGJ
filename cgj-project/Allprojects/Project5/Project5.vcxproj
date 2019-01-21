@@ -23,10 +23,6 @@
     <ClCompile Include="src\camera\camera.cpp" />
     <ClCompile Include="src\color\color.cpp" />
     <ClCompile Include="src\error\error.cpp" />
-<<<<<<< HEAD
-=======
-    <ClCompile Include="src\eventListener\eventListener.cpp" />
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
     <ClCompile Include="src\image\image.cpp" />
     <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp" />
     <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp" />
@@ -85,10 +81,6 @@
     <ClInclude Include="src\camera\camera.h" />
     <ClInclude Include="src\color\color.h" />
     <ClInclude Include="src\error\error.h" />
-<<<<<<< HEAD
-=======
-    <ClInclude Include="src\eventListener\eventListener.h" />
->>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
     <ClInclude Include="src\image\image.h" />
     <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h" />
     <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h" />
@@ -123,8 +115,6 @@
     <None Include="..\..\assets\shaders\tangramShader\mTri\mTri_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\parall\parall_fs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\parall\parall_vs.glsl" />
-    <None Include="..\..\assets\shaders\tangramShader\picked_fs.glsl" />
-    <None Include="..\..\assets\shaders\tangramShader\picked_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\sTri1\sTri1_fs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\sTri1\sTri1_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\sTri2\sTri2_fs.glsl" />
