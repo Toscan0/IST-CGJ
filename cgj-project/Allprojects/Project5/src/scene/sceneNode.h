@@ -13,6 +13,11 @@ class sceneNode {
 	protected:
 		vector3 _translationVector = vector3(0, 0, 0);
 		vector3 _scalingVector = vector3(1, 1, 1);
+<<<<<<< HEAD
+=======
+		vector3 _rotationVector = vector3(0, 0, 0);
+		double _angle = 0;
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 		matrix4x4 _initialModelMatrix;
 		matrix4x4 _modelMatrix;
 		shader* _shader;
@@ -41,6 +46,15 @@ class sceneNode {
 		const vector3 getScalingVector();
 		void setScalingVector(const vector3&);
 
+<<<<<<< HEAD
+=======
+		const vector3 getRotationVector();
+		void setRotationVector(const vector3&);
+
+		const double getAngle();
+		void setAngle(const double);
+
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 		void setMesh(mesh* m);
 		const mesh* getMesh();
 
@@ -65,6 +79,9 @@ class sceneNode {
 		const std::vector<sceneNode*> getNodes();
 	
 		void draw(camera& cam, GLuint indexSelected);
+<<<<<<< HEAD
 		void drawPicked(camera& cam, GLuint indexSelected);
 		void drawAux(camera&, matrix4x4&,float*);
+=======
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 };

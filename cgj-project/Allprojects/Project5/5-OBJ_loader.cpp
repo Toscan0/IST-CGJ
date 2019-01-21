@@ -20,8 +20,14 @@
 #include "src/qtrn/qtrn.h"
 #include "src/scene/sceneGraph.h"
 #include "src/scene/sceneNode.h"
+<<<<<<< HEAD
 #include "src/image/image.h"
 #include "src/color/color.h"
+=======
+
+#include "src/image/image.h"
+
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 #include "jsoncons/json.hpp"
 // For convenience
 using jsoncons::json;
@@ -32,8 +38,13 @@ using jsoncons::json;
 #define NORMALS 2
 #define DEGTORAD 0.0174532925
 #define M_PI 3.14159265358979323846
+<<<<<<< HEAD
 #define ROTATIONSPEED  0.1f
 #define TRANSLATIONSPEED  0.001f
+=======
+#define TRANSXX 0.1 //how much the piece translate, each time you press a key, in XX
+#define TRANSZZ 0.1 //how much the piece translate, each time you press a key, in ZZ
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 
 int WinX = 640, WinY = 480;
 int WindowHandle = 0;
@@ -41,6 +52,7 @@ unsigned int FrameCount = 0;
 
 vector4 XX_4(1, 0, 0, 1);
 vector4 YY_4(0, 1, 0, 1);
+<<<<<<< HEAD
 vector4 ZZ_4(0, 0, 1, 1);
 
 matrixFactory mf;
@@ -50,6 +62,19 @@ std::string fileLoaded;
 // mouse click
 int g_oldX = 0; // last coord x of mouse in window
 int g_oldY = 0;	// last coord y of mouse in window
+=======
+matrixFactory mf;
+qtrn qAux;
+
+// mouse click
+int g_oldX = 0; // last coord x of mouse in window
+int g_oldY = 0;	// last coord y of mouse in window
+
+//Camera
+camera mainCamera;
+vector3 eye(10.0f, 0.0f, 0.0f);
+vector3 light(1.0f, 2.0f, 1.0f);
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 
 //Camera
 camera mainCamera;
@@ -62,7 +87,10 @@ mesh parallMesh;
 mesh tableMesh;
 
 // Shader
+<<<<<<< HEAD
 shaderManager shaderM;
+=======
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 shader cubeShader;
 shader sTri1Shader, sTri2Shader, mTriShader, lTri1Shader, lTri2Shader;
 shader parallShader;
@@ -75,12 +103,40 @@ sceneGraph sG;
 sceneNode *rootNode;
 sceneNode *tableNode;
 sceneNode *lightNode;
+<<<<<<< HEAD
 sceneNode *tangramNode, *cubeNode, *sTri1Node, *sTri2Node, 
 	*lTri1Node, *lTri2Node, *mTriNode, *parallNode; // tangram and his pieces
+=======
+sceneNode *tangramNode, *cubeNode, *sTri1Node, *sTri2Node, *lTri1Node, *lTri2Node, *mTriNode, *parallNode; // tangram and his pieces
+
+//Camera Quarterion rotation
+// only rotates when true
+bool g_rot = false;
+
+// rotate the cam or rotate the pieces
+//true -> rotate the camera, false -> rotate the pieces
+bool g_camMode = true; 
+
+//Colors
+float red[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+float green[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
+float blue[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+float blue2[4] = { 0.0f, 0.0f, 0.5f, 1.0f };
+float black[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float yellow[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
+float orange[4] = { 1.0f, 0.5f, 0.1f, 1.0f };
+float purple[4] = { 0.8f, 0.0f, 0.2f, 1.0f };
+float pink[4] = { 1.0f, 0.5f, 0.5f, 1.0f };
+float brown[4] = { 0.164f, 0.074f, 0.015f, 1.0f };
+float brown2[4] = { 0.6f, 0.3f, 0.2f, 1.0f };
+
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 
 //Texture
 GLuint DiffuseTextureID;
 GLuint NormalTextureID;
+<<<<<<< HEAD
 
 //Interaction
 bool camMode = true; //q
@@ -103,6 +159,8 @@ bool rotateMode = false; //e
 *		 |- parallelogram, index: 7
 *
 */
+=======
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -186,9 +244,22 @@ void translatePiece(){
 	qtrn default_qtrn = { 1.0f, 0.0f, 0.0f, 0.0f }; //DEFAULT_QTRN	
 	qtrn q = nodeSelected->getRotQtrn();
 	matrix4x4 R;
+<<<<<<< HEAD
 	
 	matrix4x4 mAux;
 	R = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
+=======
+	if (q == default_qtrn) { //if are equal the user did not rotate the piece 
+		vector3 vR = nodeSelected->getRotationVector();
+		double angle = nodeSelected->getAngle();
+
+		R = mf.rotationMatrix4x4(vR, angle);
+	}
+	else {
+		matrix4x4 mAux;
+		R = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
+	}
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 
 	vector3 vS = nodeSelected->getScalingVector();
 	matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
@@ -196,6 +267,7 @@ void translatePiece(){
 	nodeSelected->setModelMatrix(T * R * S);
 }
 
+<<<<<<< HEAD
 void printHelp() {
 	std::cout << "-------------------------" << "\n";
 	std::cout << "Use the mouse to interact" << "\n";
@@ -524,6 +596,59 @@ void keyboard_down(unsigned char key, int x, int y) {
 			snapShotImage.snapShot(WinX, WinY);
 			break;
 		}
+=======
+//////////////////////////////////////////////////////////////////////// Mouse/Key Eventes
+void keyboard_down(unsigned char key, int x, int y) {
+	switch (key) {
+		case 'W':
+		case 'w':
+		{	
+			sceneNode* nodeSelected = sG.getNodeSelected();
+			if (nodeSelected != nullptr) {
+				vector3 vT = nodeSelected->getTranslationVector();
+				vector3 newVT(vT._a, vT._b, vT._c + TRANSZZ);
+				nodeSelected->setTranslationVector(newVT);
+				translatePiece();
+			}
+			break;
+		}
+		case 'S':
+		case 's':
+		{
+			sceneNode* nodeSelected = sG.getNodeSelected();
+			if (nodeSelected != nullptr) {
+				vector3 vT = nodeSelected->getTranslationVector();
+				vector3 newVT(vT._a, vT._b, vT._c - TRANSZZ);
+				nodeSelected->setTranslationVector(newVT);
+				translatePiece();
+			}
+			break;
+		}
+		case 'A':
+		case 'a':
+			{
+				sceneNode* nodeSelected = sG.getNodeSelected();
+				if (nodeSelected != nullptr) {
+					vector3 vT = nodeSelected->getTranslationVector();
+					vector3 newVT(vT._a - TRANSXX, vT._b, vT._c);
+					nodeSelected->setTranslationVector(newVT);
+					translatePiece();
+				}
+				break;
+			}
+		case 'D':
+		case 'd':
+			{
+				sceneNode* nodeSelected = sG.getNodeSelected();
+				if (nodeSelected != nullptr) {
+					vector3 vT = nodeSelected->getTranslationVector();
+					vector3 newVT(vT._a + TRANSXX, vT._b, vT._c);
+					nodeSelected->setTranslationVector(newVT);
+					translatePiece();
+				}
+				break;
+			}
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	}
 }
 
@@ -549,13 +674,27 @@ void OnMouseDown(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		g_oldX = x;
 		g_oldY = y;
+<<<<<<< HEAD
 	}
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		g_oldX = x;
 		g_oldY = y;
+=======
+		if (g_camMode) {
+			g_rot = true;
+		}
+		else {
+			g_rot = false;
+		}
+	}
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 
 		GLuint index;
 		glReadPixels(x, WinY - y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+<<<<<<< HEAD
+=======
+		//std::cout << "index: " << index << "\n";
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 		sG.setIndex(index);
 
 		GLfloat red;
@@ -564,17 +703,33 @@ void OnMouseDown(int button, int state, int x, int y) {
 		glReadPixels(x, WinY - y - 1, 1, 1, GL_RED, GL_FLOAT, &red);
 		glReadPixels(x, WinY - y - 1, 1, 1, GL_GREEN, GL_FLOAT, &green);
 		glReadPixels(x, WinY - y - 1, 1, 1, GL_BLUE, GL_FLOAT, &blue);
+<<<<<<< HEAD
 
 		//selected one of the pieces
 		if(index >= 1 && index <=7) {
+=======
+		//std::cout << "color(RGB): " << "(" << red << ", " << green << ", " << blue << ")" << "\n";
+
+		//selected one of the pieces
+		if(index >= 1 && index <=7) {
+			g_camMode = false;
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 			
 			std::vector<sceneNode*> nodes = tangramNode->getNodes();
 			for (unsigned i = 0; i < nodes.size(); i++) {
 				if (index == nodes[i]->getIndex()) {
+<<<<<<< HEAD
 					sG.setNodeSelected(nodes[i]);
 					/*std::cout << "Selected: " << nodes[i]->getName() <<
 						" with index: " << index <<
 						" and color(RGB): " << "(" << red << ", " << green << ", " << blue << ")" << "\n"; */
+=======
+					//nodeSelected = nodes[i];
+					sG.setNodeSelected(nodes[i]);
+					std::cout << "Selected: " << nodes[i]->getName() << 
+						" with index: " << index << 
+						" and color(RGB): " << "(" << red << ", " << green << ", " << blue << ")" << "\n";
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 					break;
 				}
 			}
@@ -582,17 +737,44 @@ void OnMouseDown(int button, int state, int x, int y) {
 				std::cout << "Error: nodeSelected with index: " << index << " not found" << "\n";
 			}
 		}
+<<<<<<< HEAD
+=======
+		else {
+			g_camMode = true;
+		}
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	}
 }
 
 void OnMouseMove(int x, int y) {
+<<<<<<< HEAD
 	if (camMode == true && translateMode == false && rotateMode == false) { // cam rotation with no Gimbal lock 
+=======
+	if (g_rot == true && g_camMode == true) { 	// cam rotation with no Gimbal lock 
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
 		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 
+		const float RotationSpeed = 0.3f;
+
 		//Recive the angle in deg
+		qtrn qyy = qAux.qFromAngleAxis(tetaX*RotationSpeed, YY_4);   // yy4 or YY_4
+		qtrn qxx = qAux.qFromAngleAxis(tetaY*RotationSpeed, XX_4);
+		qtrn q = qyy * qxx * mainCamera.getqView();
+		mainCamera.setqView(q);
+	}
+	else if(g_rot == false && g_camMode == false){ // piece rotation
+		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
+		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
+		g_oldX = (float)x;
+		g_oldY = (float)y;
+
+		sceneNode* nodeSelected = sG.getNodeSelected();
+		qtrn q = nodeSelected->getRotQtrn();
+		//Recive the angle in deg
+<<<<<<< HEAD
 		qtrn qyy = qAux.qFromAngleAxis(tetaX * ROTATIONSPEED, YY_4);  
 		qtrn qxx = qAux.qFromAngleAxis(tetaY * ROTATIONSPEED, XX_4);
 		qtrn q = qyy * qxx * mainCamera.getqView();
@@ -617,6 +799,11 @@ void OnMouseMove(int x, int y) {
 		float tetaY = (y - g_oldY) * ROTATIONSPEED; // angle to rotate in y (Deg)
 		g_oldX = (float)x;
 		g_oldY = (float)y;
+=======
+		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
+		//q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
+		nodeSelected->setRotQtrn(q);
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 
 		sceneNode* nodeSelected = sG.getNodeSelected();
 		if (nodeSelected != nullptr) {
@@ -626,6 +813,7 @@ void OnMouseMove(int x, int y) {
 			//q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
 			nodeSelected->setRotQtrn(q);
 
+<<<<<<< HEAD
 			matrix4x4 mAux;
 			matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
 
@@ -639,7 +827,17 @@ void OnMouseMove(int x, int y) {
 
 			nodeSelected->setModelMatrix(vM);
 		}
+=======
+		vector3 vT = nodeSelected->getTranslationVector();
+		matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação 
+
+		vector3 vS = nodeSelected->getScalingVector();
+		matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
+
+		matrix4x4 vM = T * mR * S; // view matrix -> row major
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 		
+		nodeSelected->setModelMatrix(vM);
 	}
 }
 
@@ -723,6 +921,7 @@ void setupGLUT(int argc, char* argv[])
 	}
 }
 
+<<<<<<< HEAD
 ///////////////////////////////////////////////////////////////LOADS
 void loadCamera(std::string file, json j) {
 	if (j.contains("camera"))
@@ -898,6 +1097,88 @@ void loadShader(std::string file, json j) {
 void loadScene(std::string file, json j) {
 	color c;
 	qtrn q;
+=======
+void myInit() {
+	mainCamera.setEye(eye);
+	mainCamera.setLight(light);
+
+	// View Matrix
+	mainCamera.makeViewMatrix();
+	// projection Matrix Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
+	mainCamera.makePrespMatrix((M_PI / 6), (640.0f / 480.0f), 1, 20);
+
+	// Mesh load
+	// tangram
+	cubeMesh.createMesh(std::string("../../assets/models/tangram/square.obj")); // cube
+	triangleMesh.createMesh(std::string("../../assets/models/tangram/triangle.obj")); // triangle
+	parallMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj")); // parallelogram
+	//table
+	tableMesh.createMesh(std::string("../../assets/models/table/table.obj")); // table
+
+	// Shaders load
+	cubeShader.createShaderProgram(
+		std::string("../../assets/shaders/tangramShader/cube/cube_vs.glsl"),
+		std::string("../../assets/shaders/tangramShader/cube/cube_fs.glsl"),
+		cubeMesh.getTexcoordsLoaded(),
+		cubeMesh.getNormalsLoaded());
+	sTri1Shader.createShaderProgram(
+		std::string("../../assets/shaders/tangramShader/sTri1/sTri1_vs.glsl"),
+		std::string("../../assets/shaders/tangramShader/sTri1/sTri1_fs.glsl"),
+		triangleMesh.getTexcoordsLoaded(),
+		triangleMesh.getNormalsLoaded());
+	sTri2Shader.createShaderProgram(
+		std::string("../../assets/shaders/tangramShader/sTri2/sTri2_vs.glsl"),
+		std::string("../../assets/shaders/tangramShader/sTri2/sTri2_fs.glsl"),
+		triangleMesh.getTexcoordsLoaded(),
+		triangleMesh.getNormalsLoaded());
+	mTriShader.createShaderProgram(
+		std::string("../../assets/shaders/tangramShader/mTri/mTri_vs.glsl"),
+		std::string("../../assets/shaders/tangramShader/mTri/mTri_fs.glsl"),
+		triangleMesh.getTexcoordsLoaded(),
+		triangleMesh.getNormalsLoaded());
+	lTri1Shader.createShaderProgram(
+		std::string("../../assets/shaders/tangramShader/lTri1/lTri1_vs.glsl"),
+		std::string("../../assets/shaders/tangramShader/lTri1/lTri1_fs.glsl"),
+		triangleMesh.getTexcoordsLoaded(),
+		triangleMesh.getNormalsLoaded());
+	lTri2Shader.createShaderProgram(
+		std::string("../../assets/shaders/tangramShader/lTri2/lTri2_vs.glsl"),
+		std::string("../../assets/shaders/tangramShader/lTri2/lTri2_fs.glsl"),
+		triangleMesh.getTexcoordsLoaded(),
+		triangleMesh.getNormalsLoaded());
+	parallShader.createShaderProgram(
+		std::string("../../assets/shaders/tangramShader/parall/parall_vs.glsl"),
+		std::string("../../assets/shaders/tangramShader/parall/parall_fs.glsl"),
+		parallMesh.getTexcoordsLoaded(),
+		parallMesh.getNormalsLoaded());
+	tableShader.createShaderProgram(
+		std::string("../../assets/shaders/tableShader/table_vs.glsl"),
+		std::string("../../assets/shaders/tableShader/table_fs.glsl"),
+		tableMesh.getTexcoordsLoaded(),
+		tableMesh.getNormalsLoaded());
+
+	createBufferObjects();
+}
+
+void createScene() {
+	/*						Scene Graph
+	*					root <----|------->      camera
+	*						|	
+						light, index: -1			
+	*			 		table, index: 0				
+	*						|
+	*	closed tangram <----|
+	*		 |- cube, index: 1
+	*		 |- small triangle 1, index: 2
+	*		 |- small triangle 2, index: 3
+	*		 |- medium triangle, index: 4
+	*		 |- large triangle 1, index: 5
+	*		 |- large triangle 2, index: 6
+	*		 |- parallelogram, index: 7
+	*
+	* For transformation the order is :  T * R * S
+	*/
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	sG.setCamera(&mainCamera);
 
 	rootNode = new sceneNode(); //root node (empty object)
@@ -905,6 +1186,7 @@ void loadScene(std::string file, json j) {
 	rootNode->makeInitialModelMatrix();
 
 	lightNode = new sceneNode();
+<<<<<<< HEAD
 	lightNode->setName(j["nodes"]["light"]["name"].as<std::string>());
 	lightNode->setIndex(j["nodes"]["light"]["index"].as_int());
 	lightNode->setTranslationVector(vector3(j["nodes"]["light"]["tV"][0].as_double(),
@@ -925,6 +1207,25 @@ void loadScene(std::string file, json j) {
 	tableNode->setShader(shaderM.getShaderByName(j["nodes"]["table"]["shader"].as<std::string>()));
 	tableNode->setTextures(DiffuseTextureID, NormalTextureID);  // add textures
 	tableNode->setColor(c.getColorByName(j["nodes"]["table"]["color"].as<std::string>()));
+=======
+	lightNode->setName("light");
+	lightNode->setIndex(0);
+	lightNode->setTranslationVector(light);
+	lightNode->makeInitialModelMatrix();
+	lightNode->setMesh(&cubeMesh);
+	lightNode->setShader(&cubeShader);
+	lightNode->setColor(pink);
+	rootNode->addNode(lightNode);
+
+	tableNode = new sceneNode();
+	tableNode->setName("table"); 
+	tableNode->setIndex(0);
+	tableNode->makeInitialModelMatrix();
+	tableNode->setMesh(&tableMesh);
+	tableNode->setShader(&tableShader);
+	tableNode->setTextures(DiffuseTextureID, NormalTextureID);  // add textures
+	tableNode->setColor(brown);
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	rootNode->addNode(tableNode);
 	
 	tangramNode = new sceneNode(); // empty object
@@ -933,6 +1234,7 @@ void loadScene(std::string file, json j) {
 	tableNode->addNode(tangramNode);
 
 	cubeNode = new sceneNode();
+<<<<<<< HEAD
 	cubeNode->setName(j["nodes"]["tangram"]["cube"]["name"].as<std::string>());
 	cubeNode->setIndex(j["nodes"]["tangram"]["cube"]["index"].as_int());
 	cubeNode->setScalingVector(
@@ -1004,9 +1306,44 @@ void loadScene(std::string file, json j) {
 	sTri2Node->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["small_triangle_2"]["mesh"].as<std::string>()));
 	sTri2Node->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["small_triangle_2"]["shader"].as<std::string>()));
 	sTri2Node->setColor(c.getColorByName(j["nodes"]["tangram"]["small_triangle_2"]["color"].as<std::string>()));
+=======
+	cubeNode->setName("cube");
+	cubeNode->setIndex(1);
+	cubeNode->setScalingVector(vector3(1.0f, 2.0f, 1.0f));
+	cubeNode->setTranslationVector(vector3(0.2f, 0.0f, 0.0f));
+	cubeNode->makeInitialModelMatrix();
+	cubeNode->setMesh(&cubeMesh);
+	cubeNode->setShader(&cubeShader);
+	cubeNode->setColor(yellow);
+	tangramNode->addNode(cubeNode);
+
+	sTri1Node = new sceneNode();
+	sTri1Node->setName("small triangle 1");
+	sTri1Node->setIndex(2);
+	sTri1Node->setScalingVector(vector3(1.0f, 2.0f, 1.0f));
+	sTri1Node->setTranslationVector(vector3(-0.2f, 0.0f, 0.2f));
+	sTri1Node->makeInitialModelMatrix();
+	sTri1Node->setMesh(&triangleMesh);
+	sTri1Node->setShader(&sTri1Shader);
+	sTri1Node->setColor(blue);
+	tangramNode->addNode(sTri1Node);
+
+	sTri2Node = new sceneNode();
+	sTri2Node->setName("small triangle 2");
+	sTri2Node->setIndex(3);
+	sTri2Node->setScalingVector(vector3(1.0f, 2.0f, 1.0f));
+	sTri2Node->setTranslationVector(vector3(0.4f, 0.0f, 0.0f));
+	sTri2Node->setRotationVector(vector3(0, 1, 0));
+	sTri2Node->setAngle((M_PI / 2));
+	sTri2Node->makeInitialModelMatrix();
+	sTri2Node->setMesh(&triangleMesh);
+	sTri2Node->setShader(&sTri2Shader);
+	sTri2Node->setColor(brown2);
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	tangramNode->addNode(sTri2Node);
-	
+
 	mTriNode = new sceneNode();
+<<<<<<< HEAD
 	mTriNode->setName(j["nodes"]["tangram"]["medium_triangle"]["name"].as<std::string>());
 	mTriNode->setIndex(j["nodes"]["tangram"]["medium_triangle"]["index"].as_int());
 	mTriNode->setScalingVector(
@@ -1028,9 +1365,22 @@ void loadScene(std::string file, json j) {
 	mTriNode->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["medium_triangle"]["mesh"].as<std::string>()));
 	mTriNode->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["medium_triangle"]["shader"].as<std::string>()));
 	mTriNode->setColor(c.getColorByName(j["nodes"]["tangram"]["medium_triangle"]["color"].as<std::string>()));
+=======
+	mTriNode->setName("medium triangle");
+	mTriNode->setIndex(4);
+	mTriNode->setTranslationVector(vector3(0.40, 0.0f, 0.0f));
+	mTriNode->setRotationVector(vector3(0, 1, 0));
+	mTriNode->setAngle(-(3 * M_PI / 4));
+	mTriNode->setScalingVector(vector3(1.4f, 2.0f, 1.4f));
+	mTriNode->makeInitialModelMatrix();
+	mTriNode->setMesh(&triangleMesh);
+	mTriNode->setShader(&mTriShader);
+	mTriNode->setColor(orange);
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	tangramNode->addNode(mTriNode);
 	
 	lTri1Node = new sceneNode();
+<<<<<<< HEAD
 	lTri1Node->setName(j["nodes"]["tangram"]["large_triangle_1"]["name"].as<std::string>());
 	lTri1Node->setIndex(j["nodes"]["tangram"]["large_triangle_1"]["index"].as_int());
 	lTri1Node->setScalingVector(
@@ -1076,9 +1426,35 @@ void loadScene(std::string file, json j) {
 	lTri2Node->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["large_triangle_2"]["mesh"].as<std::string>()));
 	lTri2Node->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["large_triangle_2"]["shader"].as<std::string>()));
 	lTri2Node->setColor(c.getColorByName(j["nodes"]["tangram"]["large_triangle_2"]["color"].as<std::string>()));
+=======
+	lTri1Node->setName("large triangle 1");
+	lTri1Node->setIndex(5);
+	lTri1Node->setTranslationVector(vector3(0.4f, 0.0f, -0.4f));
+	lTri1Node->setScalingVector(vector3(2.0f, 2.0f, 2.0f));
+	lTri1Node->setRotationVector(vector3(0, 1, 0));
+	lTri1Node->setAngle(M_PI);
+	lTri1Node->makeInitialModelMatrix();
+	lTri1Node->setMesh(&triangleMesh);
+	lTri1Node->setShader(&lTri1Shader);
+	lTri1Node->setColor(green);
+	tangramNode->addNode(lTri1Node);
+
+	lTri2Node = new sceneNode();
+	lTri2Node->setName("large triangle 2");
+	lTri2Node->setIndex(6);
+	lTri2Node->setTranslationVector(vector3(-0.4f, 0.0f, -0.4f));
+	lTri2Node->setScalingVector(vector3(2.0f, 2.0f, 2.0f));
+	lTri2Node->setRotationVector(vector3(0, 1, 0));
+	lTri2Node->setAngle(-(M_PI / 2));
+	lTri2Node->makeInitialModelMatrix();
+	lTri2Node->setMesh(&triangleMesh);
+	lTri2Node->setShader(&lTri2Shader);
+	lTri2Node->setColor(red);
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	tangramNode->addNode(lTri2Node);
 	
 	parallNode = new sceneNode();
+<<<<<<< HEAD
 	parallNode->setName(j["nodes"]["tangram"]["parallelogram"]["name"].as<std::string>());
 	parallNode->setIndex(j["nodes"]["tangram"]["parallelogram"]["index"].as_int());
 	parallNode->setScalingVector(
@@ -1100,14 +1476,29 @@ void loadScene(std::string file, json j) {
 	parallNode->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["parallelogram"]["mesh"].as<std::string>()));
 	parallNode->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["parallelogram"]["shader"].as<std::string>()));
 	parallNode->setColor(c.getColorByName(j["nodes"]["tangram"]["parallelogram"]["color"].as<std::string>()));
+=======
+	parallNode->setName("parallelogram");
+	parallNode->setIndex(7);
+	parallNode->setTranslationVector(vector3(-0.4f, 0.0f, 0.4f));
+	parallNode->setScalingVector(vector3(1.0f, 2.0f, 1.0f));
+	parallNode->makeInitialModelMatrix();
+	parallNode->setMesh(&parallMesh);
+	parallNode->setShader(&parallShader);
+	parallNode->setColor(blue2);
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	tangramNode->addNode(parallNode);
 
 
 	sG.setRoot(rootNode);
 }
 
+<<<<<<< HEAD
 void readJSONFile(std::string file) {
 	std::cout << "\n--- Load JSON file: " << file << " ---\n";
+=======
+///////////////////////////////////////////////////////////////LOADS
+void readJSONFile() {
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 	// Read from stream
 	std::ifstream is(file);
 	json j = json::parse(is);
@@ -1115,10 +1506,22 @@ void readJSONFile(std::string file) {
 	// Pretty print
 	//std::cout << "(1)\n" << pretty_print(j) << "\n\n";
 
+<<<<<<< HEAD
 	loadCamera(file, j);
 	loadMesh(file, j);
 	loadShader(file, j);
 	loadScene(file, j);
+=======
+	if (j.contains("tangram"))
+	{
+		std::string price = j["tangram"]["small_triangle_1"]["name"].as<std::string>();
+		//std::cout << price;
+	}
+	else
+	{
+		//std::cout << "n/a";
+	}
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 
 	std::cout << "--- Load End! ---\n";
 }
@@ -1143,6 +1546,7 @@ bool is_file_exist(const char *fileName)
 	return infile.good();
 }
 
+<<<<<<< HEAD
 void createScene() {
 	std::string str;
 
@@ -1166,6 +1570,17 @@ void createScene() {
 	}
 	readJSONFile(fileLoaded);
 }
+=======
+void loadImage() {
+	FreeImage_Initialise(true);
+	
+	DiffuseTextureID = image::loadTexture("../../assets/images/wood.jpg");
+	NormalTextureID = image::loadTexture("../../assets/images/wood_nm1.jpg");
+
+	FreeImage_DeInitialise();
+}
+
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 ////////////////////////////////////////////////////////////////////////////////// INIT
 void init(int argc, char* argv[])
 {
@@ -1173,6 +1588,12 @@ void init(int argc, char* argv[])
 	setupGLEW();
 	setupOpenGL();
 	setupCallbacks();
+<<<<<<< HEAD
+=======
+	
+	readJSONFile();
+	loadImage();
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 
 	createScene();
 }

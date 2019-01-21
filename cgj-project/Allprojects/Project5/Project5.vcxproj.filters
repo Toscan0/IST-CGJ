@@ -118,9 +118,12 @@
     <Filter Include="Source Files\src\image">
       <UniqueIdentifier>{5b74be37-64fc-4db4-b1ea-3f58df1c6886}</UniqueIdentifier>
     </Filter>
+<<<<<<< HEAD
     <Filter Include="Source Files\src\color">
       <UniqueIdentifier>{8e59cc65-5444-4602-ada5-945328619f67}</UniqueIdentifier>
     </Filter>
+=======
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp">
@@ -174,6 +177,7 @@
     <ClCompile Include="src\mesh\mesh.cpp">
       <Filter>Source Files\src\mesh</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="src\color\color.cpp">
       <Filter>Source Files\src\color</Filter>
     </ClCompile>
@@ -183,6 +187,8 @@
     <ClCompile Include="src\shader\shaderManager.cpp">
       <Filter>Source Files\src\shader</Filter>
     </ClCompile>
+=======
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\random\random.h">
@@ -344,6 +350,7 @@
     <ClInclude Include="src\mesh\mesh.h">
       <Filter>Source Files\src\mesh</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="src\color\color.h">
       <Filter>Source Files\src\color</Filter>
     </ClInclude>
@@ -353,6 +360,8 @@
     <ClInclude Include="src\shader\shaderManager.h">
       <Filter>Source Files\src\shader</Filter>
     </ClInclude>
+=======
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\json\defaultLoad.json">
@@ -406,14 +415,26 @@
     <None Include="..\..\assets\shaders\default\default_vs.glsl">
       <Filter>Resource Files\shaders\default</Filter>
     </None>
+<<<<<<< HEAD
+=======
+    <None Include="..\..\assets\shaders\tangramShader\picked_fs.glsl">
+      <Filter>Resource Files\shaders\tangramShader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\tangramShader\picked_vs.glsl">
+      <Filter>Resource Files\shaders\tangramShader</Filter>
+    </None>
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
     <None Include="..\..\assets\shaders\tableShader\table_vs.glsl">
       <Filter>Resource Files\shaders\tableShader</Filter>
     </None>
     <None Include="..\..\assets\shaders\tableShader\table_fs.glsl">
       <Filter>Resource Files\shaders\tableShader</Filter>
     </None>
+<<<<<<< HEAD
     <None Include="..\..\assets\json\savedScene.json">
       <Filter>Resource Files\json</Filter>
     </None>
+=======
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
   </ItemGroup>
 </Project>

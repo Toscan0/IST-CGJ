@@ -14,6 +14,16 @@ camera* sceneGraph::getCamera() {
 	return _camera;
 }
 
+<<<<<<< HEAD
+=======
+/*void sceneGraph::setShader(shader* s) {
+	_shader = s;
+}
+shader* sceneGraph::getShader() {
+	return _shader;
+}*/
+
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 void sceneGraph::setRoot(sceneNode *r) {
 	_root = r;
 }
@@ -40,5 +50,8 @@ void sceneGraph::setNodeSelected(sceneNode* nodeSelected) {
 
 void sceneGraph::draw() {
 	_root->draw(*_camera, _index);
+<<<<<<< HEAD
 	_root->drawPicked(*_camera, _index);
+=======
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 }

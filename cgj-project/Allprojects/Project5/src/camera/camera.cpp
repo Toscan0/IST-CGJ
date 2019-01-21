@@ -51,6 +51,13 @@ void camera::setOrthMatrix(matrix4x4& m) {
 
 void camera::setqView(qtrn& view) {
 	_qview = view;
+<<<<<<< HEAD
+=======
+}
+/*
+void camera::setCenter(vector3& center) {
+	_center = center;
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 }
 
 const vector3 camera::getEye() {
@@ -64,11 +71,27 @@ void camera::setEye(vector3& eye) {
 const vector3 camera::getLight() {
 	return _light;
 }
+*/
 
 const qtrn camera::getqView() {
 	return _qview;
 }
 
+<<<<<<< HEAD
+=======
+void camera::setEye(vector3& eye) {
+	_eye = eye;
+}
+
+const vector3 camera::getLight() {
+	return _light;
+}
+
+const qtrn camera::getqView() {
+	return _qview;
+}
+
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 void camera::setLight(vector3& light) {
 	_light = light;
 }

@@ -165,6 +165,7 @@ GLuint image::loadTexture(string filenameString) // , GLenum minificationFilter 
 
     // Finally, return the texture ID
     return tempTextureID;
+<<<<<<< HEAD
 }
 
 void image::snapShot(int width, int height)
@@ -197,3 +198,6 @@ void image::snapShot(int width, int height)
 	delete[] pixels;
 	delete[] pixelsRGB;
 }
+=======
+}
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7

@@ -2,6 +2,7 @@
 
 // data from vertex shader
 in vec3 exNormal;
+<<<<<<< HEAD
 in vec2 exTexcoord;
 in vec3 exLight;
 in vec3 exCamera;
@@ -88,4 +89,15 @@ void main(void)
       // combination of all components and diffuse color of the object
       out_color.xyz = diffuseColor * (Iamb + Idif + Ispe);
       out_color.a = 1;
+=======
+
+in vec4 ex_Color;
+out vec4 out_color; 
+
+uniform vec4 color;
+
+void main(void) 
+{ 
+	out_color = color;
+>>>>>>> 02ddc96a5953f7d188d6cb2c68c02ee8092c5ae7
 }
