@@ -1,1 +1,149 @@
-{"tangram":{"cube":{"mesh":"...","modelMatrix":"...","name":"...","shader":"[..., ...]"},"large_triangle_1":{"mesh":"...","modelMatrix":"...","name":"...","shader":"..."},"large_triangle_2":{"mesh":"...","modelMatrix":"...","name":"...","shader":"[..., ...]"},"medium_triangle":{"mesh":"...","modelMatrix":"...","name":"...","shader":"..."},"parallelogram":{"mesh":"...","modelMatrix":"...","name":"...","shader":"[..., ...]"},"small_triangle_1":{"mesh":"...","modelMatrix":"...","name":"lllllll","shader":"..."},"small_triangle_2":{"mesh":"...","modelMatrix":"...","name":"...","shader":"..."}}}
+{
+  "camera": {
+    "eye": [ 10.0, 0.0, 0.0 ],
+    "light": [ 1.0, 2.0, 1.0 ],
+    "perspective": {
+      "Aspect": [ 640, 480 ],
+      "FarZ": 20,
+      "Fovy": 30,
+      "NearZ": 1
+    }
+  },
+  "mesh": {
+    "cubeMesh": "../../assets/models/tangram/square.obj",
+    "parallMesh": "../../assets/models/tangram/parallelogram.obj",
+    "tableMesh": "../../assets/models/table/table.obj",
+    "triangleMesh": "../../assets/models/tangram/triangle.obj"
+  },
+  "nodes": {
+    "light": {
+      "color": "pink",
+      "index": 0,
+      "mesh": "cubeMesh",
+      "name": "light",
+      "shader": "cubeShader",
+      "tV": [ 1.4, 2.0, 1.0 ]
+    },
+    "table": {
+      "color": "brown",
+      "index": 0,
+      "mesh": "tableMesh",
+      "name": "table",
+      "shader": "tableShader"
+    },
+    "tangram": {
+      "cube": {
+        "color": "yellow",
+        "index": 1,
+        "mesh": "cubeMesh",
+        "name": "cube",
+        "qtrn": [ 0.99939084053039551, 0.0, 0.034900560975074768, 0.0 ],
+        "sV": [ 1.0, 2.0, 1.0 ],
+        "shader": "cubeShader",
+        "tV": [ -0.351999968290329, 0.0, 0.41699975728988647 ]
+      },
+      "large_triangle_1": {
+        "color": "green",
+        "index": 5,
+        "mesh": "triangleMesh",
+        "name": "large triangle 1",
+        "qtrn": [ 0.38268342614173889, 0.0, 0.92387962341308594, 0.0 ],
+        "sV": [ 2.0, 2.0, 2.0 ],
+        "shader": "lTri1Shader",
+        "tV": [ -0.0469999797642231, 0.10000000149011612, 0.917999804019928 ]
+      },
+      "large_triangle_2": {
+        "color": "red",
+        "index": 6,
+        "mesh": "triangleMesh",
+        "name": "small triangle 2",
+        "qtrn": [ -0.0017453284235671163, 0.0, 0.99999850988388062, 0.0 ],
+        "sV": [ 2.0, 2.0, 2.0 ],
+        "shader": "lTri2Shader",
+        "tV": [ 0.16800017654895782, 0.10000000149011612, 0.68399894237518311 ]
+      },
+      "medium_triangle": {
+        "color": "orange",
+        "index": 4,
+        "mesh": "triangleMesh",
+        "name": "medium triangle",
+        "qtrn": [ -0.7009093165397644, 0.0, -0.713250458240509, 0.0 ],
+        "sV": [ 1.4, 2.0, 1.4 ],
+        "shader": "mTriShader",
+        "tV": [ -0.33699971437454224, 0.10000000149011612, 0.82899880409240723 ]
+      },
+      "parallelogram": {
+        "color": "blue2",
+        "index": 7,
+        "mesh": "parallMesh",
+        "name": "parallelogram",
+        "qtrn": [ 0.69966530799865723, 0.0, 0.71447521448135376, 0.0 ],
+        "sV": [ 1.0, 2.0, 1.0 ],
+        "shader": "parallShader",
+        "tV": [ -0.25899994373321533, 0.10000000149011612, 0.087999977171421051 ]
+      },
+      "small_triangle_1": {
+        "color": "blue",
+        "index": 2,
+        "mesh": "triangleMesh",
+        "name": "small triangle 1",
+        "qtrn": [ 0.72837549448013306, 0.0, -0.68518698215484619, 0.0 ],
+        "sV": [ 1.0, 2.0, 1.0 ],
+        "shader": "sTri1Shader",
+        "tV": [ -0.4750000536441803, 0.10000000149011612, 0.62399935722351074 ]
+      },
+      "small_triangle_2": {
+        "color": "brown2",
+        "index": 3,
+        "mesh": "triangleMesh",
+        "name": "small triangle 2",
+        "qtrn": [ 0.93420869112014771, 0.0, -0.35673943161964417, 0.0 ],
+        "sV": [ 1.0, 2.0, 1.0 ],
+        "shader": "sTri2Shader",
+        "tV": [ -0.45600011944770813, 0.10000000149011612, -0.10199987888336182 ]
+      }
+    }
+  },
+  "shader": {
+    "cubeShader": {
+      "fragShader": "../../assets/shaders/tangramShader/cube/cube_fs.glsl",
+      "mesh": "cubeMesh",
+      "vertexShader": "../../assets/shaders/tangramShader/cube/cube_vs.glsl"
+    },
+    "lTri1Shader": {
+      "fragShader": "../../assets/shaders/tangramShader/lTri1/lTri1_fs.glsl",
+      "mesh": "triangleMesh",
+      "vertexShader": "../../assets/shaders/tangramShader/lTri1/lTri1_vs.glsl"
+    },
+    "lTri2Shader": {
+      "fragShader": "../../assets/shaders/tangramShader/lTri2/lTri2_fs.glsl",
+      "mesh": "triangleMesh",
+      "vertexShader": "../../assets/shaders/tangramShader/lTri2/lTri2_vs.glsl"
+    },
+    "mTriShader": {
+      "fragShader": "../../assets/shaders/tangramShader/mTri/mTri_fs.glsl",
+      "mesh": "triangleMesh",
+      "vertexShader": "../../assets/shaders/tangramShader/mTri/mTri_vs.glsl"
+    },
+    "parallShader": {
+      "fragShader": "../../assets/shaders/tangramShader/parall/parall_fs.glsl",
+      "mesh": "parallMesh",
+      "vertexShader": "../../assets/shaders/tangramShader/parall/parall_vs.glsl"
+    },
+    "sTri1Shader": {
+      "fragShader": "../../assets/shaders/tangramShader/sTri1/sTri1_fs.glsl",
+      "mesh": "triangleMesh",
+      "vertexShader": "../../assets/shaders/tangramShader/sTri1/sTri1_vs.glsl"
+    },
+    "sTri2Shader": {
+      "fragShader": "../../assets/shaders/tangramShader/sTri2/sTri2_fs.glsl",
+      "mesh": "triangleMesh",
+      "vertexShader": "../../assets/shaders/tangramShader/sTri2/sTri2_vs.glsl"
+    },
+    "tableShader": {
+      "fragShader": "../../assets/shaders/tableShader/table_fs.glsl",
+      "mesh": "tableMesh",
+      "vertexShader": "../../assets/shaders/tableShader/table_vs.glsl"
+    }
+  }
+}

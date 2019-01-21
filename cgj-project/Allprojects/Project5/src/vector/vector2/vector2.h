@@ -10,6 +10,7 @@
 struct vector2 {
 	float _a, _b;
 
+	vector2();
 	vector2(float, float);
 	vector2(std::tuple<float, float>);
 

@@ -1,6 +1,8 @@
 #include "vector2.h"
 
 // -- Constructor --
+vector2::vector2() {}
+
 vector2::vector2(float a, float b) {
 	_a = a;
 	_b = b;

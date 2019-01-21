@@ -12,20 +12,25 @@
 class sceneGraph {
 public:
 	camera* _camera;
-	shader* _shader;
 	sceneNode* _root;
+	// piece selected
+	GLuint _index; //index of the piece selected
+	sceneNode *_nodeSelected = nullptr; // node of the piece
 
 	sceneGraph();
-	sceneGraph(camera* camera, shader* shader);
+	sceneGraph(camera* camera);
 
 	void setCamera(camera *c);
 	camera* getCamera();
 
-	void setShader(shader *s);
-	shader* getShader();
-
 	void setRoot(sceneNode *r);
 	sceneNode *getRoot();
 
+	const GLuint getIndex();
+	void setIndex(GLuint index);
+
+	sceneNode* getNodeSelected();
+	void setNodeSelected(sceneNode*);
+	
 	void draw();
 };

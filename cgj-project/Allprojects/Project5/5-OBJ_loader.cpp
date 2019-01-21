@@ -1,37 +1,15 @@
-///////////////////////////////////////////////////////////////////////
-//
-//  Loading OBJ mesh from external file
-//
-//	Final individual assignment:
-//	1.	Create classes: Scene, Camera and Mesh (that loads a mesh from
-//		a Wavefront OBJ file to an indexed format) and build a small
-//		scenegraph of your tangram scene (you may create more 
-//		classes if needed).
-//	2.	Create a ground object and couple the tangram figure to the
-//		ground. Press keys to move the ground about: the tangram
-//		figure must follow the ground.
-//	3.	Animate between closed puzzle (initial square) and tangram
-//		figure by pressing a key.
-//	4.	Spherical camera interaction through mouse. It should be
-//		possible to interact while animation is playing.
-//
-//	Team assignment:
-//	Pick your team (2 elements from one same lab) for the team
-//	assignment you will be working until the end of the semester,
-//	and register it online.
-//
-// (c) 2013-18 by Carlos Martinho
-//
-///////////////////////////////////////////////////////////////////////
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <cmath>
 #include <vector>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
+#include "FreeImage.h"
 #include "src/mesh/mesh.h"
+#include "src/mesh/meshManager.h"
+#include "src/shader/shaderManager.h"
 #include "src/shader/shader.h"
 #include "src/error/error.h"
 #include "src/camera/camera.h"
@@ -42,7 +20,8 @@
 #include "src/qtrn/qtrn.h"
 #include "src/scene/sceneGraph.h"
 #include "src/scene/sceneNode.h"
-
+#include "src/image/image.h"
+#include "src/color/color.h"
 #include "jsoncons/json.hpp"
 // For convenience
 using jsoncons::json;
@@ -53,50 +32,77 @@ using jsoncons::json;
 #define NORMALS 2
 #define DEGTORAD 0.0174532925
 #define M_PI 3.14159265358979323846
+#define ROTATIONSPEED  0.1f
+#define TRANSLATIONSPEED  0.001f
 
 int WinX = 640, WinY = 480;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
+
+vector4 XX_4(1, 0, 0, 1);
+vector4 YY_4(0, 1, 0, 1);
+vector4 ZZ_4(0, 0, 1, 1);
+
+matrixFactory mf;
+qtrn qAux;
+image snapShotImage;
+std::string fileLoaded;
+// mouse click
 int g_oldX = 0; // last coord x of mouse in window
 int g_oldY = 0;	// last coord y of mouse in window
 
-vector3 eye(0.0f, 0.0f, 5.0f);
-vector3 center(0.0f, 0.0f, 0.0f);
-vector3 up(0.0f, 1.0f, 0.0f);
-
-//Quarterion rotation
-qtrn qAux;
-bool g_rot = false;
-vector4 XX_4(1, 0, 0, 1);
-vector4 YY_4(0, 1, 0, 1);
-qtrn q = { 1.0f, 0.0f, 0.0f, 0.0f };
-
+//Camera
 camera mainCamera;
-matrixFactory mf;
 
-//mesh myMesh;
+//mesh;
+meshManager meshM;
 mesh cubeMesh;
 mesh triangleMesh;
 mesh parallMesh;
 mesh tableMesh;
 
-//shader myShader;
+// Shader
+shaderManager shaderM;
 shader cubeShader;
 shader sTri1Shader, sTri2Shader, mTriShader, lTri1Shader, lTri2Shader;
 shader parallShader;
 shader tableShader;
 
 // SceneGraph
-int g_x = 0; // value to translate the scene graph
 sceneGraph sG;
 
 // SceneNode
 sceneNode *rootNode;
 sceneNode *tableNode;
-sceneNode *tangramNode, *cubeNode, *sTri1Node, *sTri2Node, *lTri1Node, *lTri2Node, *mTriNode, *parallNode; // tangram and his pieces
+sceneNode *lightNode;
+sceneNode *tangramNode, *cubeNode, *sTri1Node, *sTri2Node, 
+	*lTri1Node, *lTri2Node, *mTriNode, *parallNode; // tangram and his pieces
 
-//stencil buffer
-unsigned char stencilData[8];
+//Texture
+GLuint DiffuseTextureID;
+GLuint NormalTextureID;
+
+//Interaction
+bool camMode = true; //q
+bool translateMode = false;  //w
+bool rotateMode = false; //e
+
+/*						Scene Graph
+*					root <----|----> camera
+*						|
+*					light, index:0
+*			 		table, index: 0
+*						|
+*	closed tangram <----|
+*		 |- cube, index: 1
+*		 |- small triangle 1, index: 2
+*		 |- small triangle 2, index: 3
+*		 |- medium triangle, index: 4
+*		 |- large triangle 1, index: 5
+*		 |- large triangle 2, index: 6
+*		 |- parallelogram, index: 7
+*
+*/
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 void createBufferObjects()
@@ -121,8 +127,7 @@ void destroyBufferObjects()
 
 void drawScene()
 {
-	//glEnable(GL_STENCIL_TEST);
-	//glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	sG.draw();
 }
 
@@ -171,79 +176,469 @@ void timer(int value)
 	glutTimerFunc(1000, timer, 0);
 }
 
-//////////////////////////////////////////////////////////////////////// Mouse/Key Eventes
+////////////////////////////////////////////////////////////////////////
+// translate the piece with the values(translation, rotation and sclaing) the node have
+void translatePiece(){ 
+	sceneNode * nodeSelected = sG.getNodeSelected();
+	vector3 vT = nodeSelected->getTranslationVector();
+	matrix4x4 T = mf.translationMatrix4x4(vT);
 
+	qtrn default_qtrn = { 1.0f, 0.0f, 0.0f, 0.0f }; //DEFAULT_QTRN	
+	qtrn q = nodeSelected->getRotQtrn();
+	matrix4x4 R;
+	
+	matrix4x4 mAux;
+	R = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
+
+	vector3 vS = nodeSelected->getScalingVector();
+	matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
+
+	nodeSelected->setModelMatrix(T * R * S);
+}
+
+void printHelp() {
+	std::cout << "-------------------------" << "\n";
+	std::cout << "Use the mouse to interact" << "\n";
+	std::cout << 
+		"Press Q to rotate camera\n" <<
+		"Press W to move a piece\n" <<
+		"Press E to rotate the piece\n" <<
+		"Press R to restart the scene\n" <<
+		"Press T to aproximate the angle to units\n" <<
+		"Press L to rotate the paralellogram 180º in zz axe\n" <<
+		"Press P to snapshot the window\n" <<
+		"Press S to save the scene\n";
+	std::cout << "-------------------------" << "\n";
+}
+
+void printMode(std::string str) {
+	std::cout << str + " mode activated!" << "\n";
+	std::cout << "Use mouse to interact" << "\n";
+	std::cout << "Press i to see help!" << "\n";
+}
+//////////////////////////////////////////////////////////////////////// SAVE SCENE IN JSON
+//from nodes the only info that changes is the translaction vectores and rotation vectores
+//so its only info need to be saved, the other is copied from the default json
+json saveNodes(json j) {
+	vector3 vT;
+	qtrn q;
+	//save vectores
+	// json::array{ "JPEG","PSD","TIFF","DNG" };
+	
+	vT = cubeNode->getTranslationVector();
+	j["nodes"]["tangram"]["cube"]["tV"] = json::array{ vT._a, vT._b, vT._c };
+	q = cubeNode->getRotQtrn();
+	j["nodes"]["tangram"]["cube"]["qtrn"] = json::array{ q._t, q._x, q._y, q._z };
+
+	vT = sTri1Node->getTranslationVector();
+	j["nodes"]["tangram"]["small_triangle_1"]["tV"] = json::array{ vT._a, vT._b, vT._c };
+	q = sTri1Node->getRotQtrn();
+	j["nodes"]["tangram"]["small_triangle_1"]["qtrn"] = json::array{ q._t, q._x, q._y, q._z };
+
+	vT = sTri2Node->getTranslationVector();
+	j["nodes"]["tangram"]["small_triangle_2"]["tV"] = json::array{ vT._a, vT._b, vT._c };
+	q = sTri2Node->getRotQtrn();
+	j["nodes"]["tangram"]["small_triangle_2"]["qtrn"] = json::array{ q._t, q._x, q._y, q._z };
+
+	vT = mTriNode->getTranslationVector();
+	j["nodes"]["tangram"]["medium_triangle"]["tV"] = json::array{ vT._a, vT._b, vT._c };
+	q = mTriNode->getRotQtrn();
+	j["nodes"]["tangram"]["medium_triangle"]["qtrn"] = json::array{ q._t, q._x, q._y, q._z };
+
+	vT = lTri1Node->getTranslationVector();
+	j["nodes"]["tangram"]["large_triangle_1"]["tV"] = json::array{ vT._a, vT._b, vT._c };
+	q = lTri1Node->getRotQtrn();
+	j["nodes"]["tangram"]["large_triangle_1"]["qtrn"] = json::array{ q._t, q._x, q._y, q._z };
+
+	vT = lTri2Node->getTranslationVector();
+	j["nodes"]["tangram"]["large_triangle_2"]["tV"] = json::array{ vT._a, vT._b, vT._c };
+	q = lTri2Node->getRotQtrn();
+	j["nodes"]["tangram"]["large_triangle_2"]["qtrn"] = json::array{ q._t, q._x, q._y, q._z };
+
+	vT = parallNode->getTranslationVector();
+	j["nodes"]["tangram"]["parallelogram"]["tV"] = json::array{ vT._a, vT._b, vT._c };
+	q = parallNode->getRotQtrn();
+	j["nodes"]["tangram"]["parallelogram"]["qtrn"] = json::array{ q._t, q._x, q._y, q._z };
+
+	return j;
+}
+
+void restartScene(std::string file) {
+	// Read from stream
+	std::ifstream is(file);
+	json j = json::parse(is);
+
+	qtrn q;
+
+
+	//tableNode->makeInitialModelMatrix();
+
+	//tangramNode->makeInitialModelMatrix();
+
+	cubeNode->setScalingVector(
+		vector3(j["nodes"]["tangram"]["cube"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["cube"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["cube"]["sV"][2].as_double())
+	);
+	cubeNode->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["cube"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["cube"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["cube"]["tV"][2].as_double())
+	);
+	q = { static_cast<float> (j["nodes"]["tangram"]["cube"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["cube"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["cube"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["cube"]["qtrn"][3].as_double()) };
+	cubeNode->setRotQtrn(q);
+	cubeNode->makeInitialModelMatrix();
+
+	sTri1Node->setScalingVector(
+		vector3(j["nodes"]["tangram"]["small_triangle_1"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["small_triangle_1"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["small_triangle_1"]["sV"][2].as_double())
+	);
+	sTri1Node->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["small_triangle_1"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["small_triangle_1"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["small_triangle_1"]["tV"][2].as_double())
+	);
+	vector3 a(j["nodes"]["tangram"]["small_triangle_1"]["tV"][0].as_double(),
+		j["nodes"]["tangram"]["small_triangle_1"]["tV"][1].as_double(),
+		j["nodes"]["tangram"]["small_triangle_1"]["tV"][2].as_double());
+	q = { static_cast<float> (j["nodes"]["tangram"]["small_triangle_1"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_1"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_1"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_1"]["qtrn"][3].as_double()) };
+	sTri1Node->setRotQtrn(q);
+	sTri1Node->makeInitialModelMatrix();
+
+	sTri2Node->setScalingVector(
+		vector3(j["nodes"]["tangram"]["small_triangle_2"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["small_triangle_2"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["small_triangle_2"]["sV"][2].as_double())
+	);
+	sTri2Node->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["small_triangle_2"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["small_triangle_2"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["small_triangle_2"]["tV"][2].as_double()));
+	q = { static_cast<float> (j["nodes"]["tangram"]["small_triangle_2"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_2"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_2"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_2"]["qtrn"][3].as_double()) };
+	sTri2Node->setRotQtrn(q);
+	sTri2Node->makeInitialModelMatrix();
+
+	mTriNode->setScalingVector(
+		vector3(j["nodes"]["tangram"]["medium_triangle"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["medium_triangle"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["medium_triangle"]["sV"][2].as_double())
+	);
+	mTriNode->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["medium_triangle"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["medium_triangle"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["medium_triangle"]["tV"][2].as_double())
+	);
+	q = { static_cast<float> (j["nodes"]["tangram"]["medium_triangle"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["medium_triangle"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["medium_triangle"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["medium_triangle"]["qtrn"][3].as_double()) };
+	mTriNode->setRotQtrn(q);
+	mTriNode->makeInitialModelMatrix();
+
+	lTri1Node->setScalingVector(
+		vector3(j["nodes"]["tangram"]["large_triangle_1"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["large_triangle_1"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["large_triangle_1"]["sV"][2].as_double())
+	);
+	lTri1Node->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["large_triangle_1"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["large_triangle_1"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["large_triangle_1"]["tV"][2].as_double())
+	);
+	q = { static_cast<float> (j["nodes"]["tangram"]["large_triangle_1"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_1"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_1"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_1"]["qtrn"][3].as_double()) };
+	lTri1Node->setRotQtrn(q);
+	lTri1Node->makeInitialModelMatrix();
+
+	lTri2Node->setScalingVector(
+		vector3(j["nodes"]["tangram"]["large_triangle_2"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["large_triangle_2"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["large_triangle_2"]["sV"][2].as_double())
+	);
+	lTri2Node->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["large_triangle_2"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["large_triangle_2"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["large_triangle_2"]["tV"][2].as_double())
+	);
+	q = { static_cast<float> (j["nodes"]["tangram"]["large_triangle_2"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_2"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_2"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_2"]["qtrn"][3].as_double()) };
+	lTri2Node->setRotQtrn(q);
+	lTri2Node->makeInitialModelMatrix();
+
+	parallNode->setScalingVector(
+		vector3(j["nodes"]["tangram"]["parallelogram"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["parallelogram"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["parallelogram"]["sV"][2].as_double())
+	);
+	parallNode->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["parallelogram"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["parallelogram"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["parallelogram"]["tV"][2].as_double())
+	);
+	q = { static_cast<float> (j["nodes"]["tangram"]["parallelogram"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["parallelogram"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["parallelogram"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["parallelogram"]["qtrn"][3].as_double()) };
+	parallNode->setRotQtrn(q);
+	parallNode->makeInitialModelMatrix();
+
+}
+void saveScene(std::string filePath) {
+	json j;
+
+	std::ifstream is("../../assets/json/defaultLoad.json");
+	json jParsed = json::parse(is);
+
+	j = saveNodes(jParsed);
+	
+	// Write to stream -> creates the file if doesn't exist
+	std::ofstream os(filePath);
+	os << j;
+
+	std::cout << "Scene saved in file: " << filePath << "\n";
+}
+//////////////////////////////////////////////////////////////////////// Mouse/Key Eventes
 void keyboard_down(unsigned char key, int x, int y) {
 	switch (key) {
-		case 'A':
-		case 'a':
-			g_x--;
-			tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
+		case 'I':
+		case 'i':
+		{
+			printHelp();
 			break;
-		case 'D':
-		case 'd':
-			g_x++;
-			tableNode->setModelMatrix(mf.translationMatrix4x4(vector3(g_x, 0, 0)) * mf.identityMatrix4x4());
+		}
+		case 'Q':
+		case 'q':
+		{
+			printMode("Camera");
+			camMode = true;
+			translateMode = false;
+			rotateMode = false;
 			break;
+		}
+		case 'W':
+		case 'w':
+		{
+			printMode("Translation");
+			camMode = false;
+			translateMode = true;
+			rotateMode = false;
+			break;
+		}
+		case 'E':
+		case 'e':
+		{
+			printMode("Rotation");
+			camMode = false;
+			translateMode = false;
+			rotateMode = true;
+			break;
+		}
+		case 'R':
+		case 'r':
+		{
+			restartScene(fileLoaded);
+			break;
+		}
+		case 'L':
+		case 'l':
+		{
+			sceneNode* nodeSelected = sG.getNodeSelected();
+			if (nodeSelected != nullptr && nodeSelected->getName() == "parallelogram") {
+				qtrn q = nodeSelected->getRotQtrn();
+				//Recive the angle in deg
+				q = (qAux.qFromAngleAxis(180, ZZ_4) * q);
+				nodeSelected->setRotQtrn(q);
+
+				matrix4x4 mAux;
+				matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
+
+				vector3 vT = nodeSelected->getTranslationVector();
+				vector3 vTAux(vT._a, vT._b, vT._c);
+				matrix4x4 T = mf.translationMatrix4x4(vTAux); // matrix translação 
+				nodeSelected->setTranslationVector(vTAux);
+
+				vector3 vS = nodeSelected->getScalingVector();
+				matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
+
+				matrix4x4 vM = T * mR * S; // view matrix -> row major
+
+				nodeSelected->setModelMatrix(vM);
+			}
+			break;
+		}
+		case 'T':
+		case 't':
+		{
+			sceneNode* nodeSelected = sG.getNodeSelected();
+			if (nodeSelected != nullptr) {
+				qtrn q = nodeSelected->getRotQtrn();
+				
+				//get the aproximated angle value in Deg
+				float thetaf;
+				vector4 axis_f;
+				qAux.qToAngleAxis(q, thetaf, axis_f);
+				int theta = round(thetaf);
+				
+				q = (qAux.qFromAngleAxis(theta, axis_f) );
+				nodeSelected->setRotQtrn(q);
+
+				matrix4x4 mAux;
+				matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
+
+				vector3 vT = nodeSelected->getTranslationVector();
+				vector3 vTAux(vT._a, vT._b, vT._c);
+				matrix4x4 T = mf.translationMatrix4x4(vTAux); // matrix translação 
+
+				vector3 vS = nodeSelected->getScalingVector();
+				matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
+
+				matrix4x4 vM = T * mR * S; // view matrix -> row major
+
+				nodeSelected->setModelMatrix(vM);
+			}
+			break;
+		}
+		case 'S':
+		case 's':
+		{
+			saveScene("../../assets/json/savedScene.json");
+			break;
+		}
+		case 'P':
+		case 'p':
+		{
+			snapShotImage.snapShot(WinX, WinY);
+			break;
+		}
 	}
 }
 
 void mouseWheel(int wheel, int direction, int x, int y) {
-	if (direction == -1) {
-		vector3 newEye(mainCamera.getEye()._a, mainCamera.getEye()._b, mainCamera.getEye()._c - 1);
-		mainCamera.setEye(newEye);
-		mainCamera.makeViewMatrix(newEye, mainCamera.getCenter(), mainCamera.getUp());
-	}
+	const float MaxSpeed = 0.5f;
+	vector3 vec(1, 0, 0);
+
 	if (direction == 1) {
-		vector3 newEye(mainCamera.getEye()._a, mainCamera.getEye()._b, mainCamera.getEye()._c + 1);
+		vector3 newEye = mainCamera.getEye() - vec * MaxSpeed;
 		mainCamera.setEye(newEye);
-		mainCamera.makeViewMatrix(newEye, mainCamera.getCenter(), mainCamera.getUp());
+		vector3 tran(0, 0, -(newEye.norma()));
+		mainCamera._T = mf.translationMatrix4x4(tran);
 	}
-
-
+	if (direction == -1) {
+		vector3 newEye = mainCamera.getEye() + vec * MaxSpeed;
+		mainCamera.setEye(newEye);
+		vector3 tran(0, 0, -(newEye.norma()));
+		mainCamera._T = mf.translationMatrix4x4(tran);
+	}
 }
 
 void OnMouseDown(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-		g_rot = true;
 		g_oldX = x;
 		g_oldY = y;
 	}
-	else {
-		g_rot = false;
-	}
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		g_oldX = x;
+		g_oldY = y;
 
-	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
 		GLuint index;
 		glReadPixels(x, WinY - y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
-		std::cout << "index: " << index << "\n";
+		sG.setIndex(index);
 
+		GLfloat red;
+		GLfloat green;
+		GLfloat blue;
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_RED, GL_FLOAT, &red);
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_GREEN, GL_FLOAT, &green);
+		glReadPixels(x, WinY - y - 1, 1, 1, GL_BLUE, GL_FLOAT, &blue);
+
+		//selected one of the pieces
+		if(index >= 1 && index <=7) {
+			
+			std::vector<sceneNode*> nodes = tangramNode->getNodes();
+			for (unsigned i = 0; i < nodes.size(); i++) {
+				if (index == nodes[i]->getIndex()) {
+					sG.setNodeSelected(nodes[i]);
+					/*std::cout << "Selected: " << nodes[i]->getName() <<
+						" with index: " << index <<
+						" and color(RGB): " << "(" << red << ", " << green << ", " << blue << ")" << "\n"; */
+					break;
+				}
+			}
+			if (sG.getNodeSelected() == nullptr) {
+				std::cout << "Error: nodeSelected with index: " << index << " not found" << "\n";
+			}
+		}
 	}
 }
 
-
 void OnMouseMove(int x, int y) {
-	if (g_rot == true) { 	// Gimbal lock false
+	if (camMode == true && translateMode == false && rotateMode == false) { // cam rotation with no Gimbal lock 
 		float tetaX = (x - g_oldX); // angle to rotate in x (Deg)
 		float tetaY = (y - g_oldY); // angle to rotate in y (Deg)
 		g_oldX = (float)x;
 		g_oldY = (float)y;
 
 		//Recive the angle in deg
-		q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
-		q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
-
-		matrix4x4 mAux;
-		matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
-
-		vector3 vT(0, 0, -(mainCamera.getEye()._c));
-		matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação 
-
-		matrix4x4 vM = T * mR; // view matrix
-		matrix4x4 vMT = vM.transposeM4x4(); // view matrix transposta -> column major
-		mainCamera.setViewMatrix(vMT);
+		qtrn qyy = qAux.qFromAngleAxis(tetaX * ROTATIONSPEED, YY_4);  
+		qtrn qxx = qAux.qFromAngleAxis(tetaY * ROTATIONSPEED, XX_4);
+		qtrn q = qyy * qxx * mainCamera.getqView();
+		mainCamera.setqView(q);
 	}
-	else {
+	else if (camMode == false && translateMode == true && rotateMode == false) { // piece translation
+		float deltaX = (x - g_oldX) * TRANSLATIONSPEED; // translate in x (Deg)
+		float deltaZ = (y - g_oldY) * TRANSLATIONSPEED; // translate in Z (Deg)
+		g_oldX = (float)x;
+		g_oldY = (float)y;
+
+		sceneNode* nodeSelected = sG.getNodeSelected();
+		if (nodeSelected != nullptr) {
+			vector3 vT = nodeSelected->getTranslationVector();
+			vector3 newVT(vT._a + deltaX, vT._b, vT._c + deltaZ);
+			nodeSelected->setTranslationVector(newVT);
+			translatePiece();
+		}
+	}
+	else if(camMode == false && translateMode == false && rotateMode == true){ // piece rotation
+		float tetaX = (x - g_oldX) * ROTATIONSPEED; // angle to rotate in x (Deg)
+		float tetaY = (y - g_oldY) * ROTATIONSPEED; // angle to rotate in y (Deg)
+		g_oldX = (float)x;
+		g_oldY = (float)y;
+
+		sceneNode* nodeSelected = sG.getNodeSelected();
+		if (nodeSelected != nullptr) {
+			qtrn q = nodeSelected->getRotQtrn();
+			//Recive the angle in deg
+			q = (qAux.qFromAngleAxis(tetaX, YY_4) * q);
+			//q = (qAux.qFromAngleAxis(tetaY, XX_4) * q);
+			nodeSelected->setRotQtrn(q);
+
+			matrix4x4 mAux;
+			matrix4x4 mR = qGLMatrix(q, mAux);  // matrix rotação devolve em row major
+
+			vector3 vT = nodeSelected->getTranslationVector();
+			matrix4x4 T = mf.translationMatrix4x4(vT); // matrix translação 
+
+			vector3 vS = nodeSelected->getScalingVector();
+			matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
+
+			matrix4x4 vM = T * mR * S; // view matrix -> row major
+
+			nodeSelected->setModelMatrix(vM);
+		}
 		
 	}
 }
@@ -291,6 +686,11 @@ void setupOpenGL()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 }
 
 void setupGLEW()
@@ -323,247 +723,463 @@ void setupGLUT(int argc, char* argv[])
 	}
 }
 
-void myInit() {
-	mainCamera.setEye(eye);
-	mainCamera.setCenter(center);
-	mainCamera.setUp(up);
+///////////////////////////////////////////////////////////////LOADS
+void loadCamera(std::string file, json j) {
+	if (j.contains("camera"))
+	{
+		int eye0 = j["camera"]["eye"][0].as_int();
+		int eye1 = j["camera"]["eye"][1].as_int();
+		int eye2 = j["camera"]["eye"][2].as_int();
+		vector3 eye(eye0, eye1, eye2);
+		mainCamera.setEye(eye);
+		int light0 = j["camera"]["light"][0].as_int();
+		int light1 = j["camera"]["light"][1].as_int();
+		int light2 = j["camera"]["light"][2].as_int();
+		vector3 light(light0, light1, light2);
+		mainCamera.setLight(light);
+		// View Matrix
+		mainCamera.makeViewMatrix();
+		// projection Perspective
+		if (j["camera"].contains("perspective")) {
+			int fovy = j["camera"]["perspective"]["Fovy"].as_int();
+			int aspectNum = j["camera"]["perspective"]["Aspect"][0].as_int();
+			int aspectDen = j["camera"]["perspective"]["Aspect"][1].as_int();
+			int nearZ = j["camera"]["perspective"]["NearZ"].as_int();
+			int farZ = j["camera"]["perspective"]["FarZ"].as_int();
+			mainCamera.makePrespMatrix((fovy * DEGTORAD), (aspectNum / aspectDen), nearZ, farZ);
+		}
+		else
+		{
+			std::cerr << "ERROR:" << std::endl;
+			std::cerr << "  source:     " << file << std::endl;
+			std::cerr << "  type:       " << "file does not contain the key perspective" << std::endl;
+			exit(EXIT_FAILURE);
+		}
 
-	// View Matrix
-	mainCamera.makeViewMatrix(mainCamera.getEye(), mainCamera.getCenter(), mainCamera.getUp());
-	// projection Matrix Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-	mainCamera.makePrespMatrix((M_PI / 6), (640.0f / 480.0f), 1, 10);
-
-	// Mesh load
-	//myMesh.createMesh(std::string("../../assets/models/cube.obj"), myShader); // cube
-	//myMesh.createMesh(std::string("../../assets/models/duck.obj"), myShader); // duck
-	// tangram
-	cubeMesh.createMesh(std::string("../../assets/models/tangram/square.obj")); // cube
-	triangleMesh.createMesh(std::string("../../assets/models/tangram/triangle.obj")); // triangle
-	parallMesh.createMesh(std::string("../../assets/models/tangram/parallelogram.obj")); // parallelogram
-	//table
-	tableMesh.createMesh(std::string("../../assets/models/table/table.obj")); // table
-
-	// Shaders load
-	cubeShader.createShaderProgram(
-		std::string("../../assets/shaders/tangramShader/cube/cube_vs.glsl"),
-		std::string("../../assets/shaders/tangramShader/cube/cube_fs.glsl"),
-		cubeMesh.getTexcoordsLoaded(),
-		cubeMesh.getNormalsLoaded());
-	sTri1Shader.createShaderProgram(
-		std::string("../../assets/shaders/tangramShader/sTri1/sTri1_vs.glsl"),
-		std::string("../../assets/shaders/tangramShader/sTri1/sTri1_fs.glsl"),
-		triangleMesh.getTexcoordsLoaded(),
-		triangleMesh.getNormalsLoaded());
-	sTri2Shader.createShaderProgram(
-		std::string("../../assets/shaders/tangramShader/sTri2/sTri2_vs.glsl"),
-		std::string("../../assets/shaders/tangramShader/sTri2/sTri2_fs.glsl"),
-		triangleMesh.getTexcoordsLoaded(),
-		triangleMesh.getNormalsLoaded());
-	mTriShader.createShaderProgram(
-		std::string("../../assets/shaders/tangramShader/mTri/mTri_vs.glsl"),
-		std::string("../../assets/shaders/tangramShader/mTri/mTri_fs.glsl"),
-		triangleMesh.getTexcoordsLoaded(),
-		triangleMesh.getNormalsLoaded());
-	lTri1Shader.createShaderProgram(
-		std::string("../../assets/shaders/tangramShader/lTri1/lTri1_vs.glsl"),
-		std::string("../../assets/shaders/tangramShader/lTri1/lTri1_fs.glsl"),
-		triangleMesh.getTexcoordsLoaded(),
-		triangleMesh.getNormalsLoaded());
-	lTri2Shader.createShaderProgram(
-		std::string("../../assets/shaders/tangramShader/lTri2/lTri2_vs.glsl"),
-		std::string("../../assets/shaders/tangramShader/lTri2/lTri2_fs.glsl"),
-		triangleMesh.getTexcoordsLoaded(),
-		triangleMesh.getNormalsLoaded());
-	parallShader.createShaderProgram(
-		std::string("../../assets/shaders/tangramShader/parall/parall_vs.glsl"),
-		std::string("../../assets/shaders/tangramShader/parall/parall_fs.glsl"),
-		parallMesh.getTexcoordsLoaded(),
-		parallMesh.getNormalsLoaded());
-	tableShader.createShaderProgram(
-		std::string("../../assets/shaders/tableShader/table_vs.glsl"),
-		std::string("../../assets/shaders/tableShader/table_fs.glsl"),
-		tableMesh.getTexcoordsLoaded(),
-		tableMesh.getNormalsLoaded());
-
-	createBufferObjects();
+	}
+	else
+	{
+		std::cerr << "ERROR:" << std::endl;
+		std::cerr << "  source:     " << file << std::endl;
+		std::cerr << "  type:       " << "file does not contain the key camera" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 }
 
+void loadMesh(std::string file, json j) {
+	if (j.contains("mesh")) {
+		// tangram
+		cubeMesh.createMesh(j["mesh"]["cubeMesh"].as<std::string>());
+		triangleMesh.createMesh(j["mesh"]["triangleMesh"].as<std::string>());
+		parallMesh.createMesh(j["mesh"]["parallMesh"].as<std::string>());
+		//table
+		tableMesh.createMesh(j["mesh"]["tableMesh"].as<std::string>());
 
-void createScene() {
-	/*						Scene Graph
-	*					root <----|----> camera
-	*						|				|- viewMatrix
-	*			 		table				|- prespMatrix
-	*						|
-	*	closed tangram <----|
-	*		 |- cube
-	*		 |- small triangle 1
-	*		 |- small triangle 2
-	*		 |- medium triangle
-	*		 |- big triangle 1
-	*		 |- big triangle 2
-	*		 |- parallelogram
-	*
-	* For transformation the order is :  T * R * S
-	*/
-	vector3 vM(1.5f, 1.0f, 1.5f);
-	matrix4x4 mM = mf.scalingMatrix4x4(vM); // smal to medium
-	vector3 vL(2.0f, 1.0f, 2.0f);
-	matrix4x4 mL = mf.scalingMatrix4x4(vL); // smal to large
+		meshM.insertMesh("cubeMesh", &cubeMesh);
+		meshM.insertMesh("triangleMesh", &triangleMesh);
+		meshM.insertMesh("parallMesh", &parallMesh);
+		meshM.insertMesh("tableMesh", &tableMesh);
+	}
+	else
+	{
+		std::cerr << "ERROR:" << std::endl;
+		std::cerr << "  source:     " << file << std::endl;
+		std::cerr << "  type:       " << "file does not contain the key mesh" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
+}
+
+void loadShader(std::string file, json j) {
+	std::string vsPath;
+	std::string fsPath;
+	std::string associatedMesh;
+	mesh* meshAux;
+	if (j.contains("shader")) {
+		vsPath = j["shader"]["cubeShader"]["vertexShader"].as<std::string>();
+		fsPath = j["shader"]["cubeShader"]["fragShader"].as<std::string>();
+		associatedMesh = j["shader"]["cubeShader"]["mesh"].as<std::string>();
+		meshAux = meshM.getMeshByName(associatedMesh);
+		cubeShader.createShaderProgram(
+			vsPath,
+			fsPath,
+			meshAux->getTexcoordsLoaded(),
+			meshAux->getNormalsLoaded());
+
+		vsPath = j["shader"]["sTri1Shader"]["vertexShader"].as<std::string>();
+		fsPath = j["shader"]["sTri1Shader"]["fragShader"].as<std::string>();
+		associatedMesh = j["shader"]["sTri1Shader"]["mesh"].as<std::string>();
+		meshAux = meshM.getMeshByName(associatedMesh);
+		sTri1Shader.createShaderProgram(
+			vsPath,
+			fsPath,
+			meshAux->getTexcoordsLoaded(),
+			meshAux->getNormalsLoaded());
+
+		vsPath = j["shader"]["sTri2Shader"]["vertexShader"].as<std::string>();
+		fsPath = j["shader"]["sTri2Shader"]["fragShader"].as<std::string>();
+		associatedMesh = j["shader"]["sTri2Shader"]["mesh"].as<std::string>();
+		meshAux = meshM.getMeshByName(associatedMesh);
+		sTri2Shader.createShaderProgram(
+			vsPath,
+			fsPath,
+			meshAux->getTexcoordsLoaded(),
+			meshAux->getNormalsLoaded());
+
+		vsPath = j["shader"]["mTriShader"]["vertexShader"].as<std::string>();
+		fsPath = j["shader"]["mTriShader"]["fragShader"].as<std::string>();
+		associatedMesh = j["shader"]["mTriShader"]["mesh"].as<std::string>();
+		meshAux = meshM.getMeshByName(associatedMesh);
+		mTriShader.createShaderProgram(
+			vsPath,
+			fsPath,
+			meshAux->getTexcoordsLoaded(),
+			meshAux->getNormalsLoaded());
+
+		vsPath = j["shader"]["lTri1Shader"]["vertexShader"].as<std::string>();
+		fsPath = j["shader"]["lTri1Shader"]["fragShader"].as<std::string>();
+		associatedMesh = j["shader"]["lTri1Shader"]["mesh"].as<std::string>();
+		meshAux = meshM.getMeshByName(associatedMesh);
+		lTri1Shader.createShaderProgram(
+			vsPath,
+			fsPath,
+			meshAux->getTexcoordsLoaded(),
+			meshAux->getNormalsLoaded());
+
+		vsPath = j["shader"]["lTri2Shader"]["vertexShader"].as<std::string>();
+		fsPath = j["shader"]["lTri2Shader"]["fragShader"].as<std::string>();
+		associatedMesh = j["shader"]["lTri2Shader"]["mesh"].as<std::string>();
+		meshAux = meshM.getMeshByName(associatedMesh);
+		lTri2Shader.createShaderProgram(
+			vsPath,
+			fsPath,
+			meshAux->getTexcoordsLoaded(),
+			meshAux->getNormalsLoaded());
+
+		vsPath = j["shader"]["parallShader"]["vertexShader"].as<std::string>();
+		fsPath = j["shader"]["parallShader"]["fragShader"].as<std::string>();
+		associatedMesh = j["shader"]["parallShader"]["mesh"].as<std::string>();
+		meshAux = meshM.getMeshByName(associatedMesh);
+		parallShader.createShaderProgram(
+			vsPath,
+			fsPath,
+			meshAux->getTexcoordsLoaded(),
+			meshAux->getNormalsLoaded());
+
+		vsPath = j["shader"]["tableShader"]["vertexShader"].as<std::string>();
+		fsPath = j["shader"]["tableShader"]["fragShader"].as<std::string>();
+		associatedMesh = j["shader"]["tableShader"]["mesh"].as<std::string>();
+		meshAux = meshM.getMeshByName(associatedMesh);
+		tableShader.createShaderProgram(
+			vsPath,
+			fsPath,
+			meshAux->getTexcoordsLoaded(),
+			meshAux->getNormalsLoaded());
+		
+		shaderM.insertShader("cubeShader", &cubeShader);
+		shaderM.insertShader("sTri1Shader", &sTri1Shader);
+		shaderM.insertShader("sTri2Shader", &sTri2Shader);
+		shaderM.insertShader("mTriShader", &mTriShader);
+		shaderM.insertShader("lTri1Shader", &lTri1Shader);
+		shaderM.insertShader("lTri2Shader", &lTri2Shader);
+		shaderM.insertShader("parallShader", &parallShader);
+		shaderM.insertShader("tableShader", &tableShader);
+		createBufferObjects();
+	}
+	else
+	{
+		std::cerr << "ERROR:" << std::endl;
+		std::cerr << "  source:     " << file << std::endl;
+		std::cerr << "  type:       " << "file does not contain the key shader" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+}
+
+void loadScene(std::string file, json j) {
+	color c;
+	qtrn q;
 	sG.setCamera(&mainCamera);
 
 	rootNode = new sceneNode(); //root node (empty object)
 	rootNode->setName("root");
-	rootNode->setModelMatrix(mf.identityMatrix4x4());
-	rootNode->setModelMatrixAux(mf.identityMatrix4x4());
+	rootNode->makeInitialModelMatrix();
+
+	lightNode = new sceneNode();
+	lightNode->setName(j["nodes"]["light"]["name"].as<std::string>());
+	lightNode->setIndex(j["nodes"]["light"]["index"].as_int());
+	lightNode->setTranslationVector(vector3(j["nodes"]["light"]["tV"][0].as_double(),
+		j["nodes"]["light"]["tV"][1].as_double(),
+		j["nodes"]["light"]["tV"][2].as_double())
+	);
+	lightNode->makeInitialModelMatrix();
+	lightNode->setMesh(meshM.getMeshByName(j["nodes"]["light"]["mesh"].as<std::string>()));	
+	lightNode->setShader(shaderM.getShaderByName(j["nodes"]["light"]["shader"].as<std::string>()));
+	lightNode->setColor(c.getColorByName(j["nodes"]["light"]["color"].as<std::string>()));
+	rootNode->addNode(lightNode);
 
 	tableNode = new sceneNode();
-	tableNode->setName("table"); 
-	tableNode->setModelMatrix(mf.identityMatrix4x4());
-	tableNode->setModelMatrixAux(mf.identityMatrix4x4());
-	tableNode->setMesh(&tableMesh);
-	tableNode->setShader(&tableShader);
+	tableNode->setName(j["nodes"]["table"]["name"].as<std::string>());
+	tableNode->setIndex(j["nodes"]["table"]["index"].as_int());
+	tableNode->makeInitialModelMatrix();
+	tableNode->setMesh(meshM.getMeshByName(j["nodes"]["table"]["mesh"].as<std::string>()));
+	tableNode->setShader(shaderM.getShaderByName(j["nodes"]["table"]["shader"].as<std::string>()));
+	tableNode->setTextures(DiffuseTextureID, NormalTextureID);  // add textures
+	tableNode->setColor(c.getColorByName(j["nodes"]["table"]["color"].as<std::string>()));
 	rootNode->addNode(tableNode);
-
+	
 	tangramNode = new sceneNode(); // empty object
 	tangramNode->setName("tangram");
-	tangramNode->setModelMatrix(mf.identityMatrix4x4());
-	tangramNode->setModelMatrixAux(mf.identityMatrix4x4());
+	tangramNode->makeInitialModelMatrix();
 	tableNode->addNode(tangramNode);
 
 	cubeNode = new sceneNode();
-	cubeNode->setName("cube");
-	cubeNode->setModelMatrix(mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4());
-	cubeNode->setModelMatrixAux(mf.translationMatrix4x4(vector3(0.2f, 0.0f, 0.0f)) * mf.identityMatrix4x4());
-	cubeNode->setMesh(&cubeMesh);
-	cubeNode->setShader(&cubeShader);
+	cubeNode->setName(j["nodes"]["tangram"]["cube"]["name"].as<std::string>());
+	cubeNode->setIndex(j["nodes"]["tangram"]["cube"]["index"].as_int());
+	cubeNode->setScalingVector(
+		vector3(j["nodes"]["tangram"]["cube"]["sV"][0].as_double(),
+		j["nodes"]["tangram"]["cube"]["sV"][1].as_double(),
+		j["nodes"]["tangram"]["cube"]["sV"][2].as_double())
+	);
+	cubeNode->setTranslationVector(
+		vector3 (j["nodes"]["tangram"]["cube"]["tV"][0].as_double(),
+		j["nodes"]["tangram"]["cube"]["tV"][1].as_double(),
+		j["nodes"]["tangram"]["cube"]["tV"][2].as_double())
+	);
+	q = { static_cast<float> (j["nodes"]["tangram"]["cube"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["cube"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["cube"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["cube"]["qtrn"][3].as_double()) };
+	cubeNode->setRotQtrn(q);
+	cubeNode->makeInitialModelMatrix();
+	cubeNode->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["cube"]["mesh"].as<std::string>()));
+	cubeNode->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["cube"]["shader"].as<std::string>()));
+	cubeNode->setColor(c.getColorByName(j["nodes"]["tangram"]["cube"]["color"].as<std::string>()));
 	tangramNode->addNode(cubeNode);
 
 	sTri1Node = new sceneNode();
-	sTri1Node->setName("small triangle 1");
-	sTri1Node->setModelMatrix(mf.translationMatrix4x4(vector3(-0.2f, 0.0f, 0.2f)) * mf.identityMatrix4x4());
-	sTri1Node->setModelMatrixAux(mf.translationMatrix4x4(vector3(-0.2f, 0.0f, 0.2f)) * mf.identityMatrix4x4());
-	sTri1Node->setMesh(&triangleMesh);
-	sTri1Node->setShader(&sTri1Shader);
+	sTri1Node->setName(j["nodes"]["tangram"]["small_triangle_1"]["name"].as<std::string>());
+	sTri1Node->setIndex(j["nodes"]["tangram"]["small_triangle_1"]["index"].as_int());
+	sTri1Node->setScalingVector(
+		vector3 (j["nodes"]["tangram"]["small_triangle_1"]["sV"][0].as_double(),
+		j["nodes"]["tangram"]["small_triangle_1"]["sV"][1].as_double(),
+		j["nodes"]["tangram"]["small_triangle_1"]["sV"][2].as_double())
+	);
+	sTri1Node->setTranslationVector(
+		vector3 (j["nodes"]["tangram"]["small_triangle_1"]["tV"][0].as_double(),
+		j["nodes"]["tangram"]["small_triangle_1"]["tV"][1].as_double(),
+		j["nodes"]["tangram"]["small_triangle_1"]["tV"][2].as_double())
+	);
+	vector3 a(j["nodes"]["tangram"]["small_triangle_1"]["tV"][0].as_double(),
+		j["nodes"]["tangram"]["small_triangle_1"]["tV"][1].as_double(),
+		j["nodes"]["tangram"]["small_triangle_1"]["tV"][2].as_double());
+	q = { static_cast<float> (j["nodes"]["tangram"]["small_triangle_1"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_1"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_1"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_1"]["qtrn"][3].as_double()) };
+	sTri1Node->setRotQtrn(q);
+	sTri1Node->makeInitialModelMatrix();
+	sTri1Node->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["small_triangle_1"]["mesh"].as<std::string>()));
+	sTri1Node->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["small_triangle_1"]["shader"].as<std::string>()));
+	sTri1Node->setColor(c.getColorByName(j["nodes"]["tangram"]["small_triangle_1"]["color"].as<std::string>()));
 	tangramNode->addNode(sTri1Node);
 
 	sTri2Node = new sceneNode();
-	sTri2Node->setName("small triangle 2");
-	sTri2Node->setModelMatrix(
-		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.0f)) * 
-		mf.rotationMatrix4x4(vector3(0, 1, 0), (M_PI/2)) * 
-		mf.identityMatrix4x4()
+	sTri2Node->setName(j["nodes"]["tangram"]["small_triangle_2"]["name"].as<std::string>());
+	sTri2Node->setIndex(j["nodes"]["tangram"]["small_triangle_2"]["index"].as_int());
+	sTri2Node->setScalingVector(
+		vector3 (j["nodes"]["tangram"]["small_triangle_2"]["sV"][0].as_double(),
+		j["nodes"]["tangram"]["small_triangle_2"]["sV"][1].as_double(),
+		j["nodes"]["tangram"]["small_triangle_2"]["sV"][2].as_double())
 	);
-	sTri2Node->setModelMatrixAux(
-		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.0f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), (M_PI / 2)) *
-		mf.identityMatrix4x4()
-	);
-	sTri2Node->setMesh(&triangleMesh);
-	sTri2Node->setShader(&sTri2Shader);
+	sTri2Node->setTranslationVector(
+		vector3 (j["nodes"]["tangram"]["small_triangle_2"]["tV"][0].as_double(),
+		j["nodes"]["tangram"]["small_triangle_2"]["tV"][1].as_double(),
+		j["nodes"]["tangram"]["small_triangle_2"]["tV"][2].as_double()));
+	q = { static_cast<float> (j["nodes"]["tangram"]["small_triangle_2"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_2"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_2"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["small_triangle_2"]["qtrn"][3].as_double()) };
+	sTri2Node->setRotQtrn(q);
+	sTri2Node->makeInitialModelMatrix();
+	sTri2Node->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["small_triangle_2"]["mesh"].as<std::string>()));
+	sTri2Node->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["small_triangle_2"]["shader"].as<std::string>()));
+	sTri2Node->setColor(c.getColorByName(j["nodes"]["tangram"]["small_triangle_2"]["color"].as<std::string>()));
 	tangramNode->addNode(sTri2Node);
 	
 	mTriNode = new sceneNode();
-	mTriNode->setName("medium triangle");
-	mTriNode->setModelMatrix(
-		mf.translationMatrix4x4(vector3(0.40, 0.0f, 0.0f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(3 * M_PI / 4)) *
-		mf.scalingMatrix4x4(vector3(1.4f, 1.0f, 1.4f))
+	mTriNode->setName(j["nodes"]["tangram"]["medium_triangle"]["name"].as<std::string>());
+	mTriNode->setIndex(j["nodes"]["tangram"]["medium_triangle"]["index"].as_int());
+	mTriNode->setScalingVector(
+		vector3(j["nodes"]["tangram"]["medium_triangle"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["medium_triangle"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["medium_triangle"]["sV"][2].as_double())
 	);
-	mTriNode->setModelMatrixAux(
-		mf.translationMatrix4x4(vector3(0.40, 0.0f, 0.0f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(3 * M_PI / 4)) *
-		mf.scalingMatrix4x4(vector3(1.4f, 1.0f, 1.4f))
+	mTriNode->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["medium_triangle"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["medium_triangle"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["medium_triangle"]["tV"][2].as_double())
 	);
-	mTriNode->setMesh(&triangleMesh);
-	mTriNode->setShader(&mTriShader);
+	q = { static_cast<float> (j["nodes"]["tangram"]["medium_triangle"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["medium_triangle"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["medium_triangle"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["medium_triangle"]["qtrn"][3].as_double()) };
+	mTriNode->setRotQtrn(q);
+	mTriNode->makeInitialModelMatrix();
+	mTriNode->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["medium_triangle"]["mesh"].as<std::string>()));
+	mTriNode->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["medium_triangle"]["shader"].as<std::string>()));
+	mTriNode->setColor(c.getColorByName(j["nodes"]["tangram"]["medium_triangle"]["color"].as<std::string>()));
 	tangramNode->addNode(mTriNode);
-
+	
 	lTri1Node = new sceneNode();
-	lTri1Node->setName("large triangle 1");
-	lTri1Node->setModelMatrix(
-		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.4f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), M_PI) *
-		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
+	lTri1Node->setName(j["nodes"]["tangram"]["large_triangle_1"]["name"].as<std::string>());
+	lTri1Node->setIndex(j["nodes"]["tangram"]["large_triangle_1"]["index"].as_int());
+	lTri1Node->setScalingVector(
+		vector3(j["nodes"]["tangram"]["large_triangle_1"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["large_triangle_1"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["large_triangle_1"]["sV"][2].as_double())
 	);
-	lTri1Node->setModelMatrixAux(
-		mf.translationMatrix4x4(vector3(0.4f, 0.0f, -0.4f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), M_PI) *
-		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
+	lTri1Node->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["large_triangle_1"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["large_triangle_1"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["large_triangle_1"]["tV"][2].as_double())
 	);
-	lTri1Node->setMesh(&triangleMesh);
-	lTri1Node->setShader(&lTri1Shader);
+	q = { static_cast<float> (j["nodes"]["tangram"]["large_triangle_1"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_1"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_1"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_1"]["qtrn"][3].as_double()) };
+	lTri1Node->setRotQtrn(q);
+	lTri1Node->makeInitialModelMatrix();
+	lTri1Node->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["large_triangle_1"]["mesh"].as<std::string>()));
+	lTri1Node->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["large_triangle_1"]["shader"].as<std::string>()));
+	lTri1Node->setColor(c.getColorByName(j["nodes"]["tangram"]["large_triangle_1"]["color"].as<std::string>()));
 	tangramNode->addNode(lTri1Node);
 
 	lTri2Node = new sceneNode();
-	lTri2Node->setName("large triangle 2");
-	lTri2Node->setModelMatrix(
-		mf.translationMatrix4x4(vector3(-0.4f, 0.0f, -0.4f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) *
-		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
+	lTri2Node->setName(j["nodes"]["tangram"]["large_triangle_2"]["name"].as<std::string>());
+	lTri2Node->setIndex(j["nodes"]["tangram"]["large_triangle_2"]["index"].as_int());
+	lTri2Node->setScalingVector(
+		vector3(j["nodes"]["tangram"]["large_triangle_2"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["large_triangle_2"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["large_triangle_2"]["sV"][2].as_double())
 	);
-	lTri2Node->setModelMatrixAux(
-		mf.translationMatrix4x4(vector3(-0.4f, 0.0f, -0.4f)) *
-		mf.rotationMatrix4x4(vector3(0, 1, 0), -(M_PI / 2)) *
-		mf.scalingMatrix4x4(vector3(2.0f, 1.0f, 2.0f))
+	lTri2Node->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["large_triangle_2"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["large_triangle_2"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["large_triangle_2"]["tV"][2].as_double())
 	);
-	lTri2Node->setMesh(&triangleMesh);
-	lTri2Node->setShader(&lTri2Shader);
+	q = { static_cast<float> (j["nodes"]["tangram"]["large_triangle_2"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_2"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_2"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["large_triangle_2"]["qtrn"][3].as_double()) };
+	lTri2Node->setRotQtrn(q);
+	lTri2Node->makeInitialModelMatrix();
+	lTri2Node->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["large_triangle_2"]["mesh"].as<std::string>()));
+	lTri2Node->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["large_triangle_2"]["shader"].as<std::string>()));
+	lTri2Node->setColor(c.getColorByName(j["nodes"]["tangram"]["large_triangle_2"]["color"].as<std::string>()));
 	tangramNode->addNode(lTri2Node);
-
-	parallNode = new sceneNode();
-	parallNode->setName("parallelogram");
-	parallNode->setModelMatrix(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
-	parallNode->setModelMatrixAux(mf.translationMatrix4x4(vector3(-0.4f, 0.0f, 0.4f)));
-	parallNode->setMesh(&parallMesh);
-	parallNode->setShader(&parallShader);
-	tangramNode->addNode(parallNode);
 	
+	parallNode = new sceneNode();
+	parallNode->setName(j["nodes"]["tangram"]["parallelogram"]["name"].as<std::string>());
+	parallNode->setIndex(j["nodes"]["tangram"]["parallelogram"]["index"].as_int());
+	parallNode->setScalingVector(
+		vector3(j["nodes"]["tangram"]["parallelogram"]["sV"][0].as_double(),
+			j["nodes"]["tangram"]["parallelogram"]["sV"][1].as_double(),
+			j["nodes"]["tangram"]["parallelogram"]["sV"][2].as_double())
+	);
+	parallNode->setTranslationVector(
+		vector3(j["nodes"]["tangram"]["parallelogram"]["tV"][0].as_double(),
+			j["nodes"]["tangram"]["parallelogram"]["tV"][1].as_double(),
+			j["nodes"]["tangram"]["parallelogram"]["tV"][2].as_double())
+	);
+	q = { static_cast<float> (j["nodes"]["tangram"]["parallelogram"]["qtrn"][0].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["parallelogram"]["qtrn"][1].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["parallelogram"]["qtrn"][2].as_double()),
+	 static_cast<float> (j["nodes"]["tangram"]["parallelogram"]["qtrn"][3].as_double()) };
+	parallNode->setRotQtrn(q);
+	parallNode->makeInitialModelMatrix();
+	parallNode->setMesh(meshM.getMeshByName(j["nodes"]["tangram"]["parallelogram"]["mesh"].as<std::string>()));
+	parallNode->setShader(shaderM.getShaderByName(j["nodes"]["tangram"]["parallelogram"]["shader"].as<std::string>()));
+	parallNode->setColor(c.getColorByName(j["nodes"]["tangram"]["parallelogram"]["color"].as<std::string>()));
+	tangramNode->addNode(parallNode);
+
+
 	sG.setRoot(rootNode);
 }
 
-void readJSONFile() {
+void readJSONFile(std::string file) {
+	std::cout << "\n--- Load JSON file: " << file << " ---\n";
 	// Read from stream
-	std::ifstream is("../../assets/json/defaultLoad.json");
+	std::ifstream is(file);
 	json j = json::parse(is);
 
 	// Pretty print
-	std::cout << "(1)\n" << pretty_print(j) << "\n\n";
+	//std::cout << "(1)\n" << pretty_print(j) << "\n\n";
 
-	if (j.contains("tangram"))
-	{
-		std::string price = j["tangram"]["small_triangle_1"]["name"].as<std::string>();
-		std::cout << price;
-	}
-	else
-	{
-		std::cout << "n/a";
-	}
+	loadCamera(file, j);
+	loadMesh(file, j);
+	loadShader(file, j);
+	loadScene(file, j);
 
-	j["tangram"]["small_triangle_1"]["name"] = "lllllll";
-
-	// Write to stream
-	std::ofstream os("../../assets/json/savedScene.json");
-	os << j;
+	std::cout << "--- Load End! ---\n";
 }
 
+void loadImage() {
+	std::cout << "\n--- Load Images ---\n";
+	FreeImage_Initialise(true);
+	
+	DiffuseTextureID = image::loadTexture("../../assets/images/noise2.png");
+	NormalTextureID = image::loadTexture("../../assets/images/wood_nm1.jpg");
+
+	FreeImage_DeInitialise();
+	std::cout << "--- Load End! ---\n";
+}
+
+
+////////////////////////////////////////////////////////////////////////////////// CREATE SCENE
+bool is_file_exist(const char *fileName)
+{
+	std::ifstream infile(fileName);
+	//true 1, false 0
+	return infile.good();
+}
+
+void createScene() {
+	std::string str;
+
+	loadImage();
+	
+	bool fileExist = is_file_exist("../../assets/json/savedScene.json");
+	//std::cout << fileExist << "\n";
+	if (fileExist == true) {
+		std::cout << "\nIf you want to continues working in the saved Scene press y\n" <<
+					 "If wants to start over press n" << "\n";
+		std::cin >> str;
+		if (str == "y") {
+			fileLoaded = "../../assets/json/savedScene.json";
+		}
+		else {
+			fileLoaded = "../../assets/json/defaultLoad.json";
+		}
+	}
+	else {
+		fileLoaded = "../../assets/json/defaultLoad.json";
+	}
+	readJSONFile(fileLoaded);
+}
+////////////////////////////////////////////////////////////////////////////////// INIT
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
 	setupGLEW();
 	setupOpenGL();
 	setupCallbacks();
-	
-	readJSONFile();
 
-	myInit();
 	createScene();
 }
 
 int main(int argc, char* argv[])
 {
-	init(argc, argv);
+	init(argc, argv);	
 	glutMainLoop();
 	exit(EXIT_SUCCESS);
 }

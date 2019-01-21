@@ -47,4 +47,22 @@ struct qtrn {
 	friend const qtrn operator*(const qtrn& q0, const qtrn& q1);
 	friend const bool operator==(const qtrn& q0, const qtrn& q1);
 	friend const std::ostream& operator<<(std::ostream& stream, const qtrn& q);
+
+	qtrn toQuaternion(double yaw, double pitch, double roll) // yaw (Z), pitch (Y), roll (X)
+	{
+		// Abbreviations for the various angular functions
+		double cy = cos(yaw * 0.5);
+		double sy = sin(yaw * 0.5);
+		double cp = cos(pitch * 0.5);
+		double sp = sin(pitch * 0.5);
+		double cr = cos(roll * 0.5);
+		double sr = sin(roll * 0.5);
+
+		qtrn qAux;
+		qAux._t = cy * cp * cr + sy * sp * sr;
+		qAux._x = cy * cp * sr - sy * sp * cr;
+		qAux._y = sy * cp * sr + cy * sp * cr;
+		qAux._z = sy * cp * cr - cy * sp * sr;
+		return qAux;
+	}
 };

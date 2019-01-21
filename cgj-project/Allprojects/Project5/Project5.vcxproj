@@ -20,22 +20,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="5-OBJ_loader.cpp" />
-    <ClCompile Include="6-classicgl-teapot.cpp" />
-    <ClCompile Include="7-MatrixStack.cpp" />
-    <ClCompile Include="8-SceneManager.cpp" />
     <ClCompile Include="src\camera\camera.cpp" />
+    <ClCompile Include="src\color\color.cpp" />
     <ClCompile Include="src\error\error.cpp" />
-    <ClCompile Include="src\eventListener\eventListener.cpp" />
+    <ClCompile Include="src\image\image.cpp" />
     <ClCompile Include="src\matrix\matrix2x2\matrix2x2.cpp" />
     <ClCompile Include="src\matrix\matrix3x3\matrix3x3.cpp" />
     <ClCompile Include="src\matrix\matrix4x4\matrix4x4.cpp" />
     <ClCompile Include="src\matrix\matrixFactory\matrixFactory.cpp" />
     <ClCompile Include="src\mesh\mesh.cpp" />
+    <ClCompile Include="src\mesh\meshManager.cpp" />
     <ClCompile Include="src\qtrn\qtrn.cpp" />
     <ClCompile Include="src\random\random.cpp" />
     <ClCompile Include="src\scene\sceneGraph.cpp" />
     <ClCompile Include="src\scene\sceneNode.cpp" />
     <ClCompile Include="src\shader\shader.cpp" />
+    <ClCompile Include="src\shader\shaderManager.cpp" />
     <ClCompile Include="src\vector\vector2\vector2.cpp" />
     <ClCompile Include="src\vector\vector3\vector3.cpp" />
     <ClCompile Include="src\vector\vector4\vector4.cpp" />
@@ -79,26 +79,30 @@
     <ClInclude Include="jsoncons\staj_reader.hpp" />
     <ClInclude Include="jsoncons\stream_reader.hpp" />
     <ClInclude Include="src\camera\camera.h" />
+    <ClInclude Include="src\color\color.h" />
     <ClInclude Include="src\error\error.h" />
-    <ClInclude Include="src\eventListener\eventListener.h" />
+    <ClInclude Include="src\image\image.h" />
     <ClInclude Include="src\matrix\matrix2x2\matrix2x2.h" />
     <ClInclude Include="src\matrix\matrix3x3\matrix3x3.h" />
     <ClInclude Include="src\matrix\matrix4x4\matrix4x4.h" />
     <ClInclude Include="src\matrix\matrixFactory\matrixFactory.h" />
     <ClInclude Include="src\mesh\mesh.h" />
+    <ClInclude Include="src\mesh\meshManager.h" />
     <ClInclude Include="src\qtrn\qtrn.h" />
     <ClInclude Include="src\random\random.h" />
     <ClInclude Include="src\scene\sceneGraph.h" />
     <ClInclude Include="src\scene\sceneNode.h" />
     <ClInclude Include="src\shader\shader.h" />
+    <ClInclude Include="src\shader\shaderManager.h" />
     <ClInclude Include="src\vector\vector2\vector2.h" />
     <ClInclude Include="src\vector\vector3\vector3.h" />
     <ClInclude Include="src\vector\vector4\vector4.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\assets\json\books.json" />
     <None Include="..\..\assets\json\defaultLoad.json" />
     <None Include="..\..\assets\json\savedScene.json" />
+    <None Include="..\..\assets\shaders\default\default_fs.glsl" />
+    <None Include="..\..\assets\shaders\default\default_vs.glsl" />
     <None Include="..\..\assets\shaders\tableShader\table_fs.glsl" />
     <None Include="..\..\assets\shaders\tableShader\table_vs.glsl" />
     <None Include="..\..\assets\shaders\tangramShader\cube\cube_fs.glsl" />
@@ -189,11 +193,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependencies\glew\include;$(SolutionDir)\..\dependencies\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependencies\glew\include;$(SolutionDir)\..\dependencies\freeglut\include;$(SolutionDir)\..\dependencies\freeimage\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\dependencies\freeglut\lib\x64;$(SolutionDir)\..\dependencies\glew\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\dependencies\freeglut\lib\x64;$(SolutionDir)\..\dependencies\glew\lib\Release\x64;$(SolutionDir)\..\dependencies\freeimage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut.lib;glew32.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -219,13 +223,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependencies\glew\include;$(SolutionDir)\..\dependencies\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependencies\glew\include;$(SolutionDir)\..\dependencies\freeglut\include;$(SolutionDir)\..\dependencies\freeimage\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\dependencies\freeglut\lib\x64;$(SolutionDir)\..\dependencies\glew\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\dependencies\freeglut\lib\x64;$(SolutionDir)\..\dependencies\glew\lib\Release\x64;$(SolutionDir)\..\dependencies\freeimage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut.lib;glew32.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>

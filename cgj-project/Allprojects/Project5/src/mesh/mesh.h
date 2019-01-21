@@ -12,13 +12,20 @@
 #include "../shader/shader.h"
 #include "../camera/camera.h"
 
-typedef struct {
+typedef struct Vertex {
 	GLfloat x, y, z;
-} Vertex;
+	Vertex() {}
+	Vertex(GLfloat x, GLfloat y, GLfloat z) : x(x), y(y), z(z) {}
+	Vertex operator - (const Vertex &v)  const { return Vertex(x - v.x, y - v.y, z - v.z); }
+	Vertex operator * (GLfloat c)     const { return Vertex(x*c, y*c, z*c); }
+};
 
-typedef struct {
+typedef struct Texcoord {
 	GLfloat u, v;
-} Texcoord;
+	Texcoord() {}
+	Texcoord(GLfloat u, GLfloat v) : u(u), v(v) {}
+	Texcoord operator - (const Texcoord &t)  const { return Texcoord(u - t.u, v - t.v); }
+};
 
 typedef struct {
 	GLfloat nx, ny, nz;
@@ -26,64 +33,18 @@ typedef struct {
 
 typedef GLfloat Matrix[16];
 
-const Matrix I = {
-			1.0f,  0.0f,  0.0f,  0.0f,
-			0.0f,  1.0f,  0.0f,  0.0f,
-			0.0f,  0.0f,  1.0f,  0.0f,
-			0.0f,  0.0f,  0.0f,  1.0f
-};
-
-/*const Matrix ModelMatrix = {
-	1.0f,  0.0f,  0.0f,  0.0f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-}; // Column Major
-*/
-/*
-// Eye(5,5,5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix1 = {
-	0.70f, -0.41f,  0.58f,  0.00f,
-	0.00f,  0.82f,  0.58f,  0.00f,
-   -0.70f, -0.41f,  0.58f,  0.00f,
-	0.00f,  0.00f, -8.70f,  1.00f
-}; // Column Major
-
-// Eye(-5,-5,-5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix2 = {
-   -0.70f, -0.41f, -0.58f,  0.00f,
-	0.00f,  0.82f, -0.58f,  0.00f,
-	0.70f, -0.41f, -0.58f,  0.00f,
-	0.00f,  0.00f, -8.70f,  1.00f
-}; // Column Major
-*/
-// Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
-const Matrix ProjectionMatrix1 = {
-	0.50f,  0.00f,  0.00f,  0.00f,
-	0.00f,  0.50f,  0.00f,  0.00f,
-	0.00f,  0.00f, -0.22f,  0.00f,
-	0.00f,  0.00f, -1.22f,  1.00f
-}; // Column Major
-/*
-// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-const Matrix ProjectionMatrix2 = {
-	2.79f,  0.00f,  0.00f,  0.00f,
-	0.00f,  3.73f,  0.00f,  0.00f,
-	0.00f,  0.00f, -1.22f, -1.00f,
-	0.00f,  0.00f, -2.22f,  0.00f
-}; // Column Major
-*/
-
 class mesh{
 	protected:
 		#define VERTICES 0
 		#define TEXCOORDS 1
 		#define NORMALS 2
+		#define TANGENTS 3
+		#define BITANGENTS 4
 
 		GLuint _VaoId;
 		bool _TexcoordsLoaded, _NormalsLoaded;
 
-		std::vector <Vertex> _Vertices, _vertexData;
+		std::vector <Vertex> _Vertices, _vertexData, _Tangents, _Bitangents;
 		std::vector <Texcoord> _Texcoords, _texcoordData;
 		std::vector <Normal> _Normals, _normalData;
 		std::vector <unsigned int> _vertexIdx, _texcoordIdx, _normalIdx;		
@@ -100,9 +61,10 @@ class mesh{
 		void parseLine(std::stringstream& sin);
 		void loadMeshData(const std::string& filename);
 		void processMeshData();
+		void computeTangBitang();
 		void freeMeshData();
 		
-		void draw(const matrix4x4& modelMatrix, shader& shader, camera& camera);
+		void draw();
 		
 		void createBufferObjects();
 		void destroyBufferObjects();

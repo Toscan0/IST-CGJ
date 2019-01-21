@@ -40,42 +40,48 @@ void shader::checkLinkage(const GLuint program_id) {
 	}
 }
 
-const GLuint shader::addShader(const GLuint program_id, const GLenum shader_type, const std::string& filename)
+//const GLuint shader::addShader(const GLuint program_id, const GLenum shader_type, const std::string& filename)
+void shader::addShader(const GLenum shader_type, const std::string& filename)
 {
-	const GLuint shader_id = glCreateShader(shader_type);
+	//create shader
+	const GLuint shaderId = glCreateShader(shader_type);
 	const std::string scode = read(filename);
 	const GLchar* code = scode.c_str();
-	glShaderSource(shader_id, 1, &code, 0);
-	glCompileShader(shader_id);
-	checkCompilation(shader_id, filename);
-	glAttachShader(program_id, shader_id);
-	return shader_id;
+	glShaderSource(shaderId, 1, &code, 0);
+
+	// compile shader
+	glCompileShader(shaderId);
+	checkCompilation(shaderId, filename);
+
+	_shaders.push_back(shaderId);
 }
 
 void shader::createShaderProgram(const std::string& vs_file, const std::string& fs_file, bool texcoordsLoaded, bool mormalsLoaded)
 {
-	_ProgramId = glCreateProgram();
+	addShader(GL_VERTEX_SHADER, vs_file);
+	addShader(GL_FRAGMENT_SHADER, fs_file);
 
-	GLuint VertexShaderId = addShader(_ProgramId, GL_VERTEX_SHADER, vs_file);
-	GLuint FragmentShaderId = addShader(_ProgramId, GL_FRAGMENT_SHADER, fs_file);
+	_ProgramId = glCreateProgram();
+	;
+	for (int i = 0; i < _shaders.size(); i++) {
+		glAttachShader(_ProgramId, _shaders[i]);
+	}
 
 	glBindAttribLocation(_ProgramId, VERTICES, "inPosition");
 	if (texcoordsLoaded)
 		glBindAttribLocation(_ProgramId, TEXCOORDS, "inTexcoord");
 	if (mormalsLoaded)
 		glBindAttribLocation(_ProgramId, NORMALS, "inNormal");
+	// Color bynd
+	glBindAttribLocation(_ProgramId, COLORS, "in_Color");
 
 	glLinkProgram(_ProgramId);
 	checkLinkage(_ProgramId);
 
-	glDetachShader(_ProgramId, VertexShaderId);
-	glDetachShader(_ProgramId, FragmentShaderId);
-	glDeleteShader(VertexShaderId);
-	glDeleteShader(FragmentShaderId);
-
-	_ModelMatrix_UId = glGetUniformLocation(_ProgramId, "ModelMatrix");
-	_ViewMatrix_UId = glGetUniformLocation(_ProgramId, "ViewMatrix");
-	_ProjectionMatrix_UId = glGetUniformLocation(_ProgramId, "ProjectionMatrix");
+	for (int i = 0; i < _shaders.size(); i++) {
+		glDetachShader(_ProgramId, _shaders[i]);
+		glDeleteShader(_shaders[i]);
+	}
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 }
@@ -88,35 +94,24 @@ void shader::destroyShaderProgram()
 	checkOpenGLError("ERROR: Could not destroy shaders.");
 }
 
-/*const bool shader::getTexcoordsLoaded() {
-	return _TexcoordsLoaded;
+GLint shader::getUniform(const GLchar * name)
+{
+	std::map <const GLchar*, GLint> ::iterator it = _uniforms.find(name);
+	if (it != _uniforms.end())
+		return it->second;
+	GLint uniformID = glGetUniformLocation(_ProgramId, name);
+	_uniforms.insert(std::pair <const GLchar*, GLint>(name, uniformID));
+	return uniformID;
 }
 
-const bool shader::getNormalsLoaded() {
-	return _NormalsLoaded;
+void shader::Bind() const {
+	glUseProgram(_ProgramId);
 }
 
-const void shader::setTexcoordsLoaded(const bool texCoordsLoaded) {
-	_TexcoordsLoaded = texCoordsLoaded;
+void shader::UnBind() const {
+	glUseProgram(0);
 }
-
-const void shader::setNormalsLoaded(const bool normalsLoaded) {
-	_NormalsLoaded = normalsLoaded;
-}*/
-
 
 const GLuint shader::getProgramId() {
 	return _ProgramId;
-}
-
-const GLint shader::getModelMatrix_UId() {
-	return _ModelMatrix_UId;
-}
-
-const GLint shader::getViewMatrix_UId() {
-	return _ViewMatrix_UId;
-}
-
-const GLint shader::getProjectionMatrix_UId() {
-	return _ProjectionMatrix_UId;
 }

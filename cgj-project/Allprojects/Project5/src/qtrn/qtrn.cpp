@@ -92,27 +92,6 @@ const qtrn qAdd(const qtrn& q0, const qtrn& q1)
 	q._z = q0._z + q1._z;
 	return q;
 }
-/*
-const qtrn qMultiply(const qtrn& q, const float s)
-{
-	qtrn sq;
-	sq._t = s * q._t;
-	sq._x = s * q._x;
-	sq._y = s * q._y;
-	sq._z = s * q._z;
-	return sq;
-}
-
-const qtrn qMultiply(const qtrn& q0, const qtrn& q1)
-{
-	qtrn q;
-	q._t = q0._t * q1._t - q0._x * q1._x - q0._y * q1._y - q0._z * q1._z;
-	q._x = q0._t * q1._x + q0._x * q1._t + q0._y * q1._z - q0._z * q1._y;
-	q._y = q0._t * q1._y + q0._y * q1._t + q0._z * q1._x - q0._x * q1._z;
-	q._z = q0._t * q1._z + q0._z * q1._t + q0._x * q1._y - q0._y * q1._x;
-	return q;
-}*/
-
 matrix4x4 qGLMatrix(const qtrn& q, matrix4x4 matrix){
 	qtrn qn = qNormalize(q);
 

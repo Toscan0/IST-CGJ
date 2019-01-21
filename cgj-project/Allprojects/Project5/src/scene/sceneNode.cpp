@@ -2,12 +2,28 @@
 
 sceneNode::sceneNode() {}
 
-void sceneNode::setModelMatrixAux(const matrix4x4 &modelMatrixAux) {
-	_modelMatrixAux = modelMatrixAux;
+void sceneNode::makeInitialModelMatrix() {
+	matrixFactory mf;
+	
+	matrix4x4 mAux;
+	matrix4x4 mR;
+	mR = qGLMatrix(_q, mAux);
+	
+	//For transformation the order is : T * R * S
+	this->setInitialModelMatrix(
+		mf.translationMatrix4x4(_translationVector) * mR * 
+		mf.scalingMatrix4x4(_scalingVector)
+	);
 }
 
-const matrix4x4 sceneNode::getModelMatrixAux() {
-	return _modelMatrixAux;
+void sceneNode::setInitialModelMatrix(const matrix4x4 &initialModelMatrix) {
+	_initialModelMatrix = initialModelMatrix;
+
+	this->setModelMatrix(initialModelMatrix);
+}
+
+const matrix4x4 sceneNode::getInitialModelMatrix() {
+	return _initialModelMatrix;
 }
 
 void sceneNode::setModelMatrix(const matrix4x4 &modelMatrix) {
@@ -15,12 +31,28 @@ void sceneNode::setModelMatrix(const matrix4x4 &modelMatrix) {
 	// if is a parent node you need to updated the model matrix of his sons
 	for (int i = 0; i < _nodes.size(); i++) {
 		sceneNode* nextNode = _nodes[i];
-		nextNode->setModelMatrix(modelMatrix *  nextNode->getModelMatrixAux());
+		nextNode->setModelMatrix(modelMatrix *  nextNode->getInitialModelMatrix());
 	}
 }
 
 const matrix4x4 sceneNode::getModelMatrix() {
 	return _modelMatrix;
+}
+
+const vector3 sceneNode::getTranslationVector() {
+	return _translationVector;
+}
+
+void sceneNode::setTranslationVector(const vector3& vt) {
+	_translationVector = vt;
+}
+
+const vector3 sceneNode::getScalingVector() {
+	return _scalingVector;
+}
+
+void sceneNode::setScalingVector(const vector3& vS) {
+	_scalingVector = vS;
 }
 
 void sceneNode::setMesh(mesh* m) {
@@ -47,6 +79,41 @@ const std::string sceneNode::getName() {
 	return _name;
 }
 
+float* sceneNode::getColor() {
+	return _color;
+}
+
+void sceneNode::setColor(float* color) {
+	_color[0] = color[0];
+	_color[1] = color[1];
+	_color[2] = color[2];
+	_color[3] = color[3];
+}
+
+const int sceneNode::getIndex() {
+	return _index;
+}
+
+void sceneNode::setIndex(int index) {
+	_index = index;
+}
+
+
+const qtrn sceneNode::getRotQtrn() {
+	return _q;
+}
+
+void sceneNode::setRotQtrn(const qtrn& q) {
+	 _q = q;
+}
+
+void sceneNode::setTextures(GLint diffTex, GLint normTex)
+{
+	_texturesLoaded = true;
+	_diffuseTexture = diffTex;
+	_normalTexture = normTex;
+
+}
 
 void sceneNode::addNode(sceneNode* node) {
 	node->setModelMatrix(_modelMatrix * node->getModelMatrix());
@@ -56,24 +123,84 @@ void sceneNode::addNode(sceneNode* node) {
 const std::vector<sceneNode*> sceneNode::getNodes() {
 	return _nodes;
 }
-
-void sceneNode::draw(camera& cam) {
-	if (_shader != nullptr) {
-		glUseProgram(_shader->getProgramId());
-		matrix4x4 mM = _modelMatrix;
-		glUniformMatrix4fv(_shader->getModelMatrix_UId(), 1, GL_TRUE, mM.data()); // need to be trasposed
-		matrix4x4 vM = cam.getViewMatrix();
-		glUniformMatrix4fv(_shader->getViewMatrix_UId(), 1, GL_FALSE, vM.data());
-		matrix4x4 mP = cam.getPrespMatrix();
-		glUniformMatrix4fv(_shader->getProjectionMatrix_UId(), 1, GL_FALSE, mP.data());
+void sceneNode::drawAux(camera& cam, matrix4x4& modelMatrix,float* color) {
+	glUseProgram(_shader->getProgramId());
+	glProgramUniform4fv(_shader->getProgramId(), _shader->getUniform("forceColor"), 1, color);
+	matrix4x4 mM = modelMatrix;
+	glUniformMatrix4fv(_shader->getUniform("ModelMatrix"), 1, GL_TRUE, mM.data()); // need to be trasposed
+	matrix4x4 vM = cam.getViewMatrix();
+	glUniformMatrix4fv(_shader->getUniform("ViewMatrix"), 1, GL_FALSE, vM.data());
+	matrix4x4 mP = cam.getPrespMatrix();
+	glUniformMatrix4fv(_shader->getUniform("ProjectionMatrix"), 1, GL_FALSE, mP.data());
+	vector3 lP = cam.getLight();
+	glUniform3fv(_shader->getUniform("lightPosition"), 1, lP.data());
+	// textures
+	if (_texturesLoaded)
+	{
+		glUniform1i(_shader->getUniform("noiseTexture"), 0);
+		glUniform1i(_shader->getUniform("normalTexture"), 1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, _diffuseTexture);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, _normalTexture);
 	}
-	if (_mesh != nullptr) {
-		_mesh->draw(_modelMatrix, *_shader, cam);
+}
+
+void sceneNode::drawPicked(camera& cam, GLuint indexSelected) {
+	if (_index == indexSelected && indexSelected >= 1 && indexSelected <= 7) { // that node was selected
+		matrixFactory mf;
+		glStencilFunc(GL_NOTEQUAL, _index, 0xFF);
+		glDisable(GL_DEPTH_TEST);
+
+		qtrn default_qtrn = { 1.0f, 0.0f, 0.0f, 0.0f }; //DEFAULT_QTRN
+		matrix4x4 R;
+		
+		matrix4x4 mAux;
+		R = qGLMatrix(_q, mAux);  // matrix rotação devolve em row major
+
+		vector3 vT = _translationVector;
+		matrix4x4 T = mf.translationMatrix4x4(vT);
+
+		vector3 aux(_scalingVector._a + 0.2f, _scalingVector._b + 0.2f, _scalingVector._c + 0.2f);
+		vector3 vS = aux;
+		matrix4x4 S = mf.scalingMatrix4x4(vS); // matrix escala
+
+		matrix4x4 mM = (T * R * S); //modelMatrix
+		float black[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		drawAux(cam, mM, black);
+
+		_mesh->draw();
+
+		glEnable(GL_DEPTH_TEST);
 	}
 	for (int i = 0; i < _nodes.size(); i++) {
 		sceneNode* nextNode = _nodes[i];
 		matrix4x4 nextNodeModelMatrix = nextNode->getModelMatrix();
-		nextNode->draw(cam);
+		nextNode->drawPicked(cam, indexSelected);
 	}
-	
+}
+
+void sceneNode::draw(camera& cam, GLuint indexSelected) {
+	if (_shader != nullptr) {
+		drawAux(cam, _modelMatrix, _color);
+	}
+	if (_mesh != nullptr) {
+		if (_index == 0) { //table
+			glStencilFunc(GL_ALWAYS, _index, 0x00);
+			glStencilMask(0x00);
+		}
+		else if (_index > 0) {
+			glStencilFunc(GL_ALWAYS, _index, 0xFF);
+			glStencilMask(0xFF);
+		}
+		else {
+			std::cout << "Error: Mesh with no index, name: " + _name << "\n";
+		}
+		_mesh->draw();
+	}
+	for (int i = 0; i < _nodes.size(); i++) {
+		sceneNode* nextNode = _nodes[i];
+		matrix4x4 nextNodeModelMatrix = nextNode->getModelMatrix();
+		nextNode->draw(cam, indexSelected);
+	}
 }
